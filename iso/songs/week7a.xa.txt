@@ -1,0 +1,4 @@
+1 xa ugh/Voices.xa 1 0
+1 xa ugh/Inst.xa 1 1
+1 xa guns/Voices.xa 1 2
+1 xa guns/Inst.xa 1 3

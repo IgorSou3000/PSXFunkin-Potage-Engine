@@ -1,0 +1,7 @@
+all: \
+  $(addsuffix .cht,  $(basename $(wildcard iso/songs/*.json))) \
+  $(addsuffix .cht,  $(basename $(wildcard iso/songs/*/*.json))) \
+  iso/week7/picospeaker.cht \
+
+iso/%.cht: iso/%.json
+	tools/funkinchtpak/funkinchtpak $< $@
