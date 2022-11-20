@@ -598,7 +598,9 @@ void Menu_Tick(void)
 				"FREEPLAY",
 				"CREDITS",
 				"OPTIONS",
+				#ifndef NOSAVE
 				"SAVE",
+				#endif
 			};
 			
 			//Initialize page
@@ -913,6 +915,16 @@ void Menu_Tick(void)
 					Trans_Start();
 				}
 			}
+			char scoredisp[0x100];
+
+			sprintf(scoredisp, "PERSONAL BEST: %d", stage.save.savescore[menu_options[menu.select].stage][menu.page_param.stage.diff] * 10);
+
+			menu.font_arial.draw(&menu.font_arial,
+				scoredisp,
+				SCREEN_WIDTH - 170,
+				SCREEN_HEIGHT / 2 - 75,
+				FontAlign_Left
+			);
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(32,1);

@@ -32,7 +32,7 @@ void ErrorLock(void)
 }
 
 //Memory heap
-#define MEM_STAT //This will enable the Mem_GetStat function which returns information about available memory in the heap
+//#define MEM_STAT //This will enable the Mem_GetStat function which returns information about available memory in the heap
 
 #define MEM_IMPLEMENTATION
 #include "mem.h"
@@ -61,20 +61,27 @@ int main(int argc, char **argv)
 	
 	Timer_Init();
 
+	#ifndef NOSAVE
 	MCRD_Init();
+	#endif
 	
 	//Start game
 	gameloop = GameLoop_Menu;
 
 	//If not found any save, enable default settings and load opening
-	if (CheckSave() == false)
-	{
-		DefaultSettings();
+	#ifndef NOSAVE
+		if (CheckSave() == false)
+		{
+			DefaultSettings();
+			Menu_Load(MenuPage_Opening);
+		}
+		//Load Save Warning
+		else
+			Menu_Load(MenuPage_SaveWarning);
+
+		#else
 		Menu_Load(MenuPage_Opening);
-	}
-	//Load Save Warning
-	else
-		Menu_Load(MenuPage_SaveWarning);
+		#endif
 	
 	//Game loop
 	while (PSX_Running())

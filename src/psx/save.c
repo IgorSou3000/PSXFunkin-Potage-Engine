@@ -70,6 +70,14 @@ void DefaultSettings()
 {
   stage.save.ghost = true; 
   stage.save.showtimer = true;
+
+  for (int i = 0; i < StageId_Max; i++)
+  {
+    for (int j = 0; j < StageDiff_Max; j++)
+    {
+      stage.save.savescore[i][j] = 0;
+    }
+  }
 }
 
 boolean CheckSave(void)

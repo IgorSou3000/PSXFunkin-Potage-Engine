@@ -28,20 +28,6 @@
 
 //#define STAGE_FREECAM //Freecam
 
-static const fixed_t note_x[8] = {
-	//BF
-	 FIXED_DEC(26,1) + FIXED_DEC(SCREEN_WIDEADD,4),
-	 FIXED_DEC(60,1) + FIXED_DEC(SCREEN_WIDEADD,4),//+34
-	 FIXED_DEC(94,1) + FIXED_DEC(SCREEN_WIDEADD,4),
-	FIXED_DEC(128,1) + FIXED_DEC(SCREEN_WIDEADD,4),
-	//Opponent
-	FIXED_DEC(-128,1) - FIXED_DEC(SCREEN_WIDEADD,4),
-	 FIXED_DEC(-94,1) - FIXED_DEC(SCREEN_WIDEADD,4),//+34
-	 FIXED_DEC(-60,1) - FIXED_DEC(SCREEN_WIDEADD,4),
-	 FIXED_DEC(-26,1) - FIXED_DEC(SCREEN_WIDEADD,4),
-};
-static const fixed_t note_y = FIXED_DEC(32 - SCREEN_HEIGHT2, 1);
-
 static const u16 note_key[] = {INPUT_LEFT, INPUT_DOWN, INPUT_UP, INPUT_RIGHT};
 static const u8 note_anims[4][3] = {
 	{CharAnim_Left,  CharAnim_LeftAlt,  PlayerAnim_LeftMiss},
@@ -271,8 +257,8 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 		{
 			//Create splash object
 			Obj_Splash *splash = Obj_Splash_New(
-				note_x[type],
-				note_y * (stage.save.downscroll ? -1 : 1),
+				stage.note_x[type],
+				stage.note_y[type] * (stage.save.downscroll ? -1 : 1),
 				type % 4
 			);
 			if (splash != NULL)
@@ -905,7 +891,7 @@ static void Stage_DrawNotes(void)
 		
 		fixed_t note_fp = (fixed_t)note->pos * FIXED_UNIT;
 		fixed_t time = (scroll.start - stage.song_time) + (scroll.length * (note->pos - scroll.start_step) / scroll.length_step);
-		fixed_t y = note_y + FIXED_MUL(stage.speed, time * 150);
+		fixed_t y = stage.note_y[note->type % 8] + FIXED_MUL(stage.speed, time * 150);
 		
 		//Check if went above screen
 		if (y < FIXED_DEC(-16 - SCREEN_HEIGHT2, 1))
@@ -961,7 +947,7 @@ static void Stage_DrawNotes(void)
 						note_src.w = 32;
 						note_src.h = 28 - (clip / FIXED_UNIT);
 						
-						note_dst.x = note_x[(note->type % 8)] - FIXED_DEC(16,1);
+						note_dst.x = stage.note_x[(note->type % 8)] - FIXED_DEC(16,1);
 						note_dst.y = y + clip;
 						note_dst.w = note_src.w * FIXED_UNIT;
 						note_dst.h = (note_src.h * FIXED_UNIT);
@@ -978,7 +964,7 @@ static void Stage_DrawNotes(void)
 				{
 					//Get note height
 					fixed_t next_time = (scroll.start - stage.song_time) + (scroll.length * (note->pos + 12 - scroll.start_step) / scroll.length_step);
-					fixed_t next_y = note_y + FIXED_MUL(stage.speed, next_time * 150) - scroll.size;
+					fixed_t next_y = stage.note_y[note->type % 8] + FIXED_MUL(stage.speed, next_time * 150) - scroll.size;
 					fixed_t next_size = next_y - y;
 					
 					if (clip < next_size)
@@ -988,7 +974,7 @@ static void Stage_DrawNotes(void)
 						note_src.w = 32;
 						note_src.h = 16;
 						
-						note_dst.x = note_x[(note->type % 8)] - FIXED_DEC(16,1);
+						note_dst.x = stage.note_x[(note->type % 8)] - FIXED_DEC(16,1);
 						note_dst.y = y + clip;
 						note_dst.w = note_src.w * FIXED_UNIT;
 						note_dst.h = (next_y - y) - clip;
@@ -1011,7 +997,7 @@ static void Stage_DrawNotes(void)
 				note_src.w = 32;
 				note_src.h = 32;
 				
-				note_dst.x = note_x[(note->type % 8)] - FIXED_DEC(16,1);
+				note_dst.x = stage.note_x[(note->type % 8)] - FIXED_DEC(16,1);
 				note_dst.y = y - FIXED_DEC(16,1);
 				note_dst.w = note_src.w * FIXED_UNIT;
 				note_dst.h = note_src.h * FIXED_UNIT;
@@ -1067,7 +1053,7 @@ static void Stage_DrawNotes(void)
 				note_src.w = 32;
 				note_src.h = 32;
 				
-				note_dst.x = note_x[(note->type % 8)] - FIXED_DEC(16,1);
+				note_dst.x = stage.note_x[(note->type % 8)] - FIXED_DEC(16,1);
 				note_dst.y = y - FIXED_DEC(16,1);
 				note_dst.w = note_src.w * FIXED_UNIT;
 				note_dst.h = note_src.h * FIXED_UNIT;
@@ -1081,6 +1067,38 @@ static void Stage_DrawNotes(void)
 }
 
 //Stage loads
+
+static void Stage_LoadNotesPos(void)
+{
+	//Middle scroll
+	if (stage.save.middlescroll)
+	{
+		//BF
+		stage.note_x[0 ^ stage.note_swap] = FIXED_DEC(26 - 78,1) + FIXED_DEC(SCREEN_WIDEADD,4);
+		stage.note_x[1 ^ stage.note_swap] = FIXED_DEC(60 - 78,1) + FIXED_DEC(SCREEN_WIDEADD,4); //+34
+		stage.note_x[2 ^ stage.note_swap] = FIXED_DEC(94 - 78,1) + FIXED_DEC(SCREEN_WIDEADD,4);
+		stage.note_x[3 ^ stage.note_swap] = FIXED_DEC(128 - 78,1) + FIXED_DEC(SCREEN_WIDEADD,4);
+		//Opponent
+		for (u8 i = 4; i < 8; i++)
+		stage.note_x[i ^ stage.note_swap] = FIXED_DEC(-400,1) - FIXED_DEC(SCREEN_WIDEADD,4);
+	}
+
+	//Normal scroll
+	else
+	{
+		//BF
+		for (u8 i = 0; i < 4; i++)
+		stage.note_x[i] =  FIXED_DEC(26 + i * 34,1) + FIXED_DEC(SCREEN_WIDEADD,4); //+34
+
+		//Opponent
+		for (u8 i = 4; i < 8; i++)
+		stage.note_x[i] =  FIXED_DEC(-128 + (i - 4) * 34,1) + FIXED_DEC(SCREEN_WIDEADD,4); //-34
+	}
+	
+	//note y
+	for (u8 i = 0; i < 8; i++)
+	stage.note_y[i] = FIXED_DEC(32 - SCREEN_HEIGHT2, 1);
+}
 static void Stage_LoadPlayer(void)
 {
 	//Load player character
@@ -1167,8 +1185,6 @@ static void Stage_LoadChart(void)
 	stage.cur_section = stage.sections;
 	stage.cur_note = stage.notes;
 	stage.cur_event = stage.events;
-
-		printf("event value1 %d\n", stage.cur_event->value1);
 	
 	stage.speed = stage.ogspeed = *((fixed_t*)stage.chart_data); //Get the speed value (4 bytes)
 	
@@ -1273,6 +1289,13 @@ static void Stage_LoadState(void)
 		stage.player_state[1].character = stage.opponent;
 	}
 
+	//Update score
+	if (stage.mode != StageMode_2P)
+	{
+		if (stage.player_state[0].score > (s32)stage.save.savescore[stage.stage_id][stage.stage_diff])
+				stage.save.savescore[stage.stage_id][stage.stage_diff] = stage.player_state[0].score;
+	}
+
 	for (int i = 0; i < 2; i++)
 	{
 		memset(stage.player_state[i].arrow_hitan, 0, sizeof(stage.player_state[i].arrow_hitan));
@@ -1329,6 +1352,7 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stage.story = story;
 	
 	Stage_LoadState();
+	Stage_LoadNotesPos();
 
 	//Load Fonts
 	FontData_Load(&stage.font_cdr, Font_CDR, true);
@@ -1442,6 +1466,9 @@ static boolean Stage_NextLoad(void)
 		
 		//Initialize stage state
 		Stage_LoadState();
+
+		//Load notes position
+		Stage_LoadNotesPos();
 		
 		//Load music
 		Stage_LoadMusic();
@@ -1503,10 +1530,7 @@ void Stage_Tick(void)
 	switch (stage.state)
 	{
 		case StageState_Play:
-		{
-			FntPrint("step: %d\n", stage.song_step);
-			FntPrint("speed: %d", stage.speed);
-			
+		{		
 			//Get song position
 			boolean playing = false;
 			fixed_t next_scroll;
@@ -1575,6 +1599,12 @@ void Stage_Tick(void)
 					}
 					else
 					{
+						//Update score
+						if (stage.mode != StageMode_2P)
+						{
+							if (stage.player_state[0].score > (s32)stage.save.savescore[stage.stage_id][stage.stage_diff])
+									stage.save.savescore[stage.stage_id][stage.stage_diff] = stage.player_state[0].score;
+						}
 						stage.trans = StageTrans_Menu;
 						Trans_Start();
 					}
@@ -1733,19 +1763,21 @@ void Stage_Tick(void)
 			
 			//Draw note HUD
 			RECT note_src = {0, 0, 32, 32};
-			RECT_FIXED note_dst = {0, note_y - FIXED_DEC(16,1), FIXED_DEC(32,1), FIXED_DEC(32,1)};
+			RECT_FIXED note_dst = {0, 0, FIXED_DEC(32,1), FIXED_DEC(32,1)};
 			if (stage.save.downscroll)
 				note_dst.y = -note_dst.y - note_dst.h;
 			
 			for (u8 i = 0; i < 4; i++)
 			{
 				//BF
-				note_dst.x = note_x[i] - FIXED_DEC(16,1);
+				note_dst.x = stage.note_x[i] - FIXED_DEC(16,1);
+				note_dst.y = stage.note_y[i] - FIXED_DEC(16,1);
 				Stage_DrawStrum(i, &note_src, &note_dst);
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 				
 				//Opponent
-				note_dst.x = note_x[(i | 4)] - FIXED_DEC(16,1);
+				note_dst.x = stage.note_x[(i | 4)] - FIXED_DEC(16,1);
+				note_dst.y = stage.note_y[(i | 4)] - FIXED_DEC(16,1);
 				Stage_DrawStrum(i | 4, &note_src, &note_dst);
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 			}

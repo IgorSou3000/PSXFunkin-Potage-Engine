@@ -80,6 +80,8 @@ typedef enum
 	StageDiff_Easy,
 	StageDiff_Normal,
 	StageDiff_Hard,
+
+	StageDiff_Max,
 } StageDiff;
 
 typedef enum
@@ -187,13 +189,18 @@ typedef struct
 	struct
 	{
 		boolean ghost, middlescroll, downscroll, healthdrain, showtimer, botplay;
-		
+
+		u32 savescore[StageId_Max][StageDiff_Max];	
 	}save;
 	
 	u32 offset;
 	
 	//HUD textures
 	Gfx_Tex tex_hud0, tex_hud1, tex_hud2;
+
+	//Notes
+	fixed_t note_x[8];
+	fixed_t note_y[8];
 
 	//Font Stuff
 	FontData font_cdr, font_bold;
