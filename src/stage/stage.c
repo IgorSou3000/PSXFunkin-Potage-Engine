@@ -1764,20 +1764,24 @@ void Stage_Tick(void)
 			//Draw note HUD
 			RECT note_src = {0, 0, 32, 32};
 			RECT_FIXED note_dst = {0, 0, FIXED_DEC(32,1), FIXED_DEC(32,1)};
-			if (stage.save.downscroll)
-				note_dst.y = -note_dst.y - note_dst.h;
 			
 			for (u8 i = 0; i < 4; i++)
 			{
 				//BF
 				note_dst.x = stage.note_x[i] - FIXED_DEC(16,1);
 				note_dst.y = stage.note_y[i] - FIXED_DEC(16,1);
+
+				if (stage.save.downscroll)
+				note_dst.y = -note_dst.y - note_dst.h;
 				Stage_DrawStrum(i, &note_src, &note_dst);
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 				
 				//Opponent
 				note_dst.x = stage.note_x[(i | 4)] - FIXED_DEC(16,1);
 				note_dst.y = stage.note_y[(i | 4)] - FIXED_DEC(16,1);
+
+				if (stage.save.downscroll)
+				note_dst.y = -note_dst.y - note_dst.h;
 				Stage_DrawStrum(i | 4, &note_src, &note_dst);
 				Stage_DrawTex(&stage.tex_hud0, &note_src, &note_dst, stage.bump);
 			}
