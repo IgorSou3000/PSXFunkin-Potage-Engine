@@ -507,6 +507,42 @@ static void Stage_ProcessPlayer(PlayerState *this, Pad *pad, boolean playing)
 }
 
 //Stage drawing functions
+void Stage_DrawTexRotateCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom, u8 angle, u8 cr, u8 cg, u8 cb)
+{
+	fixed_t xz = dst->x;
+	fixed_t yz = dst->y;
+	fixed_t wz = dst->w;
+	fixed_t hz = dst->h;
+	
+	#ifdef STAGE_NOHUD
+		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
+			return;
+	#endif
+	
+	fixed_t l = (SCREEN_WIDTH2  * FIXED_UNIT) + FIXED_MUL(xz, zoom);// + FIXED_DEC(1,2);
+	fixed_t t = (SCREEN_HEIGHT2 * FIXED_UNIT) + FIXED_MUL(yz, zoom);// + FIXED_DEC(1,2);
+	fixed_t r = l + FIXED_MUL(wz, zoom);
+	fixed_t b = t + FIXED_MUL(hz, zoom);
+	
+	l /= FIXED_UNIT;
+	t /= FIXED_UNIT;
+	r /= FIXED_UNIT;
+	b /= FIXED_UNIT;
+	
+	RECT sdst = {
+		l,
+		t,
+		r - l,
+		b - t,
+	};
+	Gfx_DrawTexRotateCol(tex, src, &sdst, angle, cr, cg, cb);
+}
+
+void Stage_DrawTexRotate(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom, u8 angle)
+{
+	Stage_DrawTexRotateCol(tex, src, dst, zoom, angle, 128, 128, 128);
+}
+
 void Stage_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom, u8 cr, u8 cg, u8 cb)
 {
 	fixed_t xz = dst->x;
