@@ -21,5 +21,11 @@ I tried my best for make the code readable and easy as i can do
 # Different
 My engine looks the overlays version of psxfunkin so it way different the way it handle some stuffs, making easier for modding
 
+# STR 
+Now you can play STR!! (Video)
+
+# Sound effects
+This engine have sounds effects like scroll!!
+
 # And a lot more
 My engine added timer, new icons, new story mode and much more!!!!
