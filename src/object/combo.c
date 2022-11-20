@@ -234,7 +234,7 @@ Obj_Combo *Obj_Combo_New(fixed_t x, fixed_t y, u8 hit_type, u16 combo)
 		return NULL;
 	
 	//Set object functions and position
-	if (stage.stage_id >= StageId_6_1 && stage.stage_id <= StageId_6_3)
+	if (stage.pixelcombo)
 	{
 		//Pixel combo
 		this->obj.tick = Obj_Combo_Tick_Weeb;

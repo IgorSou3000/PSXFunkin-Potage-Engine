@@ -19,8 +19,6 @@ freely, subject to the following restrictions:
 2. Altered source versions must be plainly marked as such, and must not be
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
-
-This tool has been modified so that libpsxav isn't an external library
 */
 
 #include <assert.h>
@@ -41,7 +39,11 @@ This tool has been modified so that libpsxav isn't an external library
 #define FORMAT_XA 0
 #define FORMAT_XACD 1
 #define FORMAT_SPU 2
-#define FORMAT_STR2 3
+#define FORMAT_SPUI 3
+#define FORMAT_VAG 4
+#define FORMAT_VAGI 5
+#define FORMAT_STR2 6
+#define FORMAT_STR2CD 7
 
 #define MAX_UNMUXED_BLOCKS 9
 typedef struct {
@@ -84,11 +86,14 @@ typedef struct {
 
 typedef struct {
 	int format; // FORMAT_*
-	bool stereo; // false or true
+	int channels;
 	int frequency; // 18900 or 37800 Hz
 	int bits_per_sample; // 4 or 8
 	int file_number; // 00-FF
 	int channel_number; // 00-1F
+	int interleave;
+	int alignment;
+	bool loop;
 
 	int video_width;
 	int video_height;
@@ -119,6 +124,7 @@ void close_av_data(settings_t *settings);
 
 // filefmt.c
 void encode_file_spu(int16_t *audio_samples, int audio_sample_count, settings_t *settings, FILE *output);
+void encode_file_spu_interleaved(int16_t *audio_samples, int audio_sample_count, settings_t *settings, FILE *output);
 void encode_file_xa(int16_t *audio_samples, int audio_sample_count, settings_t *settings, FILE *output);
 void encode_file_str(settings_t *settings, FILE *output);
 

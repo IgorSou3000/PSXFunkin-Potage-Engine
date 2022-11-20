@@ -19,22 +19,27 @@ freely, subject to the following restrictions:
 2. Altered source versions must be plainly marked as such, and must not be
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
-
-This tool has been modified so that libpsxav isn't an external library
 */
 
 #include "common.h"
 
 void init_sector_buffer_video(uint8_t *buffer, settings_t *settings) {
-	memset(buffer,0,2352);
-	memset(buffer+0x001,0xFF,10);
+	int offset;
+	if (settings->format == FORMAT_STR2CD) {
+		memset(buffer, 0, 2352);
+		memset(buffer+0x001, 0xFF, 10);
+		buffer[0x00F] = 0x02;
+		offset = 0x10;
+	} else {
+		memset(buffer, 0, 2336);
+		offset = 0;
+	}
 
-	buffer[0x00F] = 0x02;
-	buffer[0x010] = settings->file_number;
-	buffer[0x011] = settings->channel_number & 0x1F;
-	buffer[0x012] = 0x08 | 0x40;
-	buffer[0x013] = 0x00;
-	memcpy(buffer + 0x014, buffer + 0x010, 4);
+	buffer[offset+0] = settings->file_number;
+	buffer[offset+1] = settings->channel_number & 0x1F;
+	buffer[offset+2] = 0x08 | 0x40;
+	buffer[offset+3] = 0x00;
+	memcpy(buffer + offset + 4, buffer + offset, 4);
 }
 
 void calculate_edc_data(uint8_t *buffer)

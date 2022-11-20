@@ -35,7 +35,10 @@ void Movie_Prep()
 {
   // Reset and initialize stuff
   printf("Resetting for Movie\n");
+  ResetCallback();
   CdInit();
+  ResetGraph(0);
+  SetGraphDebug(0);
 }
 
 void CheckMovies(void)

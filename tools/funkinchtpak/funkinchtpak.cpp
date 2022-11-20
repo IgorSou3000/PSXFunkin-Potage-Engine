@@ -42,6 +42,7 @@ struct Note
 
 #define EVENTS_FLAG_SPEED     (1 << 2) //Change Scroll Speed
 #define EVENTS_FLAG_GF        (1 << 3) //Set GF Speed
+#define EVENTS_FLAG_CAMZOOM   (1 << 4) //Add Camera Zoom
 
 #define EVENTS_FLAG_PLAYED     (1 << 15) //Event has been already played
 
@@ -210,15 +211,14 @@ int main(int argc, char *argv[])
 
 			new_event.pos = (step_base * 12) + PosRound(((double)i[0] - milli_base) * 12.0, step_crochet);
 
-			//get values information
-			std::string value1 =  j[1];
-			std::string value2 =  j[2];
-
 			if (j[0] == "Change Scroll Speed")
 				new_event.event |= EVENTS_FLAG_SPEED;
 
 			if (j[0] == "Set GF Speed")
-					new_event.event |= EVENTS_FLAG_GF;
+				new_event.event |= EVENTS_FLAG_GF;
+
+			if (j[0] == "Add Camera Zoom")
+				new_event.event |= EVENTS_FLAG_CAMZOOM;
 
 			if (new_event.event & EVENTS_FLAG_VARIANT)
 			{
@@ -241,6 +241,19 @@ int main(int argc, char *argv[])
 					if (j[2] == "")
 						j[2] = "0";
 				}
+				if (new_event.event & EVENTS_FLAG_CAMZOOM)
+				{
+					//Default values
+					if (j[1] == "")
+						j[1] = "0.015"; //cam zoom
+
+					if (j[2] == "")
+						j[2] = "0.03"; //hud zoom
+				}
+
+				//Get values information
+				std::string value1 =  j[1];
+				std::string value2 =  j[2];
 
 				//fixed values by 1024
 				new_event.value1 = std::stof(value1) * FIXED_UNIT;

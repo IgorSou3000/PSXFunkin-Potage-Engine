@@ -365,9 +365,9 @@ void Menu_Load(MenuPage page)
 
 	//Sound Effects Path
 	const char* sfx_path[] = {
-		"\\SOUNDS\\SCROLL.SFX;1",
-		"\\SOUNDS\\CONFIRM.SFX;1",
-		"\\SOUNDS\\CANCEL.SFX;1"
+		"\\SOUNDS\\SCROLL.VAG;1",
+		"\\SOUNDS\\CONFIRM.VAG;1",
+		"\\SOUNDS\\CANCEL.VAG;1"
 	};
 
 	//Load sound effects
@@ -798,6 +798,16 @@ void Menu_Tick(void)
 			//Draw upper strip
 			RECT name_bar = {0, 22, SCREEN_WIDTH, 97};
 			Gfx_DrawRect(&name_bar, 249, 207, 81);
+
+			//Draw "tracks"
+			RECT track_src = {74, 70, 58, 10};
+			RECT track_dst = {
+				15,
+				SCREEN_WIDTH2 - 15,
+				58,
+				10
+			};
+			Gfx_DrawTex(&menu.tex_story, &track_src, &track_dst);
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(48,1);

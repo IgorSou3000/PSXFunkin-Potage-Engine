@@ -1,7 +1,0 @@
-all: \
- $(addsuffix .sfx, $(basename $(wildcard iso/sounds/*.ogg))) \
- $(addsuffix .sfx, $(basename $(wildcard iso/sounds/*/*.ogg))) \
-
-# SFX converts
-iso/sounds/%.sfx: iso/sounds/%.ogg
-	  tools/psxavenc/psxavenc -f 44100 -t spu -b 4 -c 2 -F 1 -C 0 $< $@

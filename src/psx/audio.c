@@ -376,7 +376,14 @@ u16 Audio_GetLength(XA_Track track)
 	return (xa_tracks[track].length / 75) / IO_SECT_SIZE;
 }
 
-/* .SFX file loader */
+/*
+  The bulk of this code was written by spicyjpeg, really this guy is pog
+*/
+
+/* .VAG file loader */
+
+#define VAG_HEADER_SIZE 48
+
 static u8 lastChannelUsed = 0;
 
 static u8 getFreeChannel(void) {
@@ -396,7 +403,9 @@ u32 Audio_LoadSFX(const char* path)
 	  IO_FindFile(&sfx_file, path);
     IO_Data sfx_data = IO_ReadFile(&sfx_file);
 
-	u32 xfer_size = (sfx_file.size + 63) & 0xffffffc0;
+	// subtract size of .vag header (48 bytes), round to 64 bytes
+	u32 xfer_size = ((sfx_file.size - VAG_HEADER_SIZE) + 63) & 0xffffffc0;
+
 	u8  *data = (u8 *) sfx_data;
 
 	// modify sound data to ensure sound "loops" to dummy sample
@@ -415,7 +424,7 @@ u32 Audio_LoadSFX(const char* path)
 
 	SpuSetTransferStartAddr(addr); // set transfer starting address to malloced area
 	SpuSetTransferMode(SPU_TRANSFER_BY_DMA); // set transfer mode to DMA
-	SpuWrite((unsigned char *)data, xfer_size); // perform actual transfer
+	SpuWrite((unsigned char *)data + VAG_HEADER_SIZE, xfer_size); // perform actual transfer
 	SpuIsTransferCompleted(SPU_TRANSFER_WAIT); // wait for DMA to complete
 
 	printf("Allocated new sound (addr=%08x, size=%d)\n", addr, xfer_size);

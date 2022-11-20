@@ -42,14 +42,19 @@ void Events_StartEvents(void)
 					event_speed.value2 = event->value2;
 					break;
 				}
-
 				case EVENTS_FLAG_GF: //Set GF Speed!!
 				{
 					//So easy LOL
 					stage.gf_speed = (event->value1 / FIXED_UNIT) * 4;
 					break;
 				}
-
+				case EVENTS_FLAG_CAMZOOM: //Add Camera Zoom!!
+				{
+					//So easy LOL
+					stage.charbump += event->value1;
+					stage.bump += event->value2;
+					break;
+				}
 				default: //nothing lol
 					break;
 			}

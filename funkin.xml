@@ -81,7 +81,7 @@
 				<!-- Monster charts -->
 				<file name = "2.3e.cht" type = "data" source = "iso/songs/monster/monster-easy.cht"/>
 				<file name = "2.3n.cht" type = "data" source = "iso/songs/monster/monster.cht"/>
-				<file name = "2.3h.cht" type = "data" source = "iso/songs/ghostly-hard.cht"/>
+				<file name = "2.3h.cht" type = "data" source = "iso/songs/monster/monster-hard.cht"/>
 				<!-- Clucked charts -->
 				<file name = "2.4e.cht" type = "data" source = "iso/songs/clucked/clucked-hard.cht"/>
 				<file name = "2.4n.cht" type = "data" source = "iso/songs/clucked/clucked-hard.cht"/>
@@ -248,20 +248,20 @@
 			<!-- Sounds effects -->
 			<dir name = "sounds">
 				<!-- Menu Sounds -->
-				<file name = "scroll.sfx" type = "data" source = "iso/sounds/menu/scroll.sfx"/>
-				<file name = "confirm.sfx" type = "data" source = "iso/sounds/menu/confirm.sfx"/>
-				<file name = "cancel.sfx" type = "data" source = "iso/sounds/menu/cancel.sfx"/>
+				<file name = "scroll.vag" type = "data" source = "iso/sounds/menu/scroll.vag"/>
+				<file name = "confirm.vag" type = "data" source = "iso/sounds/menu/confirm.vag"/>
+				<file name = "cancel.vag" type = "data" source = "iso/sounds/menu/cancel.vag"/>
 
 				<!-- Stage Sounds -->
-				<file name = "intro3.sfx" type = "data" source = "iso/sounds/stage/intro3.sfx"/>
-				<file name = "intro2.sfx" type = "data" source = "iso/sounds/stage/intro2.sfx"/>
-				<file name = "intro1.sfx" type = "data" source = "iso/sounds/stage/intro1.sfx"/>
-				<file name = "intro0.sfx" type = "data" source = "iso/sounds/stage/intro0.sfx"/>
+				<file name = "intro3.vag" type = "data" source = "iso/sounds/stage/intro3.vag"/>
+				<file name = "intro2.vag" type = "data" source = "iso/sounds/stage/intro2.vag"/>
+				<file name = "intro1.vag" type = "data" source = "iso/sounds/stage/intro1.vag"/>
+				<file name = "intro0.vag" type = "data" source = "iso/sounds/stage/intro0.vag"/>
 
-				<file name = "intro3p.sfx" type = "data" source = "iso/sounds/stage/intro3p.sfx"/>
-				<file name = "intro2p.sfx" type = "data" source = "iso/sounds/stage/intro2p.sfx"/>
-				<file name = "intro1p.sfx" type = "data" source = "iso/sounds/stage/intro1p.sfx"/>
-				<file name = "intro0p.sfx" type = "data" source = "iso/sounds/stage/intro0p.sfx"/>
+				<file name = "intro3p.vag" type = "data" source = "iso/sounds/stage/intro3p.vag"/>
+				<file name = "intro2p.vag" type = "data" source = "iso/sounds/stage/intro2p.vag"/>
+				<file name = "intro1p.vag" type = "data" source = "iso/sounds/stage/intro1p.vag"/>
+				<file name = "intro0p.vag" type = "data" source = "iso/sounds/stage/intro0p.vag"/>
 			</dir>
 
 			<!-- Movies -->

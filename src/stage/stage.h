@@ -237,7 +237,7 @@ typedef struct
 		fixed_t tx, ty, tz, td;
 		fixed_t bzoom;
 	} camera;
-	fixed_t bump, sbump;
+	fixed_t bump, sbump, charbump;
 	
 	StageBack *back;
 	
@@ -250,6 +250,9 @@ typedef struct
 	Event* cur_event; //Current event
 	
 	fixed_t note_scroll, song_time, interp_time, interp_ms, interp_speed;
+
+	//week 6 combo
+	boolean pixelcombo;
 	
 	u16 last_bpm;
 	

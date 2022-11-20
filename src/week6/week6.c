@@ -285,6 +285,9 @@ StageBack *Back_Week6_New(void)
 	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0WEEB.TIM;1"), GFX_LOADTEX_FREE);
 	Gfx_LoadTex(&stage.tex_hud1, IO_Read("\\STAGE\\HUD1.TIM;1"), GFX_LOADTEX_FREE);
 	Gfx_LoadTex(&stage.tex_hud2, IO_Read("\\STAGE\\HUD2WEEB.TIM;1"), GFX_LOADTEX_FREE);
+
+	//Use pixel combo code
+	stage.pixelcombo = true;
 	
 	if (stage.stage_id != StageId_6_3)
 	{

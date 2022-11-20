@@ -150,7 +150,7 @@ static void Stage_ScrollCamera(void)
 		#endif
 		
 		//Update other camera stuff
-		stage.camera.bzoom = FIXED_MUL(stage.camera.zoom, stage.bump);
+		stage.camera.bzoom = FIXED_MUL(stage.camera.zoom, stage.charbump);
 	}
 }
 
@@ -1124,6 +1124,8 @@ static void Stage_LoadChart(void)
 	//Load stage data
 	char chart_path[64];
 
+	stage.num_notes = 0;
+
 	//Use standard path convention
 	sprintf(chart_path, "\\WEEK%d\\%d.%d%c.CHT;1", stage.stage_def->week, stage.stage_def->week, stage.stage_def->week_song, "ENH"[stage.stage_diff]);
 	
@@ -1184,18 +1186,18 @@ static void Stage_LoadSFX(void)
 
 	//Load Intro Sound Effects
 	static const char* intro_path[] = {
-		"\\SOUNDS\\INTRO3.SFX;1",
-		"\\SOUNDS\\INTRO2.SFX;1",
-		"\\SOUNDS\\INTRO1.SFX;1",
-		"\\SOUNDS\\INTRO0.SFX;1",
+		"\\SOUNDS\\INTRO3.VAG;1",
+		"\\SOUNDS\\INTRO2.VAG;1",
+		"\\SOUNDS\\INTRO1.VAG;1",
+		"\\SOUNDS\\INTRO0.VAG;1",
 	};
 
 	//Week 6 Intro version
 	static const char* introweeb_path[] = {
-		"\\SOUNDS\\INTRO3P.SFX;1",
-		"\\SOUNDS\\INTRO2P.SFX;1",
-		"\\SOUNDS\\INTRO1P.SFX;1",
-		"\\SOUNDS\\INTRO0P.SFX;1",
+		"\\SOUNDS\\INTRO3P.VAG;1",
+		"\\SOUNDS\\INTRO2P.VAG;1",
+		"\\SOUNDS\\INTRO1P.VAG;1",
+		"\\SOUNDS\\INTRO0P.VAG;1",
 	};
 
 	for (u8 i = 0; i < COUNT_OF(intro_path); i++)
@@ -1211,7 +1213,7 @@ static void Stage_LoadSFX(void)
 
 	//Load General Sound Effects
 	const char* sfx_path[] = {
-		"\\SOUNDS\\SCROLL.SFX;1",
+		"\\SOUNDS\\SCROLL.VAG;1",
 	};
 
 	for (u8 i = 0; i < COUNT_OF(sfx_path); i++)
@@ -1305,6 +1307,7 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stage.stage_def = &stage_defs[stage.stage_id = id];
 	stage.stage_diff = difficulty;
 	stage.story = story;
+	stage.pixelcombo = false;
 
 	//Check movies
 	//Don't play movie if you are retrying the song
@@ -1455,13 +1458,6 @@ static boolean Stage_NextLoad(void)
 
 void Stage_Tick(void)
 {
-	//Return to menu when start is pressed
-	if (pad_state.press & PAD_START && stage.state != StageState_Play)
-	{
-		stage.trans = StageTrans_Reload;
-		Trans_Start();
-	}
-
 	//Tick transition
 	if (Trans_Tick())
 	{
@@ -1649,6 +1645,9 @@ void Stage_Tick(void)
 			if ((stage.bump = FIXED_UNIT + FIXED_MUL(stage.bump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
 				stage.bump = FIXED_UNIT;
 			stage.sbump = FIXED_UNIT + FIXED_MUL(stage.sbump - FIXED_UNIT, FIXED_DEC(85,100));
+
+			if ((stage.charbump = FIXED_UNIT + FIXED_MUL(stage.charbump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
+				stage.charbump = FIXED_UNIT;
 			
 			if (playing && (stage.flag & STAGE_FLAG_JUST_STEP))
 			{
@@ -1661,11 +1660,14 @@ void Stage_Tick(void)
 				
 				//Bump screen
 				if (is_bump_step)
-					stage.bump = FIXED_DEC(104,100);
+				{
+					stage.bump += FIXED_DEC(3,100); //0.03
+					stage.charbump += FIXED_DEC(15,1000); //0.015
+				}
 				
 				//Bump health every 4 steps
 				if ((stage.song_step % 4) == 0)
-					stage.sbump = FIXED_DEC(104,100);
+					stage.sbump += FIXED_DEC(3,100);
 			}
 			
 			//Scroll camera
@@ -1900,7 +1902,7 @@ void Stage_Tick(void)
 			Gfx_SetClear(0, 0, 0);
 			
 			//Run death animation, focus on player, and change state
-			stage.player->set_anim(stage.player, PlayerAnim_Dead0);
+			stage.player->set_anim(stage.player, PlayerAnim_FirstDead);
 			
 			Stage_FocusCharacter(stage.player, 0);
 			stage.song_time = 0;
@@ -1917,12 +1919,13 @@ void Stage_Tick(void)
 			if (stage.camera.td > 0)
 				Stage_ScrollCamera();
 			stage.player->tick(stage.player);
-			
-			//Drop mic and change state if CD has finished reading and animation has ended
-			if (IO_IsReading() || stage.player->animatable.anim != PlayerAnim_Dead1)
+
+			if (IO_IsReading() || !Animatable_Ended(&stage.player->animatable))
 				break;
+
+			//Run death animation, focus on player, and change state
+			stage.player->set_anim(stage.player, PlayerAnim_DeadLoop);
 			
-			stage.player->set_anim(stage.player, PlayerAnim_Dead2);
 			stage.camera.td = FIXED_DEC(25, 1000);
 			stage.state = StageState_DeadDrop;
 			break;
@@ -1934,27 +1937,36 @@ void Stage_Tick(void)
 			stage.player->tick(stage.player);
 			
 			//Enter next state once mic has been dropped
-			if (stage.player->animatable.anim == PlayerAnim_Dead3)
-			{
-				stage.state = StageState_DeadRetry;
-				Audio_PlayXA_Track(XA_GameOver, 0x40, 1, true);
-			}
+			stage.state = StageState_DeadRetry;
+			Audio_PlayXA_Track(XA_GameOver, 0x40, 1, true);
 			break;
 		}
 		case StageState_DeadRetry:
 		{
-			//Randomly twitch
-			if (stage.player->animatable.anim == PlayerAnim_Dead3)
-			{
-				if (RandomRange(0, 29) == 0)
-					stage.player->set_anim(stage.player, PlayerAnim_Dead4);
-				if (RandomRange(0, 29) == 0)
-					stage.player->set_anim(stage.player, PlayerAnim_Dead5);
-			}
-			
 			//Scroll camera and tick player
 			Stage_ScrollCamera();
 			stage.player->tick(stage.player);
+
+			if (pad_state.press & PAD_START)
+			{
+				Audio_StopXA();
+				stage.player->set_anim(stage.player, PlayerAnim_DeadConfirm);
+				stage.state = StageState_DeadDecide;
+			}
+			break;
+		}
+		case StageState_DeadDecide:
+		{
+			//Scroll camera and tick player
+			Stage_ScrollCamera();
+			stage.player->tick(stage.player);
+
+			//Return to menu when start is pressed
+			if (Animatable_Ended(&stage.player->animatable))
+			{
+				stage.trans = StageTrans_Reload;
+				Trans_Start();
+			}
 			break;
 		}
 		default:

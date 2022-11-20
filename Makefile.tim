@@ -69,9 +69,9 @@ iso/%.arc:
 iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/menu/hud1.tim
 
 # BF
-$(BFPATH)/normal/main.arc: $(BFPATH)/normal/bf0.tim $(BFPATH)/normal/bf1.tim $(BFPATH)/normal/bf2.tim $(BFPATH)/normal/bf3.tim $(BFPATH)/normal/bf4.tim $(BFPATH)/normal/bf5.tim $(BFPATH)/normal/bf6.tim $(BFPATH)/normal/dead0.tim
+$(BFPATH)/normal/main.arc: $(BFPATH)/normal/bf0.tim $(BFPATH)/normal/bf1.tim $(BFPATH)/normal/bf2.tim $(BFPATH)/normal/bf3.tim $(BFPATH)/normal/bf4.tim $(BFPATH)/normal/bf5.tim $(BFPATH)/normal/bf6.tim $(BFPATH)/dead0.tim $(BFPATH)/dead1.tim $(BFPATH)/dead2.tim
 
-$(BFPATH)/dead.arc: $(BFPATH)/dead1.tim $(BFPATH)/dead2.tim $(BFPATH)/retry.tim
+$(BFPATH)/dead.arc: $(BFPATH)/dead3.tim $(BFPATH)/dead4.tim $(BFPATH)/dead5.tim
 
 # Dad
 $(DADPATH)/normal/main.arc: $(DADPATH)/normal/idle0.tim $(DADPATH)/normal/idle1.tim $(DADPATH)/normal/left.tim $(DADPATH)/normal/down.tim $(DADPATH)/normal/up.tim $(DADPATH)/normal/right.tim
@@ -94,7 +94,7 @@ $(PICOPATH)/normal/main.arc: $(PICOPATH)/normal/idle.tim $(PICOPATH)/normal/hit0
 $(MOMPATH)/normal/main.arc: $(MOMPATH)/normal/idle0.tim $(MOMPATH)/normal/idle1.tim $(MOMPATH)/normal/left.tim $(MOMPATH)/normal/down.tim $(MOMPATH)/normal/up.tim $(MOMPATH)/normal/right.tim
 
 # Xmas BF
-$(BFPATH)/xmas/main.arc: $(BFPATH)/xmas/bf0.tim $(BFPATH)/xmas/bf1.tim $(BFPATH)/xmas/bf2.tim $(BFPATH)/xmas/bf3.tim $(BFPATH)/xmas/bf4.tim $(BFPATH)/xmas/bf5.tim $(BFPATH)/xmas/dead0.tim
+$(BFPATH)/xmas/main.arc: $(BFPATH)/xmas/bf0.tim $(BFPATH)/xmas/bf1.tim $(BFPATH)/xmas/bf2.tim $(BFPATH)/xmas/bf3.tim $(BFPATH)/xmas/bf4.tim $(BFPATH)/xmas/bf5.tim $(BFPATH)/dead0.tim $(BFPATH)/dead1.tim $(BFPATH)/dead2.tim
 
 # Xmas Parents
 $(XMASPPATH)/normal/main.arc: $(XMASPPATH)/normal/idle0.tim $(XMASPPATH)/normal/idle1.tim $(XMASPPATH)/normal/idle2.tim $(XMASPPATH)/normal/idle3.tim $(XMASPPATH)/normal/lefta0.tim $(XMASPPATH)/normal/lefta1.tim $(XMASPPATH)/normal/leftb0.tim $(XMASPPATH)/normal/leftb1.tim $(XMASPPATH)/normal/downa0.tim $(XMASPPATH)/normal/downa1.tim $(XMASPPATH)/normal/downb0.tim $(XMASPPATH)/normal/downb1.tim $(XMASPPATH)/normal/upa0.tim $(XMASPPATH)/normal/upa1.tim $(XMASPPATH)/normal/upb0.tim $(XMASPPATH)/normal/upb1.tim $(XMASPPATH)/normal/righta0.tim $(XMASPPATH)/normal/righta1.tim $(XMASPPATH)/normal/rightb0.tim $(XMASPPATH)/normal/rightb1.tim

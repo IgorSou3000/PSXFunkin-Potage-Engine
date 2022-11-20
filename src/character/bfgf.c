@@ -92,15 +92,8 @@ static const Animation char_bfgf_anim[PlayerAnim_Max] = {
 	{2, (const u8[]){13, 14, 15, ASCR_BACK, 1}},         //PlayerAnim_Peace
 	{2, (const u8[]){16, 17, 18, 19, ASCR_REPEAT}},      //PlayerAnim_Sweat
 	
-	{5, (const u8[]){23, 24, 25, 26, 26, 26, 26, 26, 26, 26, ASCR_CHGANI, PlayerAnim_Dead1}}, //PlayerAnim_Dead0
-	{5, (const u8[]){26, ASCR_REPEAT}},                                                       //PlayerAnim_Dead1
-	{3, (const u8[]){27, 28, 29, 30, 30, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}}, //PlayerAnim_Dead2
-	{3, (const u8[]){30, ASCR_REPEAT}},                                                       //PlayerAnim_Dead3
-	{3, (const u8[]){31, 32, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}},             //PlayerAnim_Dead4
-	{3, (const u8[]){33, 34, 30, 30, 30, 30, 30, ASCR_CHGANI, PlayerAnim_Dead3}},             //PlayerAnim_Dead5
-	
-	{10, (const u8[]){30, 30, 30, ASCR_BACK, 1}}, //PlayerAnim_Dead4
-	{ 3, (const u8[]){33, 34, 30, ASCR_REPEAT}},  //PlayerAnim_Dead5
+	{5, (const u8[]){23, 24, 25, 26, 26, 26, 26, 26, 26, 26, ASCR_CHGANI, PlayerAnim_DeadLoop}}, //PlayerAnim_FirstDead
+	{5, (const u8[]){26, ASCR_REPEAT}},   
 };
 
 //Boyfriend and Girlfriend player functions
@@ -166,14 +159,14 @@ void Char_BFGF_SetAnim(Character *character, u8 anim)
 	//Perform animation checks
 	switch (anim)
 	{
-		case PlayerAnim_Dead0:
+		case PlayerAnim_FirstDead:
 			//Begin reading dead.arc and adjust focus
 			this->arc_dead = IO_AsyncReadFile(&this->file_dead_arc);
 			character->focus_x = FIXED_DEC(0,1);
 			character->focus_y = FIXED_DEC(-40,1);
 			character->focus_zoom = FIXED_DEC(125,100);
 			break;
-		case PlayerAnim_Dead2:
+		case PlayerAnim_DeadLoop:
 			//Unload main.arc
 			Mem_Free(this->arc_main);
 			this->arc_main = this->arc_dead;
@@ -181,17 +174,12 @@ void Char_BFGF_SetAnim(Character *character, u8 anim)
 			
 			//Find dead.arc files
 			const char **pathp = (const char *[]){
-				"dead1.tim", //BFGF_ArcDead_Dead1
-				"dead2.tim", //BFGF_ArcDead_Dead2
-				"retry.tim", //BFGF_ArcDead_Retry
+				"dead3.tim", //BF_ArcDead_Dead3
 				NULL
 			};
 			IO_Data *arc_ptr = this->arc_ptr;
 			for (; *pathp != NULL; pathp++)
 				*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
-			
-			//Load retry art
-			Gfx_LoadTex(&this->tex_retry, this->arc_ptr[BFGF_ArcDead_Retry], 0);
 			break;
 	}
 	
