@@ -12,8 +12,6 @@
 #include "mem.h"
 #include "stage/stage.h"
 
-//#define NOSAVE //This is for peoples who are making a port and don't want the save feature
-
 // Pallete Offset: 0x00000014 to 0x00000033
 // Image Offset:   0x00000040 to 0x000000BF
 
@@ -82,6 +80,7 @@ void DefaultSettings()
 
 boolean CheckSave(void)
 {
+  #ifndef NOSAVE
   int fd = open(SaveTitle, 0x0001);
 
   if (fd < 0) // file doesnt exist 
@@ -92,6 +91,10 @@ boolean CheckSave(void)
   else
     printf("Founded Save\n");
   return true;
+
+  #else
+    return false;
+  #endif
 }
 
 boolean ReadSave()
@@ -121,6 +124,7 @@ boolean ReadSave()
 
 void WriteSave()
 { 
+  #ifndef NOSAVE
   int fd = open(SaveTitle, 0x0002);
 
   if (fd < 0) // if save doesnt exist make one
@@ -143,6 +147,7 @@ void WriteSave()
   } 
   else 
     printf("Not Managed To Save %d\n", fd);  // failed to save
+  #endif
 }
 
 //Initiliaze memory card

@@ -69,19 +69,12 @@ int main(int argc, char **argv)
 	gameloop = GameLoop_Menu;
 
 	//If not found any save, enable default settings and load opening
-	#ifndef NOSAVE
-		if (CheckSave() == false)
-		{
-			DefaultSettings();
-			Menu_Load(MenuPage_Opening);
-		}
-		//Load Save Warning
-		else
-			Menu_Load(MenuPage_SaveWarning);
+	if (CheckSave() == false)
+		DefaultSettings();
+	else
+		ReadSave();
 
-		#else
-		Menu_Load(MenuPage_Opening);
-		#endif
+	Menu_Load(MenuPage_Opening);
 	
 	//Game loop
 	while (PSX_Running())

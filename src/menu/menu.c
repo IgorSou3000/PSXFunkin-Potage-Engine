@@ -376,12 +376,9 @@ void Menu_Load(MenuPage page)
 		menu.sounds[i] = Audio_LoadSFX(sfx_path[i]);
 	}
 	
-	//Play menu music if not be the Save Warning
-	if (page != MenuPage_SaveWarning)
-	{
+	//Play menu music
 	Audio_PlayXA_Track(XA_GettinFreaky, 0x40, 0, 1);
 	Audio_WaitPlayXA();
-	}
 	
 	//Set background colour
 	Gfx_SetClear(0, 0, 0);
@@ -598,9 +595,6 @@ void Menu_Tick(void)
 				"FREEPLAY",
 				"CREDITS",
 				"OPTIONS",
-				#ifndef NOSAVE
-				"SAVE",
-				#endif
 			};
 			
 			//Initialize page
@@ -640,10 +634,6 @@ void Menu_Tick(void)
 							break;
 						case 3: //Options
 							menu.next_page = MenuPage_Options;
-							break;
-						case 4: //Save
-							//Write Save
-							WriteSave();
 							break;
 					}
 					//Play Confirm Sound
@@ -916,15 +906,16 @@ void Menu_Tick(void)
 				}
 			}
 			char scoredisp[0x100];
-
 			sprintf(scoredisp, "PERSONAL BEST: %d", stage.save.savescore[menu_options[menu.select].stage][menu.page_param.stage.diff] * 10);
 
-			menu.font_arial.draw(&menu.font_arial,
-				scoredisp,
-				SCREEN_WIDTH - 170,
-				SCREEN_HEIGHT / 2 - 75,
-				FontAlign_Left
-			);
+			#ifndef NOSAVE
+				menu.font_arial.draw(&menu.font_arial,
+					scoredisp,
+					SCREEN_WIDTH - 170,
+					SCREEN_HEIGHT / 2 - 75,
+					FontAlign_Left
+				);
+			#endif
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(32,1);
@@ -1143,6 +1134,24 @@ void Menu_Tick(void)
 					Trans_Start();
 				}
 			}
+
+			//Save your game
+			#ifndef NOSAVE
+				if (pad_state.press & PAD_SELECT)
+					WriteSave();
+
+				RECT save_src = {0,120, 49, 7};
+				RECT save_dst = {20, 23, 49*2, 7 *2};
+				Gfx_DrawTex(&menu.tex_story, &save_src, &save_dst);
+
+				//Reset Your Save
+				if (pad_state.press & PAD_TRIANGLE)
+					DefaultSettings();
+
+				RECT reset_src = {0, 64, 57, 14};
+				RECT reset_dst = {57*2 + 20, 9, 57*2, 14*2};
+				Gfx_DrawTex(&menu.tex_story, &reset_src, &reset_dst);
+		  #endif
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
@@ -1197,80 +1206,6 @@ void Menu_Tick(void)
 			LoadScr_End();
 			break;
 		}
-
-		case MenuPage_SaveWarning:
-		{
-			static const char *menu_options[] = {
-				"YES",
-				"NO",
-			};
-			
-			if (menu.next_page == menu.page)
-			{
-				//Change options
-				if (pad_state.press & PAD_LEFT)
-				{
-					//Play Scroll Sound
-					Audio_PlaySFX(menu.sounds[0], 80);
-					if (menu.select > 0)
-							menu.select--;
-					else
-							menu.select = COUNT_OF(menu_options) - 1;
-				}
-
-				if (pad_state.press & PAD_RIGHT)
-				{
-					//Play Scroll Sound
-					Audio_PlaySFX(menu.sounds[0], 80);
-					if (menu.select < COUNT_OF(menu_options) - 1)
-						menu.select++;
-					else
-						menu.select = 0;
-				}
-				
-				//Select option if cross is pressed
-				if (pad_state.press & (PAD_START | PAD_CROSS))
-				{
-					switch (menu.select)
-					{
-						case 0: //Yes
-							//Load Save
-							ReadSave();
-							break;
-						case 1: //No
-							//Don't load Save
-							DefaultSettings();
-							break;
-					}
-
-					menu.trans_time = 0;
-					//Play Menu music
-					Audio_PlayXA_Track(XA_GettinFreaky, 0x40, 0, 1);
-					Audio_WaitPlayXA();
-
-					//Go to opening when start is pressed
-					menu.page = MenuPage_Opening;
-				}
-			
-			//Draw all options
-			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
-			{
-				menu.font_bold.draw(&menu.font_bold,
-					Menu_LowerIf(menu_options[i], menu.select != i),
-					60 + i*SCREEN_WIDTH2,
-					SCREEN_HEIGHT2 + 16,
-					FontAlign_Center
-				);
-			}
-
-			//Draw Warning
-			menu.font_bold.draw(&menu.font_bold, "WARNING", SCREEN_WIDTH2 - 16, SCREEN_HEIGHT2 - 62, FontAlign_Center);
-			menu.font_bold.draw(&menu.font_cdr, "Founded a existing save called:", SCREEN_WIDTH2 / 2 - 16, SCREEN_HEIGHT2 - 46, FontAlign_Left);
-			menu.font_bold.draw(&menu.font_cdr, SaveName, SCREEN_WIDTH2, SCREEN_HEIGHT2 - 16, FontAlign_Center);
-			menu.font_bold.draw(&menu.font_cdr, "Want Load?", SCREEN_WIDTH2 - 8, SCREEN_HEIGHT2 - 0, FontAlign_Center);
-		}
-			break;
-	}
 		default:
 			break;
 	}

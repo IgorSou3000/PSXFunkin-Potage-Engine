@@ -14,7 +14,7 @@
 //What will be displayed in memory card
 #define SaveName  "PSXFunkinPotageEngine"
 
-//#define NOSAVE //Enable this if you don't want the save system
+#define NOSAVE //Enable this if you don't want the save system
 
 typedef struct {
     u16 id; // must be 0x4353
