@@ -44,34 +44,6 @@ typedef enum
 	StageId_1_3, //Dadbattle
 	StageId_1_4, //Tutorial
 	
-	StageId_2_1, //Spookeez
-	StageId_2_2, //South
-	StageId_2_3, //Monster
-	
-	StageId_3_1, //Pico
-	StageId_3_2, //Philly
-	StageId_3_3, //Blammed
-	
-	StageId_4_1, //Satin Panties
-	StageId_4_2, //High
-	StageId_4_3, //MILF
-	
-	StageId_4_4, //Test
-	
-	StageId_5_1, //Cocoa
-	StageId_5_2, //Eggnog
-	StageId_5_3, //Winter Horrorland
-	
-	StageId_6_1, //Senpai
-	StageId_6_2, //Roses
-	StageId_6_3, //Thorns
-	
-	StageId_7_1, //Ugh
-	StageId_7_2, //Guns
-	StageId_7_3, //Stress
-	
-	StageId_2_4, //Clucked
-	
 	StageId_Max
 } StageId;
 

@@ -22,7 +22,7 @@
 #include "psx/loadscr.h"
 
 #include "stage/stage.h"
-#include "character/gf.h"
+#include "characters/gf.h"
 
 //Menu messages
 static const char *funny_messages[][2] = {
@@ -296,7 +296,7 @@ static void Menu_DrawWeek(const char *week, s32 x, s32 y, boolean flash)
 static void Menu_DrawHealth(u8 i, s16 x, s16 y)
 {
 	//Icon Size
-	u8 icon_size = 42;
+	u8 icon_size = 38;
 
 	//Get src and dst
 	RECT src = {
@@ -308,8 +308,8 @@ static void Menu_DrawHealth(u8 i, s16 x, s16 y)
 	RECT dst = {
 		x,
 		y,
-		32,
-		32
+		38,
+		38
 	};
 	
 	//Draw health icon
@@ -702,12 +702,6 @@ void Menu_Tick(void)
 			} menu_options[] = {
 				{NULL, StageId_1_4, "TUTORIAL", {"TUTORIAL", NULL, NULL}},
 				{"1", StageId_1_1, "DADDY DEAREST", {"BOPEEBO", "FRESH", "DADBATTLE"}},
-				{"2", StageId_2_1, "SPOOKY MONTH", {"SPOOKEEZ", "SOUTH", "MONSTER"}},
-				{"3", StageId_3_1, "PICO", {"PICO", "PHILLY NICE", "BLAMMED"}},
-				{"4", StageId_4_1, "MOMMY MUST MURDER", {"SATIN PANTIES", "HIGH", "MILF"}},
-				{"5", StageId_5_1, "RED SNOW", {"COCOA", "EGGNOG", "WINTER HORRORLAND"}},
-				{"6", StageId_6_1, "HATING SIMULATOR", {"SENPAI", "ROSES", "THORNS"}},
-				{"7", StageId_7_1, "TANKMAN", {"UGH", "GUNS", "STRESS"}},
 			};
 			
 			//Initialize page
@@ -832,30 +826,10 @@ void Menu_Tick(void)
 				const char *text; //The text of the song
 				u8 icon; //The character icon
 			} menu_options[] = {
-				{StageId_4_4, 0xFFFC96D7, "TEST", 0},
-				{StageId_2_4, 0xFF223344, "CLUCKY", 3},
 				{StageId_1_4, 0xFF9271FD, "TUTORIAL", 2},
 				{StageId_1_1, 0xFF9271FD, "BOPEEBO", 1},
 				{StageId_1_2, 0xFF9271FD, "FRESH", 1},
 				{StageId_1_3, 0xFF9271FD, "DADBATTLE", 1},
-				{StageId_2_1, 0xFF223344, "SPOOKEEZ", 3},
-				{StageId_2_2, 0xFF223344, "SOUTH", 3},
-				{StageId_2_3, 0xFF223344, "MONSTER", 7},
-				{StageId_3_1, 0xFF941653, "PICO", 4},
-				{StageId_3_2, 0xFF941653, "PHILLY NICE", 4},
-				{StageId_3_3, 0xFF941653, "BLAMMED", 4},
-				{StageId_4_1, 0xFFFC96D7, "SATIN PANTIES", 5},
-				{StageId_4_2, 0xFFFC96D7, "HIGH", 5},
-				{StageId_4_3, 0xFFFC96D7, "MILF", 5},
-				{StageId_5_1, 0xFFA0D1FF, "COCOA", 6},
-				{StageId_5_2, 0xFFA0D1FF, "EGGNOG", 6},
-				{StageId_5_3, 0xFFA0D1FF, "WINTER HORRORLAND", 7},
-				{StageId_6_1, 0xFFFF78BF, "SENPAI", 9},
-				{StageId_6_2, 0xFFFF78BF, "ROSES", 9},
-				{StageId_6_3, 0xFFFF78BF, "THORNS", 10},
-				{StageId_7_1, 0xFFF6B604, "UGH",11},
-				{StageId_7_2, 0xFFF6B604, "GUNS", 11},
-				{StageId_7_3, 0xFFF6B604, "STRESS", 11},
 			};
 			
 			//Initialize page
@@ -931,7 +905,7 @@ void Menu_Tick(void)
 					break;
 
 				//Draw Icon
-				Menu_DrawHealth(menu_options[i].icon, strlen(menu_options[i].text) * 13 + 48 + (y / 4), SCREEN_HEIGHT2 + y - 13);
+				Menu_DrawHealth(menu_options[i].icon, strlen(menu_options[i].text) * 13 + 48 + (y / 4), SCREEN_HEIGHT2 + y - 19);
 				
 				//Draw text
 				menu.font_bold.draw(&menu.font_bold,

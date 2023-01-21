@@ -1,4 +1,0 @@
-1 xa satinpanties/Voices.xa 1 0
-1 xa satinpanties/Inst.xa 1 1
-1 xa high/Voices.xa 1 2
-1 xa high/Inst.xa 1 3

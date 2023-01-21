@@ -1,4 +1,0 @@
-1 xa monster/Voices.xa 1 0
-1 xa monster/Inst.xa 1 1
-1 xa clucked/Voices.xa 1 2
-1 xa clucked/Inst.xa 1 3

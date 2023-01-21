@@ -22,34 +22,12 @@ SRCS = src/psx/main.c \
        src/psx/strplay.c \
        src/week0/dummy.c \
        src/week1/week1.c \
-       src/week2/week2.c \
-       src/week3/week3.c \
-       src/week4/week4.c \
-       src/week5/week5.c \
-       src/week6/week6.c \
-       src/week7/week7.c \
        src/psx/animation.c \
        src/psx/character.c \
-       src/character/bf.c \
-       src/character/bfweeb.c \
-       src/character/speaker.c \
-       src/character/dad.c \
-       src/character/spook.c \
-       src/character/monster.c \
-       src/character/pico.c \
-       src/character/mom.c \
-       src/character/xmasbf.c \
-       src/character/xmasp.c \
-       src/character/monsterx.c \
-       src/character/senpai.c \
-       src/character/senpaim.c \
-       src/character/spirit.c \
-       src/character/bfgf.c \
-       src/character/tank.c \
-       src/character/picospeaker.c \
-       src/character/gf.c \
-       src/character/gfweeb.c \
-       src/character/clucky.c \
+       src/characters/bf.c \
+       src/characters/speaker.c \
+       src/characters/dad.c \
+       src/characters/gf.c \
        src/psx/object.c \
        src/object/combo.c \
        src/object/splash.c \

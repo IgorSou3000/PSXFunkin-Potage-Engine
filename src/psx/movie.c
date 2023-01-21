@@ -25,9 +25,7 @@ static const struct {
   int frameCount; //frame count (you can get in MC32)
   StageId id; //Which Stage play the movie
 }strmovies[] = {
-  {"\\STR\\UGH.STR;1", 180, StageId_7_1},
-  {"\\STR\\GUNS.STR;1", 163, StageId_7_2},
-  {"\\STR\\STRESS.STR;1", 527, StageId_7_3},
+  {"\\STR\\UGH.STR;1", 180, StageId_Max},
 };
 
 //Prepare to do movie

@@ -2,18 +2,6 @@ all: \
   iso/songs/menu.xa \
   iso/songs/week1a.xa \
   iso/songs/week1b.xa \
-  iso/songs/week2a.xa \
-  iso/songs/week2b.xa \
-  iso/songs/week3a.xa \
-  iso/songs/week3b.xa \
-  iso/songs/week4a.xa \
-  iso/songs/week4b.xa \
-  iso/songs/week5a.xa \
-  iso/songs/week5b.xa \
-  iso/songs/week6a.xa \
-  iso/songs/week6b.xa \
-  iso/songs/week7a.xa \
-  iso/songs/week7b.xa \
 
 # XA converts
 iso/songs/%.xa: iso/songs/%.ogg
@@ -25,15 +13,3 @@ iso/songs/%.xa:
 iso/songs/menu.xa: iso/songs/freaky/Inst.xa iso/songs/gameover/Inst.xa
 iso/songs/week1a.xa: iso/songs/bopeebo/Inst.xa iso/songs/bopeebo/Voices.xa iso/songs/fresh/Inst.xa iso/songs/fresh/Voices.xa
 iso/songs/week1b.xa: iso/songs/dadbattle/Inst.xa iso/songs/dadbattle/Voices.xa iso/songs/tutorial/Inst.xa iso/songs/tutorial/Voices.xa
-iso/songs/week2a.xa: iso/songs/spookeez/Inst.xa iso/songs/spookeez/Voices.xa iso/songs/south/Inst.xa iso/songs/south/Voices.xa
-iso/songs/week2b.xa: iso/songs/monster/Inst.xa iso/songs/monster/Voices.xa iso/songs/clucked/Inst.xa iso/songs/clucked/Voices.xa
-iso/songs/week3a.xa: iso/songs/pico/Inst.xa iso/songs/pico/Voices.xa iso/songs/philly/Inst.xa iso/songs/philly/Voices.xa
-iso/songs/week3b.xa: iso/songs/blammed/Inst.xa iso/songs/blammed/Voices.xa
-iso/songs/week4a.xa: iso/songs/satinpanties/Inst.xa iso/songs/satinpanties/Voices.xa iso/songs/high/Inst.xa iso/songs/high/Voices.xa
-iso/songs/week4b.xa: iso/songs/milf/Inst.xa iso/songs/milf/Voices.xa iso/songs/test/Inst.xa iso/songs/test/Voices.xa
-iso/songs/week5a.xa: iso/songs/cocoa/Inst.xa iso/songs/cocoa/Voices.xa iso/songs/eggnog/Inst.xa iso/songs/eggnog/Voices.xa
-iso/songs/week5b.xa: iso/songs/winterhorrorland/Inst.xa iso/songs/winterhorrorland/Voices.xa
-iso/songs/week6a.xa: iso/songs/senpai/Inst.xa iso/songs/senpai/Voices.xa iso/songs/roses/Inst.xa iso/songs/roses/Voices.xa
-iso/songs/week6b.xa: iso/songs/thorns/Inst.xa iso/songs/thorns/Voices.xa
-iso/songs/week7a.xa: iso/songs/ugh/Inst.xa iso/songs/ugh/Voices.xa iso/songs/guns/Inst.xa iso/songs/guns/Voices.xa
-iso/songs/week7b.xa: iso/songs/stress/Inst.xa iso/songs/stress/Voices.xa

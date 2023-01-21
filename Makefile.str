@@ -1,7 +1,0 @@
-all: \
- $(addsuffix .str, $(basename $(wildcard iso/movies/*.mp4))) \
- $(addsuffix .str, $(basename $(wildcard iso/movies/*/*.mp4))) \
-
-# STR converts
-iso/movies/%.str: iso/movies/%.mp4
-	  tools/psxavenc/psxavenc -t str2 -W 320 -H 240 -c 2 -f 37800 $< $@

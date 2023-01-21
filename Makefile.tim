@@ -1,18 +1,3 @@
-# Characters Path
-BFPATH = iso/characters/bf
-DADPATH = iso/characters/dad
-GFPATH = iso/characters/gf
-SPOOKPATH = iso/characters/spook
-MONSTERPATH = iso/characters/monster
-PICOPATH = iso/characters/pico
-MOMPATH = iso/characters/mom
-XMASPPATH = iso/characters/xmasp
-SENPAIPATH = iso/characters/senpai
-SPIRITPATH = iso/characters/spirit
-BFGFPATH = iso/characters/bfgf
-TANKPATH = iso/characters/tank
-CLUCKYPATH = iso/characters/clucky
-
 all: \
 	iso/save16.tim \
 	iso/menu/menu.arc \
@@ -23,41 +8,11 @@ all: \
 	iso/stage/hud2.tim \
 	iso/stage/hud0weeb.tim \
 	iso/stage/hud2weeb.tim \
-	$(BFPATH)/normal/main.arc \
-	$(BFPATH)/dead.arc \
-	$(DADPATH)/normal/main.arc \
-	$(GFPATH)/normal/main.arc \
-	$(GFPATH)/normal/tut.arc \
-	$(GFPATH)/speaker.tim \
-	$(SPOOKPATH)/normal/main.arc \
-	$(MONSTERPATH)/normal/main.arc \
-	$(PICOPATH)/normal/main.arc \
-	$(MOMPATH)/normal/main.arc \
-	$(MOMPATH)/normal/hair.tim \
-	$(BFPATH)/xmas/main.arc \
-	$(XMASPPATH)/normal/main.arc \
-	$(MONSTERPATH)/xmas/main.arc \
-	$(BFPATH)/weeb/main.arc \
-	$(SENPAIPATH)/normal/main.arc \
-	$(SENPAIPATH)/mad/main.arc \
-	$(SPIRITPATH)/normal/main.arc \
-	$(GFPATH)/weeb/main.arc \
-	$(BFGFPATH)/normal/main.arc \
-	$(TANKPATH)/normal/main.arc \
-	$(TANKPATH)/normal/ugh.arc \
-	$(TANKPATH)/normal/good.arc \
-	$(PICOPATH)/week7/main.arc \
-	$(CLUCKYPATH)/normal/main.arc \
+	iso/characters/bf/main.arc \
+	iso/characters/dad/main.arc \
+	iso/characters/gf/main.arc \
+	iso/characters/gf/speaker.tim \
 	iso/week1/back.arc \
-	iso/week2/back.arc \
-	iso/week3/back.arc \
-	iso/week4/back.arc \
-	iso/week4/hench.arc \
-	iso/week5/back.arc \
-	iso/week5/evil.arc \
-	iso/week6/back.arc \
-	iso/week6/back3.tim \
-	iso/week7/back.arc
 
 iso/%.tim: iso/%.png
 	tools/funkintimpak/funkintimpak $@ $<
@@ -69,90 +24,13 @@ iso/%.arc:
 iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/menu/hud1.tim
 
 # BF
-$(BFPATH)/normal/main.arc: $(BFPATH)/normal/bf0.tim $(BFPATH)/normal/bf1.tim $(BFPATH)/normal/bf2.tim $(BFPATH)/normal/bf3.tim $(BFPATH)/normal/bf4.tim $(BFPATH)/normal/bf5.tim $(BFPATH)/normal/bf6.tim $(BFPATH)/dead0.tim $(BFPATH)/dead1.tim $(BFPATH)/dead2.tim
-
-$(BFPATH)/dead.arc: $(BFPATH)/dead3.tim $(BFPATH)/dead4.tim $(BFPATH)/dead5.tim
+iso/characters/bf/main.arc: iso/characters/bf/bf0.tim iso/characters/bf/bf1.tim iso/characters/bf/bf2.tim iso/characters/bf/bf3.tim iso/characters/bf/bf4.tim iso/characters/bf/bf5.tim iso/characters/bf/bf6.tim iso/characters/bf/dead0.tim iso/characters/bf/dead1.tim iso/characters/bf/dead2.tim
 
 # Dad
-$(DADPATH)/normal/main.arc: $(DADPATH)/normal/idle0.tim $(DADPATH)/normal/idle1.tim $(DADPATH)/normal/left.tim $(DADPATH)/normal/down.tim $(DADPATH)/normal/up.tim $(DADPATH)/normal/right.tim
+iso/characters/dad/main.arc: iso/characters/dad/idle0.tim iso/characters/dad/idle1.tim iso/characters/dad/left.tim iso/characters/dad/down.tim iso/characters/dad/up.tim iso/characters/dad/right.tim
 
 # GF
-$(GFPATH)/normal/main.arc: $(GFPATH)/normal/gf0.tim $(GFPATH)/normal/gf1.tim $(GFPATH)/normal/gf2.tim
-
-$(GFPATH)/normal/tut.arc: $(GFPATH)/normal/tut0.tim $(GFPATH)/normal/tut1.tim
-
-# Spook
-$(SPOOKPATH)/normal/main.arc: $(SPOOKPATH)/normal/idle0.tim $(SPOOKPATH)/normal/idle1.tim $(SPOOKPATH)/normal/idle2.tim $(SPOOKPATH)/normal/left.tim $(SPOOKPATH)/normal/down.tim $(SPOOKPATH)/normal/up.tim $(SPOOKPATH)/normal/right.tim
-
-# Monster
-$(MONSTERPATH)/normal/main.arc: $(MONSTERPATH)/normal/idle0.tim $(MONSTERPATH)/normal/idle1.tim $(MONSTERPATH)/normal/left.tim $(MONSTERPATH)/normal/down.tim $(MONSTERPATH)/normal/up.tim $(MONSTERPATH)/normal/right.tim
-
-# Pico
-$(PICOPATH)/normal/main.arc: $(PICOPATH)/normal/idle.tim $(PICOPATH)/normal/hit0.tim $(PICOPATH)/normal/hit1.tim
-
-# Mom
-$(MOMPATH)/normal/main.arc: $(MOMPATH)/normal/idle0.tim $(MOMPATH)/normal/idle1.tim $(MOMPATH)/normal/left.tim $(MOMPATH)/normal/down.tim $(MOMPATH)/normal/up.tim $(MOMPATH)/normal/right.tim
-
-# Xmas BF
-$(BFPATH)/xmas/main.arc: $(BFPATH)/xmas/bf0.tim $(BFPATH)/xmas/bf1.tim $(BFPATH)/xmas/bf2.tim $(BFPATH)/xmas/bf3.tim $(BFPATH)/xmas/bf4.tim $(BFPATH)/xmas/bf5.tim $(BFPATH)/dead0.tim $(BFPATH)/dead1.tim $(BFPATH)/dead2.tim
-
-# Xmas Parents
-$(XMASPPATH)/normal/main.arc: $(XMASPPATH)/normal/idle0.tim $(XMASPPATH)/normal/idle1.tim $(XMASPPATH)/normal/idle2.tim $(XMASPPATH)/normal/idle3.tim $(XMASPPATH)/normal/lefta0.tim $(XMASPPATH)/normal/lefta1.tim $(XMASPPATH)/normal/leftb0.tim $(XMASPPATH)/normal/leftb1.tim $(XMASPPATH)/normal/downa0.tim $(XMASPPATH)/normal/downa1.tim $(XMASPPATH)/normal/downb0.tim $(XMASPPATH)/normal/downb1.tim $(XMASPPATH)/normal/upa0.tim $(XMASPPATH)/normal/upa1.tim $(XMASPPATH)/normal/upb0.tim $(XMASPPATH)/normal/upb1.tim $(XMASPPATH)/normal/righta0.tim $(XMASPPATH)/normal/righta1.tim $(XMASPPATH)/normal/rightb0.tim $(XMASPPATH)/normal/rightb1.tim
-
-# Xmas Monster
-$(MONSTERPATH)/xmas/main.arc: $(MONSTERPATH)/xmas/idle0.tim $(MONSTERPATH)/xmas/idle1.tim $(MONSTERPATH)/xmas/left.tim $(MONSTERPATH)/xmas/down.tim $(MONSTERPATH)/xmas/up.tim $(MONSTERPATH)/xmas/right.tim
-
-# Weeb BF
-$(BFPATH)/weeb/main.arc: $(BFPATH)/weeb/bf0.tim $(BFPATH)/weeb/bf1.tim
-
-# Senpai
-$(SENPAIPATH)/normal/main.arc: $(SENPAIPATH)/normal/senpai0.tim $(SENPAIPATH)/normal/senpai1.tim
-
-# Senpai Mad
-$(SENPAIPATH)/mad/main.arc: $(SENPAIPATH)/mad/senpai0.tim $(SENPAIPATH)/mad/senpai1.tim
-
-# Spirit
-$(SPIRITPATH)/normal/main.arc: $(SPIRITPATH)/normal/spirit0.tim $(SPIRITPATH)/normal/spirit1.tim
-
-# Weeb GF
-$(GFPATH)/weeb/main.arc: $(GFPATH)/weeb/gf0.tim $(GFPATH)/weeb/gf1.tim
-
-# BF And GF
-$(BFGFPATH)/normal/main.arc: $(BFGFPATH)/normal/idle0.tim $(BFGFPATH)/normal/idle1.tim $(BFGFPATH)/normal/idle2.tim $(BFGFPATH)/normal/left.tim $(BFGFPATH)/normal/down.tim $(BFGFPATH)/normal/up.tim $(BFGFPATH)/normal/right.tim
-
-# Tank
-$(TANKPATH)/normal/main.arc: $(TANKPATH)/normal/idle0.tim $(TANKPATH)/normal/idle1.tim $(TANKPATH)/normal/idle2.tim $(TANKPATH)/normal/left.tim $(TANKPATH)/normal/down.tim $(TANKPATH)/normal/up.tim $(TANKPATH)/normal/right.tim
-
-$(TANKPATH)/normal/ugh.arc: $(TANKPATH)/normal/ugh0.tim $(TANKPATH)/normal/ugh1.tim
-
-$(TANKPATH)/normal/good.arc: $(TANKPATH)/normal/good0.tim $(TANKPATH)/normal/good1.tim $(TANKPATH)/normal/good2.tim $(TANKPATH)/normal/good3.tim
-
-# Pico Speaker
-$(PICOPATH)/week7/main.arc: $(PICOPATH)/week7/lefta0.tim $(PICOPATH)/week7/lefta1.tim $(PICOPATH)/week7/lefta2.tim $(PICOPATH)/week7/lefta3.tim $(PICOPATH)/week7/lefta4.tim $(PICOPATH)/week7/leftb0.tim $(PICOPATH)/week7/leftb1.tim $(PICOPATH)/week7/leftb2.tim $(PICOPATH)/week7/righta0.tim $(PICOPATH)/week7/righta1.tim $(PICOPATH)/week7/righta2.tim $(PICOPATH)/week7/righta3.tim $(PICOPATH)/week7/righta4.tim $(PICOPATH)/week7/rightb0.tim $(PICOPATH)/week7/rightb1.tim $(PICOPATH)/week7/rightb2.tim
-
-# Clucky
-$(CLUCKYPATH)/normal/main.arc: $(CLUCKYPATH)/normal/idle0.tim $(CLUCKYPATH)/normal/idle1.tim $(CLUCKYPATH)/normal/left.tim $(CLUCKYPATH)/normal/down.tim $(CLUCKYPATH)/normal/up.tim $(CLUCKYPATH)/normal/right.tim
+iso/characters/gf/main.arc: iso/characters/gf/gf0.tim iso/characters/gf/gf1.tim iso/characters/gf/gf2.tim iso/characters/gf/tut0.tim iso/characters/gf/tut1.tim
 
 # Week 1
 iso/week1/back.arc: iso/week1/back0.tim iso/week1/back1.tim
-
-# Week 2
-iso/week2/back.arc: iso/week2/back0.tim iso/week2/back1.tim iso/week2/back2.tim
-
-# Week 3
-iso/week3/back.arc: iso/week3/back0.tim iso/week3/back1.tim iso/week3/back2.tim iso/week3/back3.tim iso/week3/back4.tim iso/week3/back5.tim
-
-# Week 4
-iso/week4/back.arc: iso/week4/back0.tim iso/week4/back1.tim iso/week4/back2.tim iso/week4/back3.tim iso/week4/back4.tim
-iso/week4/hench.arc: iso/week4/hench0.tim iso/week4/hench1.tim
-
-# Week 5
-iso/week5/back.arc: iso/week5/back0.tim iso/week5/back1.tim iso/week5/back2.tim iso/week5/back3.tim iso/week5/back4.tim iso/week5/back5.tim
-
-iso/week5/evil.arc: iso/week5/back0e.tim iso/week5/back2.tim iso/week5/back5e.tim
-
-# Week6
-iso/week6/back.arc: iso/week6/back0.tim iso/week6/back1.tim iso/week6/back2.tim
-
-# Week 7
-iso/week7/back.arc: iso/week7/back0.tim iso/week7/back1.tim iso/week7/back2.tim iso/week7/back3.tim

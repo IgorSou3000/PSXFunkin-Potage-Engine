@@ -1,4 +1,0 @@
-1 xa senpai/Voices.xa 1 0
-1 xa senpai/Inst.xa 1 1
-1 xa roses/Voices.xa 1 2
-1 xa roses/Inst.xa 1 3
