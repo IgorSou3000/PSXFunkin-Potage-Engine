@@ -38,12 +38,16 @@ boolean Obj_Combo_Tick(Object *obj)
 		Stage_DrawTex(&stage.tex_hud0, &hit_src, &hit_dst, stage.camera.bzoom);
 		
 		//Apply gravity
-		this->hy += FIXED_MUL(this->hv, timer_dt);
-		this->hv += FIXED_MUL(FIXED_DEC(5,100) * 60 * 60, timer_dt);
+		if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+		{
+			this->hy += FIXED_MUL(this->hv, timer_dt);
+			this->hv += FIXED_MUL(FIXED_DEC(5,100) * 60 * 60, timer_dt);
+		}
 	}
 	
 	//Increment hit type timer
-	this->ht += timer_dt;
+	if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+		this->ht += timer_dt;
 	
 	//Tick combo
 	if (this->num[4] != 0xFF && this->ct < (FIXED_DEC(16,1) / 60))
@@ -68,12 +72,16 @@ boolean Obj_Combo_Tick(Object *obj)
 		Stage_DrawTex(&stage.tex_hud0, &combo_src, &combo_dst, stage.camera.bzoom);
 		
 		//Apply gravity
-		this->cy += FIXED_MUL(this->cv, timer_dt);
-		this->cv += FIXED_MUL(FIXED_DEC(3,100) * 60 * 60, timer_dt);
+		if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+		{
+			this->cy += FIXED_MUL(this->cv, timer_dt);
+			this->cv += FIXED_MUL(FIXED_DEC(3,100) * 60 * 60, timer_dt);
+		}
 	}
 	
 	//Increment combo timer
-	this->ct += timer_dt;
+	if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+		this->ct += timer_dt;
 	
 	//Tick numbers
 	if (this->numt < (FIXED_DEC(16,1) / 60))
@@ -104,13 +112,17 @@ boolean Obj_Combo_Tick(Object *obj)
 			Stage_DrawTex(&stage.tex_hud0, &num_src, &num_dst, stage.camera.bzoom);
 			
 			//Apply gravity
-			this->numy[i] += FIXED_MUL(this->numv[i], timer_dt);
-			this->numv[i] += FIXED_MUL(FIXED_DEC(3,100) * 60 * 60, timer_dt);
+			if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+			{
+				this->numy[i] += FIXED_MUL(this->numv[i], timer_dt);
+				this->numv[i] += FIXED_MUL(FIXED_DEC(3,100) * 60 * 60, timer_dt);
+			}
 		}
 	}
 	
 	//Increment number timer
-	this->numt += timer_dt;
+	if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+		this->numt += timer_dt;
 	
 	return (this->numt >= FIXED_DEC(16,60)) && (this->ht >= FIXED_DEC(16,60)) && (this->ct >= FIXED_DEC(16,60));
 }
@@ -142,12 +154,16 @@ boolean Obj_Combo_Tick_Weeb(Object *obj)
 		Stage_DrawTex(&stage.tex_hud0, &hit_src, &hit_dst, stage.camera.bzoom);
 		
 		//Apply gravity
+		if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+		{
 		this->hy += FIXED_MUL(this->hv, timer_dt) >> 1;
 		this->hv += FIXED_MUL(FIXED_DEC(5,100) * 60 * 60, timer_dt);
+		}
 	}
 	
 	//Increment hit type timer
-	this->ht += timer_dt;
+	if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+		this->ht += timer_dt;
 	
 	//Tick combo
 	if (this->num[4] != 0xFF && this->ct < (FIXED_DEC(16,1) / 60))
@@ -172,12 +188,16 @@ boolean Obj_Combo_Tick_Weeb(Object *obj)
 		Stage_DrawTex(&stage.tex_hud0, &combo_src, &combo_dst, stage.camera.bzoom);
 		
 		//Apply gravity
-		this->cy += FIXED_MUL(this->cv, timer_dt) >> 1;
-		this->cv += FIXED_MUL(FIXED_DEC(3,100) * 60 * 60, timer_dt);
+		if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+		{
+			this->cy += FIXED_MUL(this->cv, timer_dt) >> 1;
+			this->cv += FIXED_MUL(FIXED_DEC(3,100) * 60 * 60, timer_dt);
+		}
 	}
 	
 	//Increment combo timer
-	this->ct += timer_dt;
+	if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+		this->ct += timer_dt;
 	
 	//Tick numbers
 	if (this->numt < (FIXED_DEC(16,1) / 60))
@@ -208,13 +228,17 @@ boolean Obj_Combo_Tick_Weeb(Object *obj)
 			Stage_DrawTex(&stage.tex_hud0, &num_src, &num_dst, stage.camera.bzoom);
 			
 			//Apply gravity
-			this->numy[i] += FIXED_MUL(this->numv[i], timer_dt) >> 1;
-			this->numv[i] += FIXED_MUL(FIXED_DEC(3,100) * 60 * 60, timer_dt);
+			if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+			{
+				this->numy[i] += FIXED_MUL(this->numv[i], timer_dt) >> 1;
+				this->numv[i] += FIXED_MUL(FIXED_DEC(3,100) * 60 * 60, timer_dt);
+			}
 		}
 	}
 	
 	//Increment number timer
-	this->numt += timer_dt;
+	if ((stage.flag & STAGE_FLAG_PAUSED) == false)
+		this->numt += timer_dt;
 	
 	return (this->numt >= FIXED_DEC(16,60)) && (this->ht >= FIXED_DEC(16,60)) && (this->ct >= FIXED_DEC(16,60));
 }

@@ -100,6 +100,7 @@ typedef struct
 	
 	StageId next_stage;
 	u8 next_load;
+	boolean exist_event_json;
 } StageDef;
 
 //Stage state
@@ -160,7 +161,7 @@ typedef struct
 	//Variables that you want save
 	struct
 	{
-		boolean ghost, middlescroll, downscroll, healthdrain, showtimer, botplay;
+		boolean ghost, middlescroll, downscroll, healthdrain, showtimer, botplay, canbump;
 
 		u32 savescore[StageId_Max][StageDiff_Max];	
 	}save;
@@ -191,11 +192,13 @@ typedef struct
 	StageDiff stage_diff;
 	
 	IO_Data chart_data;
+	IO_Data event_json_data;
 	Section *sections;
 	Note *notes;
 	size_t num_notes;
 
 	Event* events;
+	Event* events2;
 	
 	fixed_t speed, ogspeed;
 	fixed_t step_crochet, step_time;
@@ -227,6 +230,7 @@ typedef struct
 	Section *cur_section; //Current section
 	Note *cur_note; //First visible and hittable note, used for drawing and hit detection
 	Event* cur_event; //Current event
+	Event* cur_event2; //Current event that use the events.json
 	
 	fixed_t note_scroll, song_time, interp_time, interp_ms, interp_speed;
 
@@ -270,10 +274,6 @@ void Stage_DrawTexRotateCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst
 void Stage_DrawTexRotate(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom, u8 angle);
 void Stage_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom, u8 r, u8 g, u8 b);
 void Stage_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom);
-void Stage_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, u8 r, u8 g, u8 b, fixed_t zoom);
-void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom);
-void Stage_BlendTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 r, u8 g, u8 b, u8 mode);
-void Stage_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 mode);
 
 //Stage functions
 void Stage_Load(StageId id, StageDiff difficulty, boolean story);

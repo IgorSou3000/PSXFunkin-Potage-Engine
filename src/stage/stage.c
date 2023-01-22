@@ -525,21 +525,21 @@ void Stage_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixe
 			return;
 	#endif
 	
-	fixed_t l = (SCREEN_WIDTH2  << FIXED_SHIFT) + FIXED_MUL(xz, zoom);// + FIXED_DEC(1,2);
-	fixed_t t = (SCREEN_HEIGHT2 << FIXED_SHIFT) + FIXED_MUL(yz, zoom);// + FIXED_DEC(1,2);
-	fixed_t r = l + FIXED_MUL(wz, zoom);
-	fixed_t b = t + FIXED_MUL(hz, zoom);
+	fixed_t left = (SCREEN_WIDTH2  << FIXED_SHIFT) + FIXED_MUL(xz, zoom);// + FIXED_DEC(1,2);
+	fixed_t top = (SCREEN_HEIGHT2 << FIXED_SHIFT) + FIXED_MUL(yz, zoom);// + FIXED_DEC(1,2);
+	fixed_t right = left + FIXED_MUL(wz, zoom);
+	fixed_t bottom = top + FIXED_MUL(hz, zoom);
 	
-	l >>= FIXED_SHIFT;
-	t >>= FIXED_SHIFT;
-	r >>= FIXED_SHIFT;
-	b >>= FIXED_SHIFT;
+	left >>= FIXED_SHIFT;
+	top >>= FIXED_SHIFT;
+	right >>= FIXED_SHIFT;
+	bottom >>= FIXED_SHIFT;
 	
 	RECT sdst = {
-		l,
-		t,
-		r - l,
-		b - t,
+		left,
+		top,
+		right - left,
+		bottom - top,
 	};
 	Gfx_DrawTexCol(tex, src, &sdst, cr, cg, cb);
 }
@@ -547,50 +547,6 @@ void Stage_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixe
 void Stage_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom)
 {
 	Stage_DrawTexCol(tex, src, dst, zoom, 0x80, 0x80, 0x80);
-}
-
-void Stage_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, u8 r, u8 g, u8 b, fixed_t zoom)
-{
-	//Don't draw if HUD and HUD is disabled
-	#ifdef STAGE_NOHUD
-		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
-			return;
-	#endif
-	
-	//Get screen-space points
-	POINT s0 = {SCREEN_WIDTH2 + (FIXED_MUL(p0->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p0->y, zoom) >> FIXED_SHIFT)};
-	POINT s1 = {SCREEN_WIDTH2 + (FIXED_MUL(p1->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p1->y, zoom) >> FIXED_SHIFT)};
-	POINT s2 = {SCREEN_WIDTH2 + (FIXED_MUL(p2->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p2->y, zoom) >> FIXED_SHIFT)};
-	POINT s3 = {SCREEN_WIDTH2 + (FIXED_MUL(p3->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p3->y, zoom) >> FIXED_SHIFT)};
-	
-	Gfx_DrawTexArbCol(tex, src, &s0, &s1, &s2, &s3, r, g, b);
-}
-
-void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom)
-{
-	Stage_DrawTexArbCol(tex, src, p0, p1, p2, p3, 0x80, 0x80, 0x80, zoom);
-}
-
-void Stage_BlendTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 r, u8 g, u8 b, u8 mode)
-{
-	//Don't draw if HUD and HUD is disabled
-	#ifdef STAGE_NOHUD
-		if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
-			return;
-	#endif
-	
-	//Get screen-space points
-	POINT s0 = {SCREEN_WIDTH2 + (FIXED_MUL(p0->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p0->y, zoom) >> FIXED_SHIFT)};
-	POINT s1 = {SCREEN_WIDTH2 + (FIXED_MUL(p1->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p1->y, zoom) >> FIXED_SHIFT)};
-	POINT s2 = {SCREEN_WIDTH2 + (FIXED_MUL(p2->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p2->y, zoom) >> FIXED_SHIFT)};
-	POINT s3 = {SCREEN_WIDTH2 + (FIXED_MUL(p3->x, zoom) >> FIXED_SHIFT), SCREEN_HEIGHT2 + (FIXED_MUL(p3->y, zoom) >> FIXED_SHIFT)};
-	
-	Gfx_BlendTexArbCol(tex, src, &s0, &s1, &s2, &s3, r, g, b, mode);
-}
-
-void Stage_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, u8 mode)
-{
-	Stage_BlendTexArbCol(tex, src, p0, p1, p2, p3, zoom, 0x80, 0x80, 0x80, mode);
 }
 
 //Stage HUD functions
@@ -1147,7 +1103,6 @@ static void Stage_LoadChart(void)
 {
 	//Load stage data
 	char chart_path[64];
-
 	stage.num_notes = 0;
 
 	//Use standard path convention
@@ -1170,6 +1125,32 @@ static void Stage_LoadChart(void)
 		stage.num_notes++;
 
 	stage.events = (Event*)(chart_byte + section_size + stage.num_notes * 4 + 4);
+
+
+
+	if (stage.event_json_data != NULL)
+		Mem_Free(stage.event_json_data);
+
+	//Check if should use events.json
+	if (stage.stage_def->exist_event_json == true)
+	{
+		sprintf(chart_path, "\\WEEK%d\\%d.%dEVENT.CHT;1", stage.stage_def->week, stage.stage_def->week, stage.stage_def->week_song);
+		stage.event_json_data = IO_Read(chart_path);
+	}
+	else
+		stage.event_json_data = NULL;
+
+	if (stage.stage_def->exist_event_json == true)
+	{
+		chart_byte = (u8*)stage.event_json_data;
+
+		section_size = *((u16*)(chart_byte + 4)); //Get the section size (skip the speed bytes (4 bytes))
+		section_address = chart_byte + 6; //Get the section (skip the speed bytes (4 bytes) and section size (2 bytes))
+
+		stage.events2 = (Event*)(chart_byte + section_size + stage.num_notes * 4 + 4);
+	}
+	else
+		stage.events2 = NULL;
 	
 	//Count max scores
 	stage.player_state[0].max_score = 0;
@@ -1191,6 +1172,7 @@ static void Stage_LoadChart(void)
 	stage.cur_section = stage.sections;
 	stage.cur_note = stage.notes;
 	stage.cur_event = stage.events;
+	stage.cur_event2 = stage.events2;
 	
 	stage.speed = stage.ogspeed = *((fixed_t*)stage.chart_data); //Get the speed value (4 bytes)
 	
@@ -1664,28 +1646,31 @@ void Stage_Tick(void)
 				stage.back->tick(stage.back);
 			
 			//Handle bump
-			if ((stage.bump = FIXED_UNIT + FIXED_MUL(stage.bump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
-				stage.bump = FIXED_UNIT;
-			stage.sbump = FIXED_UNIT + FIXED_MUL(stage.sbump - FIXED_UNIT, FIXED_DEC(85,100));
-
-			if ((stage.charbump = FIXED_UNIT + FIXED_MUL(stage.charbump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
-				stage.charbump = FIXED_UNIT;
-			
-			if (playing && (stage.flag & STAGE_FLAG_JUST_STEP))
+			if ((stage.flag & STAGE_FLAG_PAUSED) == false)
 			{
-				//Check if screen should bump
-				boolean is_bump_step = (stage.song_step % 16) == 0;
+				if ((stage.bump = FIXED_UNIT + FIXED_MUL(stage.bump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
+					stage.bump = FIXED_UNIT;
+				stage.sbump = FIXED_UNIT + FIXED_MUL(stage.sbump - FIXED_UNIT, FIXED_DEC(85,100));
+
+				if ((stage.charbump = FIXED_UNIT + FIXED_MUL(stage.charbump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
+					stage.charbump = FIXED_UNIT;
 				
-				//Bump screen
-				if (is_bump_step)
+				if (playing && (stage.flag & STAGE_FLAG_JUST_STEP))
 				{
-					stage.bump += FIXED_DEC(3,100); //0.03
-					stage.charbump += FIXED_DEC(15,1000); //0.015
+					//Check if screen should bump
+					boolean is_bump_step = (stage.song_step % 16) == 0;
+					
+					//Bump screen
+					if (is_bump_step && stage.save.canbump == true)
+					{
+						stage.bump += FIXED_DEC(3,100); //0.03
+						stage.charbump += FIXED_DEC(15,1000); //0.015
+					}
+					
+					//Bump health every 4 steps
+					if ((stage.song_step % 4) == 0)
+						stage.sbump += FIXED_DEC(3,100);
 				}
-				
-				//Bump health every 4 steps
-				if ((stage.song_step % 4) == 0)
-					stage.sbump += FIXED_DEC(3,100);
 			}
 			
 			//Scroll camera

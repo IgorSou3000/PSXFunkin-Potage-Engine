@@ -39,18 +39,6 @@ boolean Obj_Splash_Tick(Object *obj)
 	
 	Stage_DrawTex(&stage.tex_hud0, &plub_src, &plub_dst, stage.bump);
 	
-	//Draw tail
-	fixed_t tx =  this->sin * scale >> 6;
-	fixed_t ty = -this->cos * scale >> 6;
-	
-	RECT tail_src = {120 + (this->colour << 2), 228, 4, 4};
-	POINT_FIXED tl = {this->x - tx, this->y - ty};
-	POINT_FIXED tr = {this->x + tx, this->y + ty};
-	POINT_FIXED bl = {lx - tx, ly - ty};
-	POINT_FIXED br = {lx + tx, ly + ty};
-	
-	Stage_DrawTexArb(&stage.tex_hud0, &tail_src, &tl, &tr, &bl, &br, stage.bump);
-	
 	return this->size >= FIXED_UNIT;
 }
 

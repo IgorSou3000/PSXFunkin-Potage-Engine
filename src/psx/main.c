@@ -60,6 +60,7 @@ int main(int argc, char **argv)
 	Pad_Init();
 	
 	Timer_Init();
+	Font_Init();
 
 	#ifndef NOSAVE
 	MCRD_Init();

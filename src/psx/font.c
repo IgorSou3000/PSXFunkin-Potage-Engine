@@ -11,18 +11,20 @@
 
 #include <string.h>
 
-static void Font_DrawTex(struct FontData *this, RECT* src, s32 x, s32 y, u8 r, u8 g, u8 b)
+static Gfx_Tex font_tex;
+
+static void Font_DrawTex(struct FontData *this, RECT* src, s32 x, s32 y, u8 r, u8 g, u8 b, Gfx_Tex* tex)
 {
 	//Draw a stage font (it bump)
 	if (this->is_stage)
 	{
 		RECT_FIXED dst = {x * FIXED_UNIT, y * FIXED_UNIT, src->w * FIXED_UNIT, src->h * FIXED_UNIT};
-		Stage_DrawTexCol(&this->tex, src, &dst, stage.bump, r, g, b);
+		Stage_DrawTexCol(tex, src, &dst, stage.bump, r, g, b);
 	}
 	else
 	{
 		RECT dst = {x, y, src->w, src->h};
-		Gfx_DrawTexCol(&this->tex, src, &dst, r, g, b);
+		Gfx_DrawTexCol(tex, src, &dst, r, g, b);
 	}
 }
 
@@ -59,7 +61,7 @@ void Font_Bold_DrawCol(struct FontData *this, const char *text, s32 x, s32 y, Fo
 		if ((c -= 'A') <= 'z' - 'A') //Lower-case will show inverted colours
 		{
 			RECT src = {((c % 0x8) * 28) + v0 * 14, (c / 8) * 16, 14, 16};
-			Font_DrawTex(this, &src, x, y, r, g, b);
+			Font_DrawTex(this, &src, x, y, r, g, b, &font_tex);
 		}
 		x += 13;
 	}
@@ -114,7 +116,7 @@ void Font_Arial_DrawCol(struct FontData *this, const char *text, s32 x, s32 y, F
 		
 		//Draw character
 		RECT src = {font_arialmap[c].ix, 130 + font_arialmap[c].iy, font_arialmap[c].iw, font_arialmap[c].ih};
-		Font_DrawTex(this, &src, x, y, r, g, b);
+		Font_DrawTex(this, &src, x, y, r, g, b, &font_tex);
 		
 		//Increment X
 		x += font_arialmap[c].gw;
@@ -155,7 +157,7 @@ void Font_CDR_DrawCol(struct FontData *this, const char *text, s32 x, s32 y, Fon
 
 		RECT src = {font_cdrmap[c].charX, font_cdrmap[c].charY + 198, font_cdrmap[c].charW, font_cdrmap[c].charL};
 
-		Font_DrawTex(this, &src, x, y, r, g, b);
+		Font_DrawTex(this, &src, x, y, r, g, b, &font_tex);
 
 		//Increment X
 		x += (font_cdrmap[c].charW - 1);
@@ -169,26 +171,27 @@ void Font_Draw(struct FontData *this, const char *text, s32 x, s32 y, FontAlign 
 }
 
 //Font functions
+void Font_Init(void)
+{
+	Gfx_LoadTex(&font_tex, IO_Read("\\FONT\\FONT1.TIM;1"), GFX_LOADTEX_FREE);
+}
 void FontData_Load(FontData *this, Font font, boolean is_stage)
 {
 	//Load the given font
 	switch (font)
 	{
 		case Font_Bold:
-			//Load texture and set functions
-			Gfx_LoadTex(&this->tex, IO_Read("\\FONT\\FONT1.TIM;1"), GFX_LOADTEX_FREE);
+			//Set functions
 			this->get_width = Font_Bold_GetWidth;
 			this->draw_col = Font_Bold_DrawCol;
 			break;
 		case Font_Arial:
-			//Load texture and set functions
-			Gfx_LoadTex(&this->tex, IO_Read("\\FONT\\FONT1.TIM;1"), GFX_LOADTEX_FREE);
+			//Set functions
 			this->get_width = Font_Arial_GetWidth;
 			this->draw_col = Font_Arial_DrawCol;
 			break;
 	case Font_CDR:
-			//Load texture and set functions
-			Gfx_LoadTex(&this->tex, IO_Read("\\FONT\\FONT1.TIM;1"), GFX_LOADTEX_FREE);
+			//Set functions
 			this->get_width = Font_CDR_GetWidth;
 			this->draw_col = Font_CDR_DrawCol;
 			break;

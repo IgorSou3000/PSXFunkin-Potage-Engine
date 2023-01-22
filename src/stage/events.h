@@ -23,7 +23,7 @@
 
 typedef struct
 {
-  //psych engine shit
+  //psych engine sevents variables
   u16 pos; //1/12 steps
   u16 event;
   u16 value1;

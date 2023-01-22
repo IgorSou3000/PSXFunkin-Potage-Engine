@@ -1059,6 +1059,7 @@ void Menu_Tick(void)
 				{OptType_Boolean, "GHOST TAP ", &stage.save.ghost, {.spec_boolean = {0}}},
 				{OptType_Boolean, "DOWNSCROLL", &stage.save.downscroll, {.spec_boolean = {0}}},
 				{OptType_Boolean, "MIDDLESCROLL", &stage.save.middlescroll, {.spec_boolean = {0}}},
+				{OptType_Boolean, "CAMERA ZOOM", &stage.save.canbump, {.spec_boolean = {0}}},
 				{OptType_Boolean, "BOTPLAY", &stage.save.botplay, {.spec_boolean = {0}}},
 				{OptType_Boolean, "SHOW TIMER", &stage.save.showtimer, {.spec_boolean = {0}}},
 			};

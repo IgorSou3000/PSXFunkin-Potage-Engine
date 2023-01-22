@@ -195,41 +195,26 @@ void Gfx_BlendRect(const RECT *rect, u8 r, u8 g, u8 b, u8 mode)
 	nextpri += sizeof(DR_TPAGE);
 }
 
-void Gfx_DrawTexRotateCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 angle, u8 r, u8 g, u8 b)
+void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, u8 b)
 {	
-	s16 sin = MUtil_Sin(angle);
-	s16 cos = MUtil_Cos(angle);
-
-	RECT pdst = {dst->x, dst->y, dst->w / 2, dst->h / 2};
+	RECT pdst = {dst->x, dst->y, dst->w, dst->h};
 
 	//Get rotated points
-	POINT p0 = {-pdst.w, -pdst.h};
-	MUtil_RotatePoint(&p0, sin, cos);
-	
-	POINT p1 = { pdst.w, -pdst.h};
-	MUtil_RotatePoint(&p1, sin, cos);
-	
-	POINT p2 = {-pdst.w,  pdst.h};
-	MUtil_RotatePoint(&p2, sin, cos);
-	
-	POINT p3 = { pdst.w,  pdst.h};
-	MUtil_RotatePoint(&p3, sin, cos);
-	
 	POINT d0 = {
-		pdst.w + pdst.x + p0.x,
-		pdst.h + pdst.y + p0.y
+		pdst.x,
+		pdst.y
 	};
 	POINT d1 = {
-		pdst.w + pdst.x + p1.x,
-		pdst.h + pdst.y + p1.y
+		pdst.w + pdst.x,
+		pdst.y
 	};
 	POINT d2 = {
-    pdst.w + pdst.x + p2.x,
-		pdst.h + pdst.y + p2.y
+    pdst.x,
+		pdst.h + pdst.y
 	};
 	POINT d3 = {
-    pdst.w + pdst.x + p3.x,
-		pdst.h + pdst.y + p3.y
+    pdst.w + pdst.x,
+		pdst.h + pdst.y
 	};
 	
   //Add quad
@@ -245,68 +230,7 @@ void Gfx_DrawTexRotateCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 ang
 	nextpri += sizeof(POLY_FT4);
 }
 
-void Gfx_DrawTexRotate(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 angle)
-{
-	Gfx_DrawTexRotateCol(tex, src, dst, angle, 128, 128, 128);
-}
-
-void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, u8 b)
-{
-	//Add quad
-	POLY_FT4 *quad = (POLY_FT4*)nextpri;
-	setPolyFT4(quad);
-	setUVWH(quad, src->x, src->y, src->w, src->h);
-	setXYWH(quad, dst->x, dst->y, dst->w, dst->h);
-	setRGB0(quad, r, g, b);
-	quad->tpage = tex->tpage;
-	quad->clut = tex->clut;
-	
-	addPrim(ot[db], quad);
-	nextpri += sizeof(POLY_FT4);
-}
-
 void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
 {
 	Gfx_DrawTexCol(tex, src, dst, 128, 128, 128);
-}
-
-void Gfx_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 r, u8 g, u8 b)
-{
-	//Add quad
-	POLY_FT4 *quad = (POLY_FT4*)nextpri;
-	setPolyFT4(quad);
-	setUVWH(quad, src->x, src->y, src->w, src->h);
-	setXY4(quad, p0->x, p0->y, p1->x, p1->y, p2->x, p2->y, p3->x, p3->y);
-	setRGB0(quad, r, g, b);
-	quad->tpage = tex->tpage;
-	quad->clut = tex->clut;
-	
-	addPrim(ot[db], quad);
-	nextpri += sizeof(POLY_FT4);
-}
-
-void Gfx_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3)
-{
-	Gfx_DrawTexArbCol(tex, src, p0, p1, p2, p3, 128, 128, 128);
-}
-
-void Gfx_BlendTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 r, u8 g, u8 b, u8 mode)
-{
-	//Add quad
-	POLY_FT4 *quad = (POLY_FT4*)nextpri;
-	setPolyFT4(quad);
-	setUVWH(quad, src->x, src->y, src->w, src->h);
-	setXY4(quad, p0->x, p0->y, p1->x, p1->y, p2->x, p2->y, p3->x, p3->y);
-	setRGB0(quad, r, g, b);
-	setSemiTrans(quad, 1);
-	quad->tpage = tex->tpage | getTPage(0, mode, 0, 0);
-	quad->clut = tex->clut;
-	
-	addPrim(ot[db], quad);
-	nextpri += sizeof(POLY_FT4);
-}
-
-void Gfx_BlendTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 mode)
-{
-	Gfx_BlendTexArbCol(tex, src, p0, p1, p2, p3, 128, 128, 128, mode);
 }
