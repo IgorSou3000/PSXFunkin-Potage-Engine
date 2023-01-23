@@ -158,11 +158,19 @@ int main(int argc, char *argv[])
 	
 	auto song_info = j["song"];
 	
-	double bpm = song_info["bpm"];
+	//Need do this if statement in bpm and speed for not get errors since event.json don't contain these values
+	double bpm = 0;
+
+	if (song_info["bpm"] > 0)
+		bpm  = song_info["bpm"];
+
 	double crochet = (60.0 / bpm) * 1000.0;
 	double step_crochet = crochet / 4;
 	
-	double speed = song_info["speed"];
+	double speed = 0;
+
+	if (song_info["speed"] > 0)
+		speed = song_info["speed"];
 	
 	std::cout << argv[1] << " speed: " << speed << " ini bpm: " << bpm << " step_crochet: " << step_crochet << std::endl;
 	
@@ -274,7 +282,7 @@ int main(int argc, char *argv[])
 			Event new_event;
 
 			new_event.pos = (step_base * 12) + PosRound(((double)i[0] - milli_base) * 12.0, step_crochet);
-			//Older psych engine events version
+			//Newer psych engine events version
 			Events_Read(j, new_event, events, 0);
 		}
 	}
@@ -282,7 +290,19 @@ int main(int argc, char *argv[])
 	//Push dummy section and note
 	Section dum_section;
 	dum_section.end = 0xFFFF;
-	dum_section.flag = sections[sections.size() - 1].flag;
+
+	/*
+	Since event.json don't use sections in the newers versions of psych engine
+	I need make sure if the size of section size be 0, it not use the flag of sections variable
+	Otherwise it will have the segmentation fault
+	*/
+	uint16_t section_size = sections.size();
+
+	if (section_size == 0)
+		dum_section.flag = 0;
+	else
+		dum_section.flag = sections[sections.size() - 1].flag;
+
 	sections.push_back(dum_section);
 	
 	Note dum_note;
@@ -305,8 +325,10 @@ int main(int argc, char *argv[])
 	}
 	
 	//Write header
-	WriteLong(out, (fixed_t)(speed * FIXED_UNIT)); //first 4 bytes
-	WriteWord(out, 6 + (sections.size() * 4)); //skip speed bytes and that bytes (2 bytes) + section size * 4
+	WriteLong(out, (fixed_t)(speed * FIXED_UNIT)); //The speed of the chart (first 4 bytes)
+	WriteWord(out, 8 + (sections.size() * 4)); //Get the notes address (2 bytes)
+	WriteWord(out, (notes.size() * 4)); //Get the event address(2 bytes)
+	
 	
 	//Write sections
 	for (auto &i : sections)

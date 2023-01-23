@@ -69,14 +69,14 @@ void Events_StartEvents(void)
 	//Same thing but for event.json
 	if (stage.stage_def->exist_event_json == true)
 	{
-		for (Event *event = stage.cur_event2; event->pos != 0xFFFF; event++)
+		for (Event *event = stage.event_cur_event; event->pos != 0xFFFF; event++)
 		{
 			//Update event pointer
 			if (event->pos > (stage.note_scroll >> FIXED_SHIFT))
 				break;
 
 			else
-				stage.cur_event2++;
+				stage.event_cur_event++;
 
 			if (event->event & EVENTS_FLAG_PLAYED)
 				continue;
@@ -85,6 +85,7 @@ void Events_StartEvents(void)
 			event->event |= EVENTS_FLAG_PLAYED;
 		}
 	}
+
 	Events_Tick();
 }
 
