@@ -39,10 +39,10 @@
 //Stage enums
 typedef enum
 {
-	StageId_1_1, //Bopeebo
-	StageId_1_2, //Fresh
-	StageId_1_3, //Dadbattle
-	StageId_1_4, //Tutorial
+	StageId_Bopeebo,
+	StageId_Fresh,
+	StageId_DadBattle,
+	StageId_Tutorial,
 	
 	StageId_Max
 } StageId;
@@ -161,7 +161,7 @@ typedef struct
 	//Variables that you want save
 	struct
 	{
-		boolean ghost, middlescroll, downscroll, healthdrain, showtimer, botplay, canbump;
+		boolean ghost, middlescroll, downscroll, healthdrain, showtimer, botplay, canbump, splash;
 
 		u32 savescore[StageId_Max][StageDiff_Max];	
 	}save;

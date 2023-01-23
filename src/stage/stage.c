@@ -226,13 +226,16 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 		for (int i = 0; i < 3; i++)
 		{
 			//Create splash object
-			Obj_Splash *splash = Obj_Splash_New(
-				stage.note_x[type],
-				stage.note_y[type] * (stage.save.downscroll ? -1 : 1),
-				type % 4
-			);
-			if (splash != NULL)
-				ObjectList_Add(&stage.objlist_splash, (Object*)splash);
+			if (stage.save.splash == true)
+			{
+				Obj_Splash *splash = Obj_Splash_New(
+					stage.note_x[type],
+					stage.note_y[type] * (stage.save.downscroll ? -1 : 1),
+					type % 4
+				);
+				if (splash != NULL)
+					ObjectList_Add(&stage.objlist_splash, (Object*)splash);
+			}
 		}
 	}
 	

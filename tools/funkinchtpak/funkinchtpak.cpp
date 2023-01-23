@@ -216,7 +216,9 @@ int main(int argc, char *argv[])
 			Event new_event;
 
 			new_event.pos = (step_base * 12) + PosRound(((double)j[0] - milli_base) * 12.0, step_crochet);
+
 			//Older psych engine events version
+			Events_Read(j, new_event, events, 2);
 			Events_Read(j, new_event, events, 3);
 
 			//Push main note

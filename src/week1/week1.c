@@ -32,30 +32,12 @@ void Back_Week1_Tick(StageBack *back)
 	{
 		switch (stage.stage_id)
 		{
-			case StageId_1_1:
+			case StageId_Bopeebo:
 				//BF peace
 				if (stage.song_step >= 0 && (stage.song_step % 32) == 28)
 					stage.player->set_anim(stage.player, PlayerAnim_Peace);
 				break;
-			case StageId_1_2:
-				//GF bopping
-				switch (stage.song_beat)
-				{
-					case 16:
-						stage.gf_speed = 8;
-						break;
-					case 48:
-						stage.gf_speed = 4;
-						break;
-					case 80:
-						stage.gf_speed = 8;
-						break;
-					case 112:
-						stage.gf_speed = 4;
-						break;
-				}
-				break;
-			case StageId_1_4:
+			case StageId_Tutorial:
 				//BF and GF peace + cheer
 				stage.gf_speed = 8;
 				if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step % 64) == 60)

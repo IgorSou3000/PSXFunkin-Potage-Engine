@@ -238,7 +238,7 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	this->character.scale = FIXED_DEC(1,1);
 	
 	this->character.focus_x = FIXED_DEC(-50,1);
-	this->character.focus_y = (stage.stage_id == StageId_1_4) ? FIXED_DEC(-85,1) : FIXED_DEC(-65,1);
+	this->character.focus_y = (stage.stage_id == StageId_Tutorial) ? FIXED_DEC(-85,1) : FIXED_DEC(-65,1);
 	this->character.focus_zoom = FIXED_DEC(1,1);
 	
 	//Load art

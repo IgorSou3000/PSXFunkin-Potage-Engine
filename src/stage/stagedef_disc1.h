@@ -11,7 +11,7 @@
 		1, 1,
 		XA_Bopeebo, 0,
 		
-		StageId_1_2, STAGE_LOAD_FLAG,
+		StageId_Fresh, STAGE_LOAD_FLAG,
 		false
 	},
 	{ //StageId_1_2 (Fresh)
@@ -27,8 +27,8 @@
 		1, 2,
 		XA_Fresh, 2,
 		
-		StageId_1_3, STAGE_LOAD_FLAG,
-		false
+		StageId_DadBattle, STAGE_LOAD_FLAG,
+		true
 	},
 	{ //StageId_1_3 (Dadbattle)
 		//Characters
@@ -43,8 +43,8 @@
 		1, 3,
 		XA_Dadbattle, 0,
 		
-		StageId_1_3, 0,
-		true
+		StageId_DadBattle, 0,
+		false
 	},
 	{ //StageId_1_4 (Tutorial)
 		//Characters
@@ -59,6 +59,6 @@
 		1, 4,
 		XA_Tutorial, 2,
 		
-		StageId_1_4, 0,
+		StageId_Tutorial, 0,
 		false
 	},

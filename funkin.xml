@@ -55,11 +55,11 @@
 				<file name = "1.2e.cht" type = "data" source = "iso/songs/fresh/fresh-easy.cht"/>
 				<file name = "1.2n.cht" type = "data" source = "iso/songs/fresh/fresh.cht"/>
 				<file name = "1.2h.cht" type = "data" source = "iso/songs/fresh/fresh-hard.cht"/>
+				<file name = "1.2event.cht" type = "data" source = "iso/songs/fresh/events.cht"/>
 				<!-- Dadbattle charts -->
 				<file name = "1.3e.cht" type = "data" source = "iso/songs/dadbattle/dadbattle-easy.cht"/>
 				<file name = "1.3n.cht" type = "data" source = "iso/songs/dadbattle/dadbattle.cht"/>
 				<file name = "1.3h.cht" type = "data" source = "iso/songs/dadbattle/dadbattle-hard.cht"/>
-				<file name = "1.3event.cht" type = "data" source = "iso/songs/dadbattle/events.cht"/>
 				<!-- Tutorial charts -->
 				<file name = "1.4e.cht" type = "data" source = "iso/songs/tutorial/tutorial-easy.cht"/>
 				<file name = "1.4n.cht" type = "data" source = "iso/songs/tutorial/tutorial.cht"/>

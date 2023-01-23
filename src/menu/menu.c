@@ -700,8 +700,8 @@ void Menu_Tick(void)
 				const char *name;
 				const char *tracks[3];
 			} menu_options[] = {
-				{NULL, StageId_1_4, "TUTORIAL", {"TUTORIAL", NULL, NULL}},
-				{"1", StageId_1_1, "DADDY DEAREST", {"BOPEEBO", "FRESH", "DADBATTLE"}},
+				{NULL, StageId_Tutorial, "TUTORIAL", {"TUTORIAL", NULL, NULL}},
+				{"1", StageId_DadBattle, "DADDY DEAREST", {"BOPEEBO", "FRESH", "DADBATTLE"}},
 			};
 			
 			//Initialize page
@@ -826,29 +826,21 @@ void Menu_Tick(void)
 				const char *text; //The text of the song
 				u8 icon; //The character icon
 			} menu_options[] = {
-				{StageId_1_4, 0xFF9271FD, "TUTORIAL", 2},
-				{StageId_1_1, 0xFF9271FD, "BOPEEBO", 1},
-				{StageId_1_2, 0xFF9271FD, "FRESH", 1},
-				{StageId_1_3, 0xFF9271FD, "DADBATTLE", 1},
+				{StageId_Tutorial, 0xFF9271FD, "TUTORIAL", 2},
+				{StageId_Bopeebo, 0xFF9271FD, "BOPEEBO", 1},
+				{StageId_Fresh, 0xFF9271FD, "FRESH", 1},
+				{StageId_DadBattle, 0xFF9271FD, "DADBATTLE", 1},
 			};
 			
 			//Initialize page
 			if (menu.page_swap)
 			{
-				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(32 + SCREEN_HEIGHT2,1);
+				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(30 + SCREEN_HEIGHT2,1);
 				menu.page_param.stage.diff = StageDiff_Normal;
 				menu.page_state.freeplay.back_r = FIXED_DEC(255,1);
 				menu.page_state.freeplay.back_g = FIXED_DEC(255,1);
 				menu.page_state.freeplay.back_b = FIXED_DEC(255,1);
 			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"FREEPLAY",
-				16,
-				SCREEN_HEIGHT - 32,
-				FontAlign_Left
-			);
 			
 			//Draw difficulty selector
 			Menu_DifficultySelector(SCREEN_WIDTH - 100, SCREEN_HEIGHT2 - 48);
@@ -879,6 +871,8 @@ void Menu_Tick(void)
 					Trans_Start();
 				}
 			}
+
+			//Draw Score
 			char scoredisp[0x100];
 			sprintf(scoredisp, "PERSONAL BEST: %d", stage.save.savescore[menu_options[menu.select].stage][menu.page_param.stage.diff] * 10);
 
@@ -892,26 +886,26 @@ void Menu_Tick(void)
 			#endif
 			
 			//Draw options
-			s32 next_scroll = menu.select * FIXED_DEC(32,1);
+			s32 next_scroll = menu.select * FIXED_DEC(30,1);
 			menu.scroll += Lerp(menu.scroll, next_scroll, FIXED_DEC(1,1) / 16);
 			
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 32) - 8 - (menu.scroll / FIXED_UNIT);
+				s32 y = (i * 30) - (menu.scroll / FIXED_UNIT);
 				if (y <= -SCREEN_HEIGHT2 - 8)
 					continue;
 				if (y >= SCREEN_HEIGHT2 + 8)
 					break;
 
 				//Draw Icon
-				Menu_DrawHealth(menu_options[i].icon, strlen(menu_options[i].text) * 13 + 48 + (y / 4), SCREEN_HEIGHT2 + y - 19);
+				Menu_DrawHealth(menu_options[i].icon, strlen(menu_options[i].text) * 13 + 38 + 4 + (y / 6), SCREEN_HEIGHT2 + y - 38);
 				
 				//Draw text
 				menu.font_bold.draw(&menu.font_bold,
 					Menu_LowerIf(menu_options[i].text, menu.select != i),
-					48 + (y / 4),
-					SCREEN_HEIGHT2 + y - 8,
+					48 + (y / 6),
+					SCREEN_HEIGHT2 - 16 + y - 8,
 					FontAlign_Left
 				);
 			}
@@ -957,17 +951,7 @@ void Menu_Tick(void)
 			
 			//Initialize page
 			if (menu.page_swap)
-			{
 				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
-			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"MODS",
-				16,
-				SCREEN_HEIGHT - 32,
-				FontAlign_Left
-			);
 			
 			//Handle option and selection
 			if (menu.next_page == menu.page && Trans_Idle())
@@ -1032,72 +1016,36 @@ void Menu_Tick(void)
 		}
 		case MenuPage_Options:
 		{
-			static const char *gamemode_strs[] = {"NORMAL", "SWAP", "TWO PLAYER"};
 			static const struct
 			{
-				enum
-				{
-					OptType_Boolean,
-					OptType_Enum,
-				} type;
 				const char *text;
-				void *value;
-				union
-				{
-					struct
-					{
-						int a;
-					} spec_boolean;
-					struct
-					{
-						s32 max;
-						const char **strs;
-					} spec_enum;
-				} spec;
+				u8 page;
 			} menu_options[] = {
-				{OptType_Enum,    "GAMEMODE", &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
-				{OptType_Boolean, "GHOST TAP ", &stage.save.ghost, {.spec_boolean = {0}}},
-				{OptType_Boolean, "DOWNSCROLL", &stage.save.downscroll, {.spec_boolean = {0}}},
-				{OptType_Boolean, "MIDDLESCROLL", &stage.save.middlescroll, {.spec_boolean = {0}}},
-				{OptType_Boolean, "CAMERA ZOOM", &stage.save.canbump, {.spec_boolean = {0}}},
-				{OptType_Boolean, "BOTPLAY", &stage.save.botplay, {.spec_boolean = {0}}},
-				{OptType_Boolean, "SHOW TIMER", &stage.save.showtimer, {.spec_boolean = {0}}},
+				{"VISUAL", MenuOptions_Visual},
+				{"GAMEPLAY", MenuOptions_Gameplay},
 			};
-			
+
 			//Initialize page
 			if (menu.page_swap)
+			{
+				menu.select = 0;
 				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"OPTIONS",
-				16,
-				SCREEN_HEIGHT - 32,
-				FontAlign_Left
-			);
+			}
 			
 			//Handle option and selection
 			if (menu.next_page == menu.page && Trans_Idle())
 			{
 				menu.select = Menu_Scroll(menu.select, COUNT_OF(menu_options) - 1, &menu.sounds[0]);
 				
-				//Handle option changing
-				switch (menu_options[menu.select].type)
+				//Go to option when cross is pressed
+				if (pad_state.press & (PAD_CROSS | PAD_START))
 				{
-					case OptType_Boolean:
-						if (pad_state.press & (PAD_CROSS | PAD_LEFT | PAD_RIGHT))
-							*((boolean*)menu_options[menu.select].value) ^= 1;
-						break;
-					case OptType_Enum:
-						if (pad_state.press & PAD_LEFT)
-							if (--*((s32*)menu_options[menu.select].value) < 0)
-								*((s32*)menu_options[menu.select].value) = menu_options[menu.select].spec.spec_enum.max - 1;
-						if (pad_state.press & PAD_RIGHT)
-							if (++*((s32*)menu_options[menu.select].value) >= menu_options[menu.select].spec.spec_enum.max)
-								*((s32*)menu_options[menu.select].value) = 0;
-						break;
+					//Play Confirm Sound
+					Audio_PlaySFX(menu.sounds[2], 80);
+
+					menu.page = menu.next_page = menu_options[menu.select].page;
 				}
-				
+
 				//Return to main menu if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
 				{
@@ -1129,6 +1077,205 @@ void Menu_Tick(void)
 		  #endif
 			
 			//Draw options
+			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
+			{
+				//Get position on screen
+				s32 y = (i * 24) - 8;
+				if (y <= -SCREEN_HEIGHT2 - 8)
+					continue;
+				if (y >= SCREEN_HEIGHT2 + 8)
+					break;
+				
+				//Draw text
+				menu.font_bold.draw(&menu.font_bold,
+					Menu_LowerIf(menu_options[i].text, menu.select != i),
+					SCREEN_WIDTH2,
+					SCREEN_HEIGHT2 + y - 8,
+					FontAlign_Center
+				);
+			}
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				253 / 2, 113 / 2, 155 / 2,
+				0, 0, 0
+			);
+			break;
+		}
+		case MenuOptions_Visual:
+		{
+			static const struct
+			{
+				enum
+				{
+					OptType_Boolean,
+				} type;
+				const char *text;
+				void *value;
+				union
+				{
+					struct
+					{
+						int a;
+					} spec_boolean;
+				} spec;
+			} menu_options[] = {
+				{OptType_Boolean, "CAMERA ZOOM", &stage.save.canbump, {.spec_boolean = {0}}},
+				{OptType_Boolean, "SPLASH", &stage.save.splash, {.spec_boolean = {0}}},
+			};
+			
+			//Initialize page
+			if (menu.page_swap)
+			{
+				menu.select = 0;
+				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
+			}
+			
+			//Draw page label
+			menu.font_bold.draw(&menu.font_bold,
+				"VISUALS AND UI",
+				16,
+				16,
+				FontAlign_Left
+			);
+			
+			//Handle option and selection
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				menu.select = Menu_Scroll(menu.select, COUNT_OF(menu_options) - 1, &menu.sounds[0]);
+				
+				//Handle option changing
+				if (pad_state.press & (PAD_CROSS | PAD_LEFT | PAD_RIGHT))
+					*((boolean*)menu_options[menu.select].value) ^= 1;
+				
+				//Return to main menu if circle is pressed
+				if (pad_state.press & PAD_CIRCLE)
+				{
+					//Play Cancel Sound
+					Audio_PlaySFX(menu.sounds[2], 80);
+
+					menu.page = menu.next_page = MenuPage_Options;
+				}
+			}
+
+			//Draw options
+			s32 next_scroll = menu.select * FIXED_DEC(24,1);
+			menu.scroll += (next_scroll - menu.scroll) / 16;
+			
+			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
+			{
+				//Get position on screen
+				s32 y = (i * 24) - 8 - (menu.scroll / FIXED_UNIT);
+				if (y <= -SCREEN_HEIGHT2 - 8)
+					continue;
+				if (y >= SCREEN_HEIGHT2 + 8)
+					break;
+				
+				//Draw text
+				char text[0x80];
+				sprintf(text, "%s %s", menu_options[i].text, *((boolean*)menu_options[i].value) ? "ON" : "OFF");
+
+				//Draw text
+				menu.font_bold.draw(&menu.font_bold,
+					Menu_LowerIf(text, menu.select != i),
+					48 + (y / 4),
+					SCREEN_HEIGHT2 - 16 + y - 8,
+					FontAlign_Left
+				);
+			}
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				253 / 2, 113 / 2, 155 / 2,
+				0, 0, 0
+			);
+			break;
+		}
+		case MenuOptions_Gameplay:
+		{
+			static const char *gamemode_strs[] = {"NORMAL", "SWAP", "TWO PLAYER"};
+			static const struct
+			{
+				enum
+				{
+					OptType_Boolean,
+					OptType_Enum,
+				} type;
+				const char *text;
+				void *value;
+				union
+				{
+					struct
+					{
+						int a;
+					} spec_boolean;
+					struct
+					{
+						s32 max;
+						const char **strs;
+					} spec_enum;
+				} spec;
+			} menu_options[] = {
+				{OptType_Enum,    "GAMEMODE", &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
+				{OptType_Boolean, "GHOST TAP ", &stage.save.ghost, {.spec_boolean = {0}}},
+				{OptType_Boolean, "DOWNSCROLL", &stage.save.downscroll, {.spec_boolean = {0}}},
+				{OptType_Boolean, "MIDDLESCROLL", &stage.save.middlescroll, {.spec_boolean = {0}}},
+				{OptType_Boolean, "BOTPLAY", &stage.save.botplay, {.spec_boolean = {0}}},
+				{OptType_Boolean, "SHOW TIMER", &stage.save.showtimer, {.spec_boolean = {0}}},
+			};
+			
+			//Initialize page
+			if (menu.page_swap)
+			{
+				menu.select = 0;
+				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
+			}
+			
+			//Draw page label
+			menu.font_bold.draw(&menu.font_bold,
+				"GAMEPLAY",
+				16,
+				16,
+				FontAlign_Left
+			);
+			
+			//Handle option and selection
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				menu.select = Menu_Scroll(menu.select, COUNT_OF(menu_options) - 1, &menu.sounds[0]);
+				
+				//Handle option changing
+				switch (menu_options[menu.select].type)
+				{
+					case OptType_Boolean:
+						if (pad_state.press & (PAD_CROSS | PAD_LEFT | PAD_RIGHT))
+							*((boolean*)menu_options[menu.select].value) ^= 1;
+						break;
+					case OptType_Enum:
+						if (pad_state.press & PAD_LEFT)
+							if (--*((s32*)menu_options[menu.select].value) < 0)
+								*((s32*)menu_options[menu.select].value) = menu_options[menu.select].spec.spec_enum.max - 1;
+						if (pad_state.press & PAD_RIGHT)
+							if (++*((s32*)menu_options[menu.select].value) >= menu_options[menu.select].spec.spec_enum.max)
+								*((s32*)menu_options[menu.select].value) = 0;
+						break;
+				}
+				
+				//Return to main menu if circle is pressed
+				if (pad_state.press & PAD_CIRCLE)
+				{
+					//Play Cancel Sound
+					Audio_PlaySFX(menu.sounds[2], 80);
+
+					menu.page = menu.next_page = MenuPage_Options;
+				}
+			}
+			
+			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
 			menu.scroll += (next_scroll - menu.scroll) / 16;
 			
@@ -1154,9 +1301,9 @@ void Menu_Tick(void)
 				}
 				menu.font_bold.draw(&menu.font_bold,
 					Menu_LowerIf(text, menu.select != i),
-					SCREEN_WIDTH2,
-					SCREEN_HEIGHT2 + y - 8,
-					FontAlign_Center
+					48 + (y / 4),
+					SCREEN_HEIGHT2 - 16 + y - 8,
+					FontAlign_Left
 				);
 			}
 			
@@ -1169,6 +1316,7 @@ void Menu_Tick(void)
 			);
 			break;
 		}
+
 		case MenuPage_Stage:
 		{
 			//Unload menu state

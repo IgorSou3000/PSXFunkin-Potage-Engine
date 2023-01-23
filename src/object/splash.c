@@ -17,8 +17,6 @@ boolean Obj_Splash_Tick(Object *obj)
 	Obj_Splash *this = (Obj_Splash*)obj;
 	
 	//Move
-	fixed_t lx = this->x - this->xsp * (2 + ((this->size * 4) >> FIXED_SHIFT));
-	fixed_t ly = this->y - this->ysp * (2 + ((this->size * 4) >> FIXED_SHIFT));
 	this->x += this->xsp;
 	this->y += this->ysp;
 	this->xsp = this->xsp * 5 / 6;
