@@ -126,13 +126,20 @@ void Char_GF_Tick(Character *character)
 			Speaker_Bump(&this->speaker);
 		}
 	}
+
+	//Get parallax
+	fixed_t parallax;
+	if (stage.stage_id >= StageId_Bopeebo && stage.stage_id <= StageId_Tutorial)
+		parallax = FIXED_DEC(7,10);
+	else
+		parallax = FIXED_UNIT;
 	
 	//Animate and draw
 	Animatable_Animate(&character->animatable, (void*)this, Char_GF_SetFrame);
-	Character_Draw(character, &this->tex, &char_gf_frame[this->frame]);
+	Character_Draw(character, &this->tex, &char_gf_frame[this->frame], parallax);
 	
 	//Tick speakers
-	Speaker_Tick(&this->speaker, character->x, character->y);
+	Speaker_Tick(&this->speaker, character->x, character->y, parallax);
 }
 
 void Char_GF_SetAnim(Character *character, u8 anim)

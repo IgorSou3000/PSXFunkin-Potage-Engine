@@ -33,25 +33,25 @@ void Character_Init(Character *this, fixed_t x, fixed_t y)
 	this->sing_end = 0;
 }
 
-void Character_DrawCol(Character *this, Gfx_Tex *tex, const CharFrame *cframe, u8 r, u8 g, u8 b)
+void Character_DrawCol(Character *this, Gfx_Tex *tex, const CharFrame *cframe, u8 r, u8 g, u8 b, fixed_t parallax)
 {
 	//Draw character
-	fixed_t x = this->x - stage.camera.x - FIXED_MUL(FIXED_DEC(cframe->off[0],1), this->scale);
-	fixed_t y = this->y - stage.camera.y - FIXED_MUL(FIXED_DEC(cframe->off[1],1), this->scale);
+	fixed_t x = this->x - FIXED_MUL(stage.camera.x, parallax) - FIXED_MUL(FIXED_DEC(cframe->off[0],1), this->scale);
+	fixed_t y = this->y - FIXED_MUL(stage.camera.y, parallax) - FIXED_MUL(FIXED_DEC(cframe->off[1],1), this->scale);
 	
 	RECT src = {cframe->src[0], cframe->src[1], cframe->src[2], cframe->src[3]};
 	RECT_FIXED dst = {
 		x, 
 		y, 
-		FIXED_MUL(src.w * FIXED_UNIT, this->scale), 
-		FIXED_MUL(src.h * FIXED_UNIT, this->scale)
+		FIXED_MUL(src.w << FIXED_SHIFT, this->scale), 
+		FIXED_MUL(src.h << FIXED_SHIFT, this->scale)
 	};
 	Stage_DrawTexCol(tex, &src, &dst, stage.camera.bzoom, r, g, b);
 }
 
-void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe)
+void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe, fixed_t parallax)
 {
-	Character_DrawCol(this, tex, cframe, 0x80, 0x80, 0x80);
+	Character_DrawCol(this, tex, cframe, 0x80, 0x80, 0x80, parallax);
 }
 
 void Character_CheckStartSing(Character *this)

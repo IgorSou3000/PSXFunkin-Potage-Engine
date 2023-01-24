@@ -94,7 +94,7 @@ void Char_Dad_Tick(Character *character)
 	
 	//Animate and draw
 	Animatable_Animate(&character->animatable, (void*)this, Char_Dad_SetFrame);
-	Character_Draw(character, &this->tex, &char_dad_frame[this->frame]);
+	Character_Draw(character, &this->tex, &char_dad_frame[this->frame], FIXED_UNIT);
 }
 
 void Char_Dad_SetAnim(Character *character, u8 anim)

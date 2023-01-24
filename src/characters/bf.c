@@ -176,7 +176,7 @@ void Char_BF_Tick(Character *character)
 	
 	//Animate and draw character
 	Animatable_Animate(&character->animatable, (void*)this, Char_BF_SetFrame);
-	Character_Draw(character, &this->tex, &char_bf_frame[this->frame]);
+	Character_Draw(character, &this->tex, &char_bf_frame[this->frame], FIXED_UNIT);
 }
 
 void Char_BF_SetAnim(Character *character, u8 anim)
