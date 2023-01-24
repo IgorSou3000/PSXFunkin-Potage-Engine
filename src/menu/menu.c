@@ -377,7 +377,8 @@ void Menu_Load(MenuPage page)
 	}
 	
 	//Play menu music
-	Audio_PlayXA_Track(XA_GettinFreaky, 0x40, 0, 1);
+	Audio_LoadXA("\\MENU\\MENU.MUS;1");
+	Audio_PlayXA_Track(0x40, 0, 1);
 	Audio_WaitPlayXA();
 	
 	//Set background colour
@@ -1040,9 +1041,6 @@ void Menu_Tick(void)
 				//Go to option when cross is pressed
 				if (pad_state.press & (PAD_CROSS | PAD_START))
 				{
-					//Play Confirm Sound
-					Audio_PlaySFX(menu.sounds[2], 80);
-
 					menu.page = menu.next_page = menu_options[menu.select].page;
 				}
 

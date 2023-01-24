@@ -26,6 +26,9 @@
 			<dir name = "menu">
 				<file name = "loading.tim" type = "data" source = "iso/menu/loading.tim"/>
 				<file name = "menu.arc" type = "data" source = "iso/menu/menu.arc"/>
+
+				<!-- Menu songs -->
+				<file name = "menu.mus" type = "xa" source = "iso/songs/freaky/song.mus"/>
 			</dir>
 			
 			<!-- Fonts -->
@@ -64,6 +67,12 @@
 				<file name = "1.4e.cht" type = "data" source = "iso/songs/tutorial/tutorial-easy.cht"/>
 				<file name = "1.4n.cht" type = "data" source = "iso/songs/tutorial/tutorial.cht"/>
 				<file name = "1.4h.cht" type = "data" source = "iso/songs/tutorial/tutorial-hard.cht"/>
+
+				<!-- Week1 songs -->
+				<file name = "week1_1.mus" type = "xa" source = "iso/songs/bopeebo/song.mus"/>
+				<file name = "week1_2.mus" type = "xa" source = "iso/songs/fresh/song.mus"/>
+				<file name = "week1_3.mus" type = "xa" source = "iso/songs/dadbattle/song.mus"/>
+				<file name = "week1_4.mus" type = "xa" source = "iso/songs/tutorial/song.mus"/>
 			</dir>
 			<!-- Character assets -->
 			<dir name = "char">
@@ -96,16 +105,6 @@
 			<dir name = "str">
 				<!-- Week7 videos -->
 				<file name = "ugh.str" type = "str" source = "iso/movies/ugh.str"/>
-			</dir>
-			
-			<!-- Music -->
-			<dir name = "songs">
-				<file name = "menu.xa" type = "xa" source = "iso/songs/menu.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week1a.xa" type = "xa" source = "iso/songs/week1a.xa"/>
-				<dummy sectors="128"/>
-				<file name = "week1b.xa" type = "xa" source = "iso/songs/week1b.xa"/>
-				<dummy sectors="128"/>
 			</dir>
 			
 			<!-- Dummy sectors -->

@@ -1,15 +1,9 @@
 all: \
-  iso/songs/menu.xa \
-  iso/songs/week1a.xa \
-  iso/songs/week1b.xa \
+  $(addsuffix .xa,  $(basename $(wildcard iso/songs/*/*.ogg))) \
+  $(basename $(wildcard iso/songs/*/*.txt)) \
 
 # XA converts
 iso/songs/%.xa: iso/songs/%.ogg
 	tools/psxavenc/psxavenc -f 37800 -t xa -b 4 -c 2 -F 1 -C 0 $< $@
-iso/songs/%.xa:
+iso/songs/%.mus:
 	tools/xainterleave/xainterleave $@
-
-# XA interleaves
-iso/songs/menu.xa: iso/songs/freaky/Inst.xa iso/songs/gameover/Inst.xa
-iso/songs/week1a.xa: iso/songs/bopeebo/Inst.xa iso/songs/bopeebo/Voices.xa iso/songs/fresh/Inst.xa iso/songs/fresh/Voices.xa
-iso/songs/week1b.xa: iso/songs/dadbattle/Inst.xa iso/songs/dadbattle/Voices.xa iso/songs/tutorial/Inst.xa iso/songs/tutorial/Voices.xa
