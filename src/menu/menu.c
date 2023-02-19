@@ -403,9 +403,6 @@ void Menu_Tick(void)
 {
 	//Clear per-frame flags
 	stage.flag &= ~STAGE_FLAG_JUST_STEP;
-
-	if (pad_state.press & PAD_SELECT)
-		WriteSave();
 	
 	//Get song position
 	u16 bpm = 102; // Freaky BPM(102)

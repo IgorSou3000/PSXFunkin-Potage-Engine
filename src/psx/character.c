@@ -46,6 +46,7 @@ void Character_DrawCol(Character *this, Gfx_Tex *tex, const CharFrame *cframe, u
 		FIXED_MUL(src.w << FIXED_SHIFT, this->scale), 
 		FIXED_MUL(src.h << FIXED_SHIFT, this->scale)
 	};
+
 	Stage_DrawTexCol(tex, &src, &dst, stage.camera.bzoom, r, g, b);
 }
 

@@ -8,6 +8,7 @@
 #define PSXF_GUARD_STAGE_H
 
 #include "events.h"
+#include "debug.h"
 #include "psx/io.h"
 #include "psx/gfx.h"
 #include "psx/pad.h"

@@ -23,10 +23,7 @@
 #include "object/splash.h"
 
 //Stage constants
-//#define STAGE_PERFECT //Play all notes perfectly
-//#define STAGE_NOHUD //Disable the HUD
-
-//#define STAGE_FREECAM //Freecam
+//#define DEBUG_MODE
 
 static const u16 note_key[] = {INPUT_LEFT, INPUT_DOWN, INPUT_UP, INPUT_RIGHT};
 static const u8 note_anims[4][3] = {
@@ -85,19 +82,8 @@ static void Stage_ScrollCamera(void)
 	//Don't do anything if game is paused
 	if (!(stage.flag & STAGE_FLAG_PAUSED))
 	{
-		#ifdef STAGE_FREECAM
-			if (pad_state.held & PAD_LEFT)
-				stage.camera.x -= FIXED_DEC(2,1);
-			if (pad_state.held & PAD_UP)
-				stage.camera.y -= FIXED_DEC(2,1);
-			if (pad_state.held & PAD_RIGHT)
-				stage.camera.x += FIXED_DEC(2,1);
-			if (pad_state.held & PAD_DOWN)
-				stage.camera.y += FIXED_DEC(2,1);
-			if (pad_state.held & PAD_TRIANGLE)
-				stage.camera.zoom -= FIXED_DEC(1,100);
-			if (pad_state.held & PAD_CROSS)
-				stage.camera.zoom += FIXED_DEC(1,100);
+		#ifdef DEBUG_MODE
+			Debug_Tick();
 		#else
 			//Scroll based off current divisor
 			stage.camera.x += Lerp(stage.camera.x, stage.camera.tx, stage.camera.td);
@@ -1319,6 +1305,7 @@ static void Stage_LoadState(void)
 		stage.player_state[i].pad_held = stage.player_state[i].pad_press = 0;
 	}
 	
+	Debug_Load();
 	ObjectList_Free(&stage.objlist_splash);
 	ObjectList_Free(&stage.objlist_fg);
 	ObjectList_Free(&stage.objlist_bg);
@@ -1963,7 +1950,7 @@ void Stage_Tick(void)
 			//Load Gameover texture
 			Gfx_LoadTex(&stage.tex_gameover, stage.gameover_tim, GFX_LOADTEX_FREE);
 
-			//Load gameover music
+			//Play Gameover music
 			Audio_LoadXA("\\STAGE\\GAMEOVER.MUS;1");
 			Audio_PlayXA(0x40, 0, true);
 			
