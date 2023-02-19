@@ -1,5 +1,5 @@
 # PSXFunkin Potage
-Another Engine for PSXFunkin LOL
+Another Engine for PSXFunkin
 
 ## Compilation
 Refer to [COMPILE.md](/COMPILE.md) here
@@ -10,22 +10,19 @@ This project is not endorsed by the original Friday Night Funkin' and PSXFunkin 
 ## What this engine add?
 
 # Pause Menu
-You can now pause the game and resume when needed!!
+You can now pause and resume the game when needed
 
 # Save System
-You can save now, which means you can save your score and options!
+You can save now, which means you can save your score and option
 
 # Easier Code
-I tried my best for make the code readable and easy as i can do
-
-# Different
-My engine looks the overlays version of psxfunkin so it way different the way it handle some stuffs, making easier for modding
+I tried my best for make the code readable as possible
 
 # STR 
 Now you can play STR!! (Video)
 
 # Sound effects
-This engine have sounds effects like scroll!!
+This engine have sounds effects like scroll sound in menu
 
 # And a lot more
-My engine added timer, new icons, new story mode and much more!!!!
+My engine added timer, new icons, new story mode and much more

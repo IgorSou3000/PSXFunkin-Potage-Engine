@@ -1976,7 +1976,7 @@ void Stage_Tick(void)
 			RECT gameover_src = {0, 0, 255, 255};
 			RECT_FIXED gameover_dst = {
 				FIXED_DEC(-128,1),
-				FIXED_DEC(-98,1),
+				FIXED_DEC(-120,1),
 				FIXED_DEC(255,1),
 				FIXED_DEC(255,1)
 			};

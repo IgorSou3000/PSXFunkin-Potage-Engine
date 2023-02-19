@@ -68,15 +68,7 @@ TIP: For any make, try appending `-jX` to the end of it, where X is the number o
 
 `make -f Makefile.tools` This will compile the tools found in [tools/](/tools/).
 
-`make -f Makefile.tim` This will convert all the pngs in [iso/](/iso/) to TIM files that can be displayed by the PS1.
-
-`make -f Makefile.xa` This will convert all the oggs in [iso/music/](/iso/music/) to XA files that can be played by the PS1. This step will take a WHILE. Be patient!
-
-`make -f Makefile.cht` This will convert all the jsons in [iso/chart/](/iso/chart/) to cht files that can be played by the game.
-
-`make -f Makefile.vag` This will convert all the short oggs in [iso/sounds/](/iso/sounds/) to vag files that can be played by the game.
-
-`make -f Makefile.str` This will convert all the mp4 in [iso/movies/](/iso/movies/) to str files that can be played by the game. (WIP!!)
+`make -f Makefile.assets` This will convert all the assets [iso/](/iso/) (TIM, XA, CHT AND VAG files)
 
 You can read more about these asset formats in [FORMATS.md](/FORMATS.md)
 
