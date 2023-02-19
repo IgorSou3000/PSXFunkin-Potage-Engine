@@ -5,10 +5,9 @@ all: \
 	iso/font/font1.tim \
 	iso/stage/hud0.tim \
 	iso/stage/hud1.tim \
-	iso/stage/hud2.tim \
-	iso/stage/hud0weeb.tim \
-	iso/stage/hud2weeb.tim \
+	iso/stage/intro.tim \
 	iso/characters/bf/main.arc \
+	iso/characters/bf/dead.tim \
 	iso/characters/dad/main.arc \
 	iso/characters/gf/main.arc \
 	iso/characters/gf/speaker.tim \
@@ -24,7 +23,7 @@ iso/%.arc:
 iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/menu/hud1.tim
 
 # BF
-iso/characters/bf/main.arc: iso/characters/bf/bf0.tim iso/characters/bf/bf1.tim iso/characters/bf/bf2.tim iso/characters/bf/bf3.tim iso/characters/bf/bf4.tim iso/characters/bf/bf5.tim iso/characters/bf/bf6.tim iso/characters/bf/dead0.tim iso/characters/bf/dead1.tim iso/characters/bf/dead2.tim
+iso/characters/bf/main.arc: iso/characters/bf/bf0.tim iso/characters/bf/bf1.tim iso/characters/bf/bf2.tim iso/characters/bf/bf3.tim iso/characters/bf/bf4.tim iso/characters/bf/bf5.tim iso/characters/bf/bf6.tim
 
 # Dad
 iso/characters/dad/main.arc: iso/characters/dad/idle0.tim iso/characters/dad/idle1.tim iso/characters/dad/left.tim iso/characters/dad/down.tim iso/characters/dad/up.tim iso/characters/dad/right.tim

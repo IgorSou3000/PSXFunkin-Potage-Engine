@@ -169,7 +169,12 @@ typedef struct
 	u32 offset;
 	
 	//HUD textures
-	Gfx_Tex tex_hud0, tex_hud1, tex_hud2;
+	Gfx_Tex tex_hud0, tex_hud1, tex_intro;
+
+	//Game over
+	Gfx_Tex tex_gameover;
+	IO_Data gameover_tim;
+	char gameover_path[30];
 
 	//Notes
 	fixed_t note_x[8];
@@ -221,7 +226,7 @@ typedef struct
 		fixed_t tx, ty, tz, td;
 		fixed_t bzoom;
 	} camera;
-	fixed_t bump, sbump, charbump;
+	fixed_t bump, sbump, character_bump;
 	
 	StageBack *back;
 	
@@ -259,12 +264,9 @@ typedef struct
 	
 	enum
 	{
-		StageState_Play, //Game is playing as normal
-		StageState_Dead,       //Start BREAK animation and reading extra data from CD
-		StageState_DeadLoad,   //Wait for said data to be read
-		StageState_DeadDrop,   //Mic drop
-		StageState_DeadRetry,  //Retry prompt
-		StageState_DeadDecide, //Decided
+		StageState_Play, 			//Game is playing as normal
+		StageState_Dead,      //Unload a lot of data
+		StageState_DeadLoop,	//Retry prompt
 	} state;
 	
 	u8 note_swap;

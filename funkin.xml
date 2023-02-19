@@ -40,9 +40,10 @@
 			<dir name = "stage">
 				<file name = "hud0.tim" type = "data" source = "iso/stage/hud0.tim"/>
 				<file name = "hud1.tim" type = "data" source = "iso/stage/hud1.tim"/>
-				<file name = "hud2.tim" type = "data" source = "iso/stage/hud2.tim"/>
-				<file name = "hud0weeb.tim" type = "data" source = "iso/stage/hud0weeb.tim"/>
-				<file name = "hud2weeb.tim" type = "data" source = "iso/stage/hud2weeb.tim"/>
+				<file name = "intro.tim" type = "data" source = "iso/stage/intro.tim"/>
+
+				<!-- Gameover songs -->
+				<file name = "gameover.mus" type = "xa" source = "iso/songs/gameover/song.mus"/>
 			</dir>
 			
 			<!-- Week 1 assets -->
@@ -78,6 +79,7 @@
 			<dir name = "char">
 				<!-- Boyfriend assets -->
 				<file name = "bf.arc" type = "data" source = "iso/characters/bf/main.arc"/>
+				<file name = "bfdead.tim" type = "data" source = "iso/characters/bf/dead.tim"/>
 			
 				<!-- Dad assets -->
 				<file name = "dad.arc" type = "data" source = "iso/characters/dad/main.arc"/>

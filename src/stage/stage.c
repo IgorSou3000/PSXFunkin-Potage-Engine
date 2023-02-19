@@ -106,7 +106,7 @@ static void Stage_ScrollCamera(void)
 		#endif
 		
 		//Update other camera stuff
-		stage.camera.bzoom = FIXED_MUL(stage.camera.zoom, stage.charbump);
+		stage.camera.bzoom = FIXED_MUL(stage.camera.zoom, stage.character_bump);
 	}
 }
 
@@ -631,71 +631,69 @@ static void Stage_TimerDraw(void)
 
 static void Stage_DrawCountdown(void)
 {
-	//Every 5 steps until step be positive, that variable is decreased by 1
-	s8 count = 2 - (-stage.song_step / 5); 
+	const s8 start_draw_step = -25;
+	const u8 increase_count_step = 5;
+	const u8 intro_width = 120;
+	const u8 intro_height = 50;
 
-	if (stage.song_step >= -25)
+	//Calculate the countdown number to display based on the current song step
+	s8 countdown_number = 2 - (-stage.song_step / increase_count_step); 
+
+	if (stage.song_step >= start_draw_step)
 	{
 		//Get src and dst of countdown
 		RECT countdown_src = {
-			0,
-			(count) * 85,
-			252,
-			85
+			(countdown_number % 2) * intro_width,
+			(countdown_number / 2) * intro_height,
+			intro_width,
+			intro_height
 		};
 
 		RECT_FIXED countdown_dst = {
-			FIXED_DEC(-140,1),
+			FIXED_DEC(-countdown_src.w,1),
 			FIXED_DEC(-43,1),
-			FIXED_MUL(countdown_src.w << FIXED_SHIFT, FIXED_DEC(125,100)),
-			FIXED_MUL(countdown_src.h << FIXED_SHIFT, FIXED_DEC(125,100)),
+			FIXED_DEC(countdown_src.w * 2, 1),
+			FIXED_DEC(countdown_src.h * 2, 1),
 		};
 
-		if (count >= 0)
-			Stage_DrawTex(&stage.tex_hud2, &countdown_src, &countdown_dst, stage.camera.bzoom);
+		//Draw the countdown texture if the countdown number is non-negative
+		if (countdown_number >= 0)
+			Stage_DrawTex(&stage.tex_intro, &countdown_src, &countdown_dst, stage.camera.bzoom);
 
-		//Play the intro sounds
-		if (stage.flag & STAGE_FLAG_JUST_STEP && (stage.song_step % 0x5) == 0)
-			Audio_PlaySFX(stage.introsound[count + 2], 90);
+		//Play the appropriate intro sound if the song step is a multiple of increase_count_step
+		if (stage.flag & STAGE_FLAG_JUST_STEP && (stage.song_step % increase_count_step) == 0)
+			Audio_PlaySFX(stage.introsound[countdown_number + 2], 90);
 	}
 }
 
-static void Stage_DrawHealthBar(u32 color, s8 ox)
+static void Stage_DrawHealthBar(u32 health_bar_color, s8 offsetx)
 {
-	//Convert hex value to a RGB value
+	//Extract the RGB components of the healthBarColor
+  u8 r = ((health_bar_color >> 16) & 0xFF) / 2;
+  u8 g = ((health_bar_color >> 8) & 0xFF) / 2;
+  u8 b = ((health_bar_color) & 0xFF) / 2;
 
-	//I'm dividing by 2 because as the health bar is white, if I don't divide, the healthbar will be very light
-	u8 r = ((color >> 16) & 0xFF) / 2;  // Extract the RR byte
-  u8 g = ((color >> 8) & 0xFF) / 2;   // Extract the GG byte
-  u8 b = ((color) & 0xFF) / 2;        // Extract the BB byte
-
-	//Check which "health bar code" we should use
-	u8 healthw;
-
-	//Player health code
-	if (ox > 0)
-		healthw = 200;
-	//Opponent health code
-	else
-		healthw = 200 - (200 * stage.player_state[0].health / 20000);
+	// Determine the width of the health bar based on player position
+  u8 health_width = (offsetx > 0) ? 200 : (200 - (200 * stage.player_state[0].health / 20000));
 
 	//Get src and dst
-	RECT health_src = {0, 250, healthw, 5};
-	RECT_FIXED health_dst = {FIXED_DEC(-100,1), (SCREEN_HEIGHT2 - 28) << FIXED_SHIFT, healthw << FIXED_SHIFT, FIXED_DEC(5,1)};
+	RECT health_src = {0, 250, health_width, 5};
+	RECT_FIXED health_dst = {FIXED_DEC(-100,1), (SCREEN_HEIGHT2 - 28) << FIXED_SHIFT, health_width << FIXED_SHIFT, FIXED_DEC(5,1)};
 
+	//Adjust the Y position for downscroll mode
 	if (stage.save.downscroll)
 			health_dst.y = -health_dst.y - health_dst.h + FIXED_DEC(4,1);
 				
 	Stage_DrawTexCol(&stage.tex_hud1, &health_src, &health_dst, stage.bump, r, g, b);
 }
-static void Stage_DrawHealth(s16 health, u8 i, s8 ox)
+static void Stage_DrawHealthIcon(s16 health, u8 icon_index, s8 offsetx)
 {
 	//Icon Size
 	u8 icon_size = 38;
 
-	//Check if we should use 'dying' frame
+	//Check if we should use 'dying' icon
 	s8 dying;
-	if (ox < 0)
+	if (offsetx < 0)
 		dying = (health >= 18000) * icon_size;
 	else
 		dying = (health <= 2000) * icon_size;
@@ -703,15 +701,15 @@ static void Stage_DrawHealth(s16 health, u8 i, s8 ox)
 	//Get src and dst
 	fixed_t hx = (100 << FIXED_SHIFT) * (10000 - health) / 10000;
 	RECT src = {
-		(i % 3) * (icon_size*2) + dying,
-		(i / 3) * icon_size,
+		(icon_index % 3) * (icon_size * 2) + dying,
+		(icon_index / 3) * icon_size,
 		icon_size,
 		icon_size
 	};
 
 	RECT_FIXED dst = {
-		hx + ox * FIXED_DEC(17,1) - FIXED_DEC(16,1),
-		FIXED_DEC(SCREEN_HEIGHT2 - 32 + 4 - (icon_size/2), 1),
+		hx + offsetx * FIXED_DEC(17,1) - FIXED_DEC(16,1),
+		FIXED_DEC(SCREEN_HEIGHT2 - 32 + 4 - (icon_size / 2), 1),
 		src.w << FIXED_SHIFT,
 		src.h << FIXED_SHIFT
 	};
@@ -1396,6 +1394,10 @@ void Stage_Unload(void)
 	if (stage.back != NULL)
 		stage.back->free(stage.back);
 	stage.back = NULL;
+
+	//Unload gameover texture
+	Mem_Free(stage.gameover_tim);
+	stage.gameover_tim = NULL;
 	
 	//Unload stage data
 	Mem_Free(stage.chart_data);
@@ -1493,6 +1495,13 @@ static boolean Stage_NextLoad(void)
 
 void Stage_Tick(void)
 {
+	//Reload song when start or cross is pressed
+	if (pad_state.press & PAD_START && stage.state != StageState_Play)
+	{
+		stage.trans = StageTrans_Reload;
+		Trans_Start();
+	}
+
 	//Tick transition
 	if (Trans_Tick())
 	{
@@ -1556,7 +1565,7 @@ void Stage_Tick(void)
 					{
 						//Song has started
 						playing = true;
-						Audio_PlayXA_Track(0x40, 0, 0);
+						Audio_PlayXA(0x40, 0, false);
 							
 						//Update song time
 						fixed_t audio_time = (fixed_t)Audio_TellXA_Milli() - stage.offset;
@@ -1686,8 +1695,8 @@ void Stage_Tick(void)
 					stage.bump = FIXED_UNIT;
 				stage.sbump = FIXED_UNIT + FIXED_MUL(stage.sbump - FIXED_UNIT, FIXED_DEC(85,100));
 
-				if ((stage.charbump = FIXED_UNIT + FIXED_MUL(stage.charbump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
-					stage.charbump = FIXED_UNIT;
+				if ((stage.character_bump = FIXED_UNIT + FIXED_MUL(stage.character_bump - FIXED_UNIT, FIXED_DEC(95,100))) <= FIXED_DEC(1003,1000))
+					stage.character_bump = FIXED_UNIT;
 				
 				if (playing && (stage.flag & STAGE_FLAG_JUST_STEP))
 				{
@@ -1698,7 +1707,7 @@ void Stage_Tick(void)
 					if (is_bump_step && stage.save.canbump == true)
 					{
 						stage.bump += FIXED_DEC(3,100); //0.03
-						stage.charbump += FIXED_DEC(15,1000); //0.015
+						stage.character_bump += FIXED_DEC(15,1000); //0.015
 					}
 					
 					//Bump health every 4 steps
@@ -1877,8 +1886,8 @@ void Stage_Tick(void)
 					stage.player_state[0].health = 20000;
 				
 				//Draw health heads
-				Stage_DrawHealth(stage.player_state[0].health, stage.player_state[0].character->health_i, 1);
-				Stage_DrawHealth(stage.player_state[0].health, stage.player_state[1].character->health_i, -1);
+				Stage_DrawHealthIcon(stage.player_state[0].health, stage.player_state[0].character->health_i, 1);
+				Stage_DrawHealthIcon(stage.player_state[0].health, stage.player_state[1].character->health_i, -1);
 				
 				//Draw health bar
 				Stage_DrawHealthBar(stage.player_state[1].character->health_b, -1);
@@ -1947,76 +1956,32 @@ void Stage_Tick(void)
 			
 			//Change background colour to black
 			Gfx_SetClear(0, 0, 0);
-			
-			//Run death animation, focus on player, and change state
-			stage.player->set_anim(stage.player, PlayerAnim_FirstDead);
-			
+		
 			Stage_FocusCharacter(stage.player, 0);
 			stage.song_time = 0;
+
+			//Load Gameover texture
+			Gfx_LoadTex(&stage.tex_gameover, stage.gameover_tim, GFX_LOADTEX_FREE);
+
+			//Load gameover music
+			Audio_LoadXA("\\STAGE\\GAMEOVER.MUS;1");
+			Audio_PlayXA(0x40, 0, true);
 			
-			stage.state = StageState_DeadLoad;
+			stage.state = StageState_DeadLoop;
+			break;
 		}
-	//Fallthrough
-		case StageState_DeadLoad:
+		//Fallthrough
+		case StageState_DeadLoop:
 		{
-			//Scroll camera and tick player
-			if (stage.song_time < FIXED_UNIT)
-				stage.song_time += FIXED_UNIT / 60;
-			stage.camera.td = FIXED_DEC(-2, 100) + FIXED_MUL(stage.song_time, FIXED_DEC(45, 1000));
-			if (stage.camera.td > 0)
-				Stage_ScrollCamera();
-			stage.player->tick(stage.player);
-
-			if (IO_IsReading() || !Animatable_Ended(&stage.player->animatable))
-				break;
-
-			//Run death animation, focus on player, and change state
-			stage.player->set_anim(stage.player, PlayerAnim_DeadLoop);
-			
-			stage.camera.td = FIXED_DEC(25, 1000);
-			stage.state = StageState_DeadDrop;
+			RECT gameover_src = {0, 0, 255, 255};
+			RECT_FIXED gameover_dst = {
+				FIXED_DEC(-128,1),
+				FIXED_DEC(-98,1),
+				FIXED_DEC(255,1),
+				FIXED_DEC(255,1)
+			};
+			Stage_DrawTex(&stage.tex_gameover, &gameover_src, &gameover_dst, stage.character_bump);
 			break;
 		}
-		case StageState_DeadDrop:
-		{
-			//Scroll camera and tick player
-			Stage_ScrollCamera();
-			stage.player->tick(stage.player);
-			
-			//Enter next state once mic has been dropped
-			stage.state = StageState_DeadRetry;
-			Audio_PlayXA_Track(0x40, 1, true);
-			break;
-		}
-		case StageState_DeadRetry:
-		{
-			//Scroll camera and tick player
-			Stage_ScrollCamera();
-			stage.player->tick(stage.player);
-
-			if (pad_state.press & PAD_START)
-			{
-				Audio_StopXA();
-				stage.player->set_anim(stage.player, PlayerAnim_DeadConfirm);
-				stage.state = StageState_DeadDecide;
-			}
-			break;
-		}
-		case StageState_DeadDecide:
-		{
-			//Scroll camera and tick player
-			Stage_ScrollCamera();
-			stage.player->tick(stage.player);
-
-			//Return to menu when start is pressed
-			if (Animatable_Ended(&stage.player->animatable))
-			{
-				stage.trans = StageTrans_Reload;
-				Trans_Start();
-			}
-			break;
-		}
-		default:
-			break;
 	}
 }

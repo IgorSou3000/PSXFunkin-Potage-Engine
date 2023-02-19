@@ -69,6 +69,7 @@ void DefaultSettings()
   stage.save.ghost = true; 
   stage.save.showtimer = true;
   stage.save.canbump = true;
+  stage.save.splash = true;
 
   for (int i = 0; i < StageId_Max; i++)
   {

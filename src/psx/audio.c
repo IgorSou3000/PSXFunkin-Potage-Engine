@@ -196,7 +196,7 @@ static void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop
 	XA_SetVolume(volume);
 }
 
-void Audio_PlayXA_Track(u8 volume, u8 channel, boolean loop)
+void Audio_PlayXA(u8 volume, u8 channel, boolean loop)
 {
 	//Play track
 	Audio_PlayXA_File(&xa_file, volume, channel, loop);

@@ -378,8 +378,7 @@ void Menu_Load(MenuPage page)
 	
 	//Play menu music
 	Audio_LoadXA("\\MENU\\MENU.MUS;1");
-	Audio_PlayXA_Track(0x40, 0, 1);
-	Audio_WaitPlayXA();
+	Audio_PlayXA(0x40, 0, true);
 	
 	//Set background colour
 	Gfx_SetClear(0, 0, 0);
@@ -1010,7 +1009,7 @@ void Menu_Tick(void)
 			Menu_DrawBack(
 				true,
 				8,
-				197 / 2, 240 / 2, 95 / 2,
+				255 / 2, 165 / 2, 0 / 2,
 				0, 0, 0
 			);
 			break;

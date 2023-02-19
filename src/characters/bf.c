@@ -22,9 +22,6 @@ enum
 	BF_ArcMain_BF4,
 	BF_ArcMain_BF5,
 	BF_ArcMain_BF6,
-	BF_ArcMain_Dead0, //BREAK
-	BF_ArcMain_Dead1, //Mic Drop
-	BF_ArcMain_Dead2, //Mic Drop
 	
 	BF_ArcMain_Max,
 };
@@ -38,7 +35,7 @@ typedef struct
 	IO_Data arc_main;
 	IO_Data arc_ptr[BF_ArcMain_Max];
 	
-	Gfx_Tex tex, tex_retry;
+	Gfx_Tex tex;
 	u8 frame, tex_id;
 } Char_BF;
 
@@ -82,21 +79,6 @@ static const CharFrame char_bf_frame[] = {
 	
 	{BF_ArcMain_BF6, {  0, 108,  99, 108}, { 42, 101}}, //26 right miss 1
 	{BF_ArcMain_BF6, {100, 109, 101, 108}, { 43, 101}}, //27 right miss 2
-
-	{BF_ArcMain_Dead0, {  0,  0,114,114},{ 59,102}}, //28 dead0 1
-	{BF_ArcMain_Dead0, {116,  0,114,114},{ 60,101}}, //29 dead0 2
-	{BF_ArcMain_Dead0, {  0,116,114,114},{ 60,104}}, //30 dead0 3
-	{BF_ArcMain_Dead0, {116,116,114,114},{ 63,104}}, //31 dead0 4
-
-	{BF_ArcMain_Dead1, {  0,  0,114,114},{ 59,101}}, //32 dead1 1
-	{BF_ArcMain_Dead1, {116,  0,114,114},{ 60,101}}, //33 dead1 2
-	{BF_ArcMain_Dead1, {  0,122,114,114},{ 62,100}}, //34 dead1 3
-	{BF_ArcMain_Dead1, {122,122,114,114},{ 61,100}}, //35 dead1 4
-
-	{BF_ArcMain_Dead2, {  0,  0,114,114},{ 59,101}}, //36 dead2 1
-	{BF_ArcMain_Dead2, {116,  0,114,114},{ 60,101}}, //37 dead2 2
-	{BF_ArcMain_Dead2, {  0,122,114,114},{ 62,100}}, //38 dead2 3
-	{BF_ArcMain_Dead2, {122,122,114,114},{ 61,100}}, //39 dead2 4
 };
 
 static const Animation char_bf_anim[PlayerAnim_Max] = {
@@ -117,10 +99,6 @@ static const Animation char_bf_anim[PlayerAnim_Max] = {
 	
 	{2, (const u8[]){13, 14, 15, ASCR_BACK, 1}},         //PlayerAnim_Peace
 	{2, (const u8[]){16, 17, 18, 19, ASCR_REPEAT}},      //PlayerAnim_Sweat
-	
-	{4, (const u8[]){28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 39, 39, ASCR_BACK, 1}}, //PlayerAnim_FirstDead
-	{2, (const u8[]){40, 41, 42, 43, 43, 43, 43, 43, 43, 43, 43, ASCR_REPEAT}},  //PlayerAnim_DeadLoop     
-	{2, (const u8[]){44, 45, 46, 47, 48, 49, 50, 51, 51, 51, 51, 51, 51, 51, 51, 51, ASCR_BACK, 1}},  //PlayerAnim_DeadConfirm                                                 //PlayerAnim_DeadLoop
 };
 
 //Boyfriend player functions
@@ -142,37 +120,10 @@ void Char_BF_Tick(Character *character)
 {
 	Char_BF *this = (Char_BF*)character;
 	
-	//Handle animation updates
-	if ((character->pad_held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0 ||
-	    (character->animatable.anim != CharAnim_Left &&
-	     character->animatable.anim != CharAnim_LeftAlt &&
-	     character->animatable.anim != CharAnim_Down &&
-	     character->animatable.anim != CharAnim_DownAlt &&
-	     character->animatable.anim != CharAnim_Up &&
-	     character->animatable.anim != CharAnim_UpAlt &&
-	     character->animatable.anim != CharAnim_Right &&
-	     character->animatable.anim != CharAnim_RightAlt))
-		Character_CheckEndSing(character);
+	Character_CheckAnimationUpdate(character);
 	
 	if (stage.flag & STAGE_FLAG_JUST_STEP)
-	{
-		//Perform idle dance
-		if (Animatable_Ended(&character->animatable) &&
-			(character->animatable.anim != CharAnim_Left &&
-		     character->animatable.anim != CharAnim_LeftAlt &&
-		     character->animatable.anim != PlayerAnim_LeftMiss &&
-		     character->animatable.anim != CharAnim_Down &&
-		     character->animatable.anim != CharAnim_DownAlt &&
-		     character->animatable.anim != PlayerAnim_DownMiss &&
-		     character->animatable.anim != CharAnim_Up &&
-		     character->animatable.anim != CharAnim_UpAlt &&
-		     character->animatable.anim != PlayerAnim_UpMiss &&
-		     character->animatable.anim != CharAnim_Right &&
-		     character->animatable.anim != CharAnim_RightAlt &&
-		     character->animatable.anim != PlayerAnim_RightMiss) &&
-			(stage.song_step % 8) == 0)
-			character->set_anim(character, CharAnim_Idle);
-	}
+		Character_PerformIdle(character);
 	
 	//Animate and draw character
 	Animatable_Animate(&character->animatable, (void*)this, Char_BF_SetFrame);
@@ -243,6 +194,10 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	
 	//Load art
 	this->arc_main = IO_Read("\\CHAR\\BF.ARC;1");
+
+	//Load gameover texture
+	sprintf(stage.gameover_path, "\\CHAR\\BFDEAD.TIM;1");
+	stage.gameover_tim = IO_Read(stage.gameover_path);
 	
 	const char **pathp = (const char *[]){
 		"bf0.tim",   //BF_ArcMain_BF0
@@ -252,9 +207,6 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 		"bf4.tim",   //BF_ArcMain_BF4
 		"bf5.tim",   //BF_ArcMain_BF5
 		"bf6.tim",   //BF_ArcMain_BF6
-		"dead0.tim", //BF_ArcMain_Dead0
-		"dead1.tim", //BF_ArcMain_Dead1
-		"dead2.tim", //BF_ArcMain_Dead2
 		NULL
 	};
 	IO_Data *arc_ptr = this->arc_ptr;

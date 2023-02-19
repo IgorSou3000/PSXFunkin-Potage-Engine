@@ -197,31 +197,11 @@ void Gfx_BlendRect(const RECT *rect, u8 r, u8 g, u8 b, u8 mode)
 
 void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, u8 b)
 {	
-	RECT pdst = {dst->x, dst->y, dst->w, dst->h};
-
-	//Get rotated points
-	POINT d0 = {
-		pdst.x,
-		pdst.y
-	};
-	POINT d1 = {
-		pdst.w + pdst.x,
-		pdst.y
-	};
-	POINT d2 = {
-    pdst.x,
-		pdst.h + pdst.y
-	};
-	POINT d3 = {
-    pdst.w + pdst.x,
-		pdst.h + pdst.y
-	};
-	
   //Add quad
 	POLY_FT4 *quad = (POLY_FT4*)nextpri;
 	setPolyFT4(quad);
 	setUVWH(quad, src->x, src->y, src->w, src->h);
-	setXY4(quad, d0.x, d0.y, d1.x, d1.y, d2.x, d2.y, d3.x, d3.y);
+	setXYWH(quad, dst->x, dst->y, dst->w, dst->h);
 	setRGB0(quad, r, g, b);
 	quad->tpage = tex->tpage;
 	quad->clut = tex->clut;

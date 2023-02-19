@@ -32,7 +32,7 @@ static void Events_Check(Event* event)
 		{
 			if (stage.save.canbump == true)
 			{
-				stage.charbump += event->value1;
+				stage.character_bump += event->value1;
 				stage.bump += event->value2;
 			}
 			break;
