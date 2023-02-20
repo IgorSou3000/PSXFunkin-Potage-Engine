@@ -23,7 +23,7 @@
 #include "object/splash.h"
 
 //Stage constants
-//#define DEBUG_MODE
+#define DEBUG_MODE
 
 static const u16 note_key[] = {INPUT_LEFT, INPUT_DOWN, INPUT_UP, INPUT_RIGHT};
 static const u8 note_anims[4][3] = {

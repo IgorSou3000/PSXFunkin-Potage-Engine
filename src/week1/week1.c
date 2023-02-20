@@ -93,6 +93,8 @@ void Back_Week1_DrawBG(StageBack *back)
 		FIXED_DEC(410,1),
 		FIXED_DEC(123,1)
 	};
+
+	Debug_MoveTexture(&stage_dst, 1, "stage", 0, 0);
 	
 	Stage_DrawTex3D(&this->tex_back0, &stage_src, &stage_dst, fx, fy, stage.camera.bzoom);
 	
