@@ -108,7 +108,7 @@ void Back_Week1_DrawBG(StageBack *back)
 		FIXED_DEC(105,1)
 	};
 
-	Debug_MoveTexture(&backl_dst, 3, "back left");
+	Debug_MoveTexture(&backl_dst, 0, "back left", fx, fy);
 	RECT backr_src = {120, 59, 135, 120};
 	RECT_FIXED backr_dst = {
 		FIXED_DEC(60,1) - fx,

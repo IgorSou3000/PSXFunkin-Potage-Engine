@@ -28,7 +28,7 @@ void Debug_Load(void)
 	}
 }
 
-void Debug_MoveTexture(RECT_FIXED* src, u8 select, const char* name)
+void Debug_MoveTexture(RECT_FIXED* src, u8 select, const char* name, fixed_t camera_x, fixed_t camera_y)
 {
 	src->x += debug.positions[select].x;
 	src->y += debug.positions[select].y;
@@ -36,8 +36,8 @@ void Debug_MoveTexture(RECT_FIXED* src, u8 select, const char* name)
 	src->h += debug.positions[select].h;
 	sprintf(debug.tex_names[select], name);
 
-	debug.ogpositions[select].x = src->x;
-	debug.ogpositions[select].y = src->y;
+	debug.ogpositions[select].x = src->x + camera_x;
+	debug.ogpositions[select].y = src->y + camera_y;
 	debug.ogpositions[select].w = src->w;
 	debug.ogpositions[select].h = src->h;
 }
@@ -129,7 +129,7 @@ void Debug_Tick(void)
 
 			stage.font_cdr.draw(&stage.font_cdr,
 				texture_text,
-				-140,
+				-160,
 				-52,
 				FontAlign_Left
 			);
@@ -165,7 +165,7 @@ void Debug_Tick(void)
 
 			stage.font_cdr.draw(&stage.font_cdr,
 				texture_text,
-				-140,
+				-160,
 				-52,
 				FontAlign_Left
 			);
@@ -195,7 +195,7 @@ void Debug_Tick(void)
 				FontAlign_Left
 			);
 
-			if (debug.select < 3)
+			if (debug.select < COUNT_OF(chars))
 			{
 				sprintf(texture_text, "X: %d, Y: %d", 
 				chars[debug.select]->x >> FIXED_SHIFT,
@@ -204,7 +204,7 @@ void Debug_Tick(void)
 
 				stage.font_cdr.draw(&stage.font_cdr,
 					texture_text,
-					-140,
+					-160,
 					-52,
 					FontAlign_Left
 				);

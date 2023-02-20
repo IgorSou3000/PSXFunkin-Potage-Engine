@@ -24,7 +24,7 @@ typedef struct
 extern Debug debug;
 
 void Debug_Load(void);
-void Debug_MoveTexture(RECT_FIXED* src, u8 select, const char* name);
+void Debug_MoveTexture(RECT_FIXED* src, u8 select, const char* name, fixed_t camera_x, fixed_t camera_y);
 void Debug_Tick(void);
 
 #endif
