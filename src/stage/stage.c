@@ -1279,7 +1279,7 @@ static void Stage_LoadState(void)
 	//Update score
 	if (stage.mode != StageMode_2P)
 	{
-		if (stage.player_state[0].score > (s32)stage.save.savescore[stage.stage_id][stage.stage_diff])
+		if (stage.player_state[0].score > (s32)stage.save.savescore[stage.stage_id][stage.stage_diff] && stage.save.botplay == false)
 				stage.save.savescore[stage.stage_id][stage.stage_diff] = stage.player_state[0].score;
 	}
 
@@ -1606,7 +1606,7 @@ void Stage_Tick(void)
 						//Update score
 						if (stage.mode != StageMode_2P)
 						{
-							if (stage.player_state[0].score > (s32)stage.save.savescore[stage.stage_id][stage.stage_diff])
+							if (stage.player_state[0].score > (s32)stage.save.savescore[stage.stage_id][stage.stage_diff] && stage.save.botplay == false)
 									stage.save.savescore[stage.stage_id][stage.stage_diff] = stage.player_state[0].score;
 						}
 						stage.trans = StageTrans_Menu;
