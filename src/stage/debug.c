@@ -8,6 +8,7 @@
 #include "psx/pad.h"
 #include "stage.h"
 
+#ifdef DEBUG_MODE
 Debug debug;
 
 void Debug_Load(void)
@@ -222,3 +223,19 @@ void Debug_Tick(void)
 		}
 	}
 }
+
+#else
+void Debug_Load(void)
+{}
+void Debug_MoveTexture(RECT_FIXED* src, u8 select, const char* name, fixed_t camera_x, fixed_t camera_y)
+{
+	(void)src;
+	(void)select;
+	(void)name;
+	(void)camera_x;
+	(void)camera_y;
+}
+void Debug_Tick(void)
+{}
+
+#endif

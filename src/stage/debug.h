@@ -11,6 +11,7 @@
 #include "psx/gfx.h"
 #include "psx/fixed.h"
 
+#ifdef DEBUG_MODE
 //Debug definitions
 typedef struct
 {
@@ -22,6 +23,7 @@ typedef struct
 } Debug;
 
 extern Debug debug;
+#endif
 
 void Debug_Load(void);
 void Debug_MoveTexture(RECT_FIXED* src, u8 select, const char* name, fixed_t camera_x, fixed_t camera_y);
