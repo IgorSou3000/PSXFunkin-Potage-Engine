@@ -35,14 +35,14 @@ void Back_Week1_Tick(StageBack *back)
 			case StageId_Bopeebo:
 				//BF peace
 				if (stage.song_step >= 0 && (stage.song_step % 32) == 28)
-					stage.player->set_anim(stage.player, PlayerAnim_Peace);
+					stage.player->set_anim(stage.player, CharAnim_Special1);
 				break;
 			case StageId_Tutorial:
 				//BF and GF peace + cheer
 				stage.gf_speed = 8;
 				if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step % 64) == 60)
 				{
-					stage.player->set_anim(stage.player, PlayerAnim_Peace);
+					stage.player->set_anim(stage.player, CharAnim_Special1);
 					stage.opponent->set_anim(stage.opponent, CharAnim_UpAlt);
 				}
 				break;

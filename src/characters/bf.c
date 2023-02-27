@@ -91,14 +91,15 @@ static const Animation char_bf_anim[PlayerAnim_Max] = {
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_UpAlt
 	{2, (const u8[]){11, 12, ASCR_BACK, 1}},             //CharAnim_Right
 	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_RightAlt
+
+	{2, (const u8[]){13, 14, 15, ASCR_BACK, 1}},         //CharAnim_Special1
+	{2, (const u8[]){16, 17, 18, 19, ASCR_REPEAT}},      //CharAnim_Special2
+	{0, (const u8[]){ASCR_CHGANI, CharAnim_Idle}},       //CharAnim_Special3
 	
 	{1, (const u8[]){ 5, 20, 20, 21, ASCR_BACK, 1}},     //PlayerAnim_LeftMiss
 	{1, (const u8[]){ 7, 22, 22, 23, ASCR_BACK, 1}},     //PlayerAnim_DownMiss
 	{1, (const u8[]){ 9, 24, 24, 25, ASCR_BACK, 1}},     //PlayerAnim_UpMiss
 	{1, (const u8[]){11, 26, 26, 27, ASCR_BACK, 1}},     //PlayerAnim_RightMiss
-	
-	{2, (const u8[]){13, 14, 15, ASCR_BACK, 1}},         //PlayerAnim_Peace
-	{2, (const u8[]){16, 17, 18, 19, ASCR_REPEAT}},      //PlayerAnim_Sweat
 };
 
 //Boyfriend player functions
@@ -133,16 +134,6 @@ void Char_BF_Tick(Character *character)
 void Char_BF_SetAnim(Character *character, u8 anim)
 {
 	Char_BF *this = (Char_BF*)character;
-	
-	//Perform animation checks
-	switch (anim)
-	{
-		case PlayerAnim_FirstDead:
-			character->focus_x = FIXED_DEC(0,1);
-			character->focus_y = FIXED_DEC(-40,1);
-			character->focus_zoom = FIXED_DEC(125,100);
-			break;
-	}
 	
 	//Set animation
 	Animatable_SetAnim(&character->animatable, anim);

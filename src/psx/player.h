@@ -17,13 +17,6 @@ typedef enum
 	PlayerAnim_UpMiss,
 	PlayerAnim_RightMiss,
 	
-	PlayerAnim_Peace,
-	PlayerAnim_Sweat,
-	
-	PlayerAnim_FirstDead, //BREAK
-	PlayerAnim_DeadLoop, //Twitch
-	PlayerAnim_DeadConfirm, //Confirm
-	
 	PlayerAnim_Max,
 } PlayerAnim;
 
