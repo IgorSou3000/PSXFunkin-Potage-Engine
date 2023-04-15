@@ -168,7 +168,7 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	Character_Init((Character*)this, x, y);
 	
 	//Set character information
-	this->character.spec = CHAR_SPEC_MISSANIM;
+	this->character.spec = (CHAR_SPEC_MISSANIM | CHAR_SPEC_ISPLAYER);
 
 	//Health Icon
 	this->character.health_i = 0;

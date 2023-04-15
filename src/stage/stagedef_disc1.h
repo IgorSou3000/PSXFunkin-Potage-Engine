@@ -11,8 +11,7 @@
 		1, 1,
 		"\\WEEK1\\WEEK1_1.MUS;1",
 		
-		StageId_Fresh, STAGE_LOAD_FLAG,
-		false
+		StageId_Fresh, STAGE_LOAD_FLAG
 	},
 	{ //StageId_Fresh
 		//Characters
@@ -27,8 +26,7 @@
 		1, 2,
 		"\\WEEK1\\WEEK1_2.MUS;1",
 		
-		StageId_DadBattle, STAGE_LOAD_FLAG,
-		true
+		StageId_DadBattle, STAGE_LOAD_FLAG
 	},
 	{ //StageId_DadBattle
 		//Characters
@@ -43,8 +41,7 @@
 		1, 3,
 		"\\WEEK1\\WEEK1_3.MUS;1",
 		
-		StageId_DadBattle, 0,
-		false
+		StageId_DadBattle, 0
 	},
 	{ //StageId_Tutorial
 		//Characters
@@ -59,6 +56,5 @@
 		1, 4,
 		"\\WEEK1\\WEEK1_4.MUS;1",
 		
-		StageId_Tutorial, 0,
-		false
+		StageId_Tutorial, 0
 	},

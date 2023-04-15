@@ -88,15 +88,15 @@ void Back_Week1_DrawBG(StageBack *back)
 	//Draw Stage
 	RECT stage_src = {0, 0, 255, 59};
 	RECT_FIXED stage_dst = {
-		FIXED_DEC(-230,1),
-		FIXED_DEC(50,1),
+		FIXED_DEC(-230,1) - fx,
+		FIXED_DEC(50,1) - fy,
 		FIXED_DEC(410,1),
 		FIXED_DEC(123,1)
 	};
 
 	Debug_MoveTexture(&stage_dst, 1, "stage", 0, 0);
 	
-	Stage_DrawTex3D(&this->tex_back0, &stage_src, &stage_dst, fx, fy, stage.camera.bzoom);
+	Stage_DrawTex(&this->tex_back0, &stage_src, &stage_dst, stage.camera.bzoom);
 	
 	//Draw back
 	fx = stage.camera.x / 2;
@@ -152,11 +152,6 @@ StageBack *Back_Week1_New(void)
 	this->back.draw_md = NULL;
 	this->back.draw_bg = Back_Week1_DrawBG;
 	this->back.free = Back_Week1_Free;
-
-	//Load HUD textures
-	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
-	Gfx_LoadTex(&stage.tex_hud1, IO_Read("\\STAGE\\HUD1.TIM;1"), GFX_LOADTEX_FREE);
-	Gfx_LoadTex(&stage.tex_intro, IO_Read("\\STAGE\\INTRO.TIM;1"), GFX_LOADTEX_FREE);
 	
 	//Load background textures
 	IO_Data arc_back = IO_Read("\\WEEK1\\BACK.ARC;1");

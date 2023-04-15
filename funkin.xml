@@ -40,6 +40,7 @@
 			<dir name = "stage">
 				<file name = "hud0.tim" type = "data" source = "iso/stage/hud0.tim"/>
 				<file name = "hud1.tim" type = "data" source = "iso/stage/hud1.tim"/>
+				<file name = "hud1spk.tim" type = "data" source = "iso/stage/hud1spk.tim"/>
 				<file name = "intro.tim" type = "data" source = "iso/stage/intro.tim"/>
 
 				<!-- Gameover songs -->

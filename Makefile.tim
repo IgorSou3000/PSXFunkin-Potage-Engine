@@ -5,6 +5,7 @@ all: \
 	iso/font/font1.tim \
 	iso/stage/hud0.tim \
 	iso/stage/hud1.tim \
+	iso/stage/hud1spk.tim \
 	iso/stage/intro.tim \
 	iso/characters/bf/main.arc \
 	iso/characters/bf/dead.tim \

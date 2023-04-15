@@ -22,6 +22,14 @@ void IO_Quit(void)
 	
 }
 
+boolean IO_ExistFile(const char* path)
+{
+	//Search for file
+	CdlFILE file;
+
+	return (CdSearchFile(&file, (char*)path) != false);
+}
+
 void IO_FindFile(CdlFILE *file, const char *path)
 {
 	printf("[IO_FindFile] Searching for %s\n", path);

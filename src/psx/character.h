@@ -16,6 +16,7 @@
 //Character specs
 typedef u8 CharSpec;
 #define CHAR_SPEC_MISSANIM (1 << 0) //Has miss animations
+#define CHAR_SPEC_ISPLAYER (1 << 1) //Character is the player
 
 //Character enums
 typedef enum

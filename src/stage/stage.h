@@ -101,7 +101,6 @@ typedef struct
 	
 	StageId next_stage;
 	u8 next_load;
-	boolean exist_event_json;
 } StageDef;
 
 //Stage state
@@ -126,6 +125,18 @@ typedef struct
 	u16 pos; //1/12 steps
 	u16 type;
 } Note;
+
+typedef struct
+{
+	IO_Data data;
+	Section *sections;
+	Note *notes;
+	Event* events;
+
+	Section *cur_section; //Current section
+	Note *cur_note; //First visible and hittable note, used for drawing and hit detection
+	Event* cur_event; //Current event
+} Chart;
 
 typedef struct
 {
@@ -197,16 +208,9 @@ typedef struct
 	StageId stage_id;
 	StageDiff stage_diff;
 	
-	IO_Data chart_data;
-	Section *sections;
-	Note *notes;
-	Event* events;
-	size_t num_notes;
-
-	IO_Data event_chart_data;
-	Section *event_sections;
-	Note *event_notes;
-	Event* event_events;
+	Chart main_chart;
+	Chart event_chart; //event.json
+	boolean exist_event_json;
 	
 	fixed_t speed, ogspeed;
 	fixed_t step_crochet, step_time;
@@ -234,15 +238,6 @@ typedef struct
 	Character *player;
 	Character *opponent;
 	Character *gf;
-	
-	Section *cur_section; //Current section
-	Note *cur_note; //First visible and hittable note, used for drawing and hit detection
-	Event* cur_event; //Current event
-	
-	// For event.json
-	Section *event_cur_section; //Current section
-	Note *event_cur_note; //First visible and hittable note, used for drawing and hit detection
-	Event* event_cur_event; //Current event
 	
 	fixed_t note_scroll, song_time, interp_time, interp_ms, interp_speed;
 
@@ -281,14 +276,13 @@ extern Stage stage;
 //Stage drawing functions
 void Stage_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom, u8 r, u8 g, u8 b);
 void Stage_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t zoom);
-void Stage_DrawTex3DCol(Gfx_Tex *tex, const RECT *src, RECT_FIXED *dst, fixed_t camera_x, fixed_t camera_y, u8 r, u8 g, u8 b, fixed_t zoom);
-void Stage_DrawTex3D(Gfx_Tex *tex, const RECT *src, RECT_FIXED *dst, fixed_t camera_x, fixed_t camera_y, fixed_t zoom);
 void Stage_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, u8 r, u8 g, u8 b, fixed_t zoom);
 void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom);
 
 //Stage functions
 void Stage_Load(StageId id, StageDiff difficulty, boolean story);
 void Stage_LoadScr(StageId id, StageDiff difficulty, boolean story);
+void Stage_UnloadChart(Chart* chart);
 void Stage_Unload(void);
 void Stage_Tick(void);
 
