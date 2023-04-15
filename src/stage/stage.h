@@ -97,7 +97,8 @@ typedef struct
 	
 	//Song info	
 	u8 week, week_song;
-	const char* music_track;
+	XA_Track track;
+	u8 channel;
 	
 	StageId next_stage;
 	u8 next_load;

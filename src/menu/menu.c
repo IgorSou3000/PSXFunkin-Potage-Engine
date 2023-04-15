@@ -377,8 +377,7 @@ void Menu_Load(MenuPage page)
 	}
 	
 	//Play menu music
-	Audio_LoadXA("\\MENU\\MENU.MUS;1");
-	Audio_PlayXA(0x40, 0, true);
+	Audio_PlayXA_Track(XA_GettinFreaky, 0x40, 0, true);
 	
 	//Set background colour
 	Gfx_SetClear(0, 0, 0);

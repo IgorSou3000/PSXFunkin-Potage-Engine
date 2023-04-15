@@ -1,7 +1,13 @@
+FILES = $(addsuffix .vag, $(basename $(wildcard iso/sounds/*.ogg))) \
+ $(addsuffix .vag, $(basename $(wildcard iso/sounds/*/*.ogg)))
+
 all: \
- $(addsuffix .vag, $(basename $(wildcard iso/sounds/*.ogg))) \
- $(addsuffix .vag, $(basename $(wildcard iso/sounds/*/*.ogg))) \
+    $(FILES) \
 
 # SFX converts
 iso/sounds/%.vag: iso/sounds/%.ogg
 	  tools/psxavenc/psxavenc -f 44100 -t vag -b 4 -c 1 -F 1 -C 0 $< $@
+
+.PHONY: clean
+clean:
+  rm -f $(FILES)

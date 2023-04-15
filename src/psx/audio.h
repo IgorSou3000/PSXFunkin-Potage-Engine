@@ -11,11 +11,36 @@
 
 typedef u32 SFX;
 
+//XA enumerations
+typedef enum
+{
+  XA_Menu,   //MENU.XA
+  XA_Week1A, //WEEK1A.XA
+  XA_Week1B, //WEEK1B.XA
+  
+  XA_Max,
+} XA_File;
+
+typedef enum
+{
+  //MENU.XA
+  XA_GettinFreaky,
+  XA_GameOver,
+  //WEEK1A.XA
+  XA_Bopeebo,
+  XA_Fresh,
+  //WEEK1B.XA
+  XA_Dadbattle,
+  XA_Tutorial,
+  
+  XA_TrackMax,
+} XA_Track;
+
 //Audio functions
 void Audio_Init(void);
 void Audio_Quit(void);
-void Audio_LoadXA(const char* path);
-void Audio_PlayXA(u8 volume, u8 channel, boolean loop);
+void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop);
+void Audio_SeekXA_Track(XA_Track track);
 void Audio_PauseXA(void);
 void Audio_ResumeXA(void);
 void Audio_StopXA(void);
@@ -25,7 +50,7 @@ s32 Audio_TellXA_Milli(void);
 boolean Audio_PlayingXA(void);
 void Audio_WaitPlayXA(void);
 void Audio_ProcessXA(void);
-u16 Audio_GetLength();
+u16 Audio_GetLength(XA_Track track);
 
 void Audio_ClearAlloc(void);
 u32 Audio_LoadSFX(const char* path);

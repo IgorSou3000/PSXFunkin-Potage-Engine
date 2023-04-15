@@ -54,7 +54,7 @@ static void Stage_StartVocal(void)
 {
 	if (!(stage.flag & STAGE_FLAG_VOCAL_ACTIVE))
 	{
-		Audio_ChannelXA(0);
+		Audio_ChannelXA(stage.stage_def->channel);
 		stage.flag |= STAGE_FLAG_VOCAL_ACTIVE;
 	}
 }
@@ -63,7 +63,7 @@ static void Stage_CutVocal(void)
 {
 	if (stage.flag & STAGE_FLAG_VOCAL_ACTIVE)
 	{
-		Audio_ChannelXA(1);
+		Audio_ChannelXA(stage.stage_def->channel + 1);
 		stage.flag &= ~STAGE_FLAG_VOCAL_ACTIVE;
 	}
 }
@@ -570,11 +570,11 @@ static void Stage_TimerTick(void)
 	{
 			//Don't change anything if timer be 0
 			if (stage.timer != 0)
-   			stage.timer = Audio_GetLength() - (stage.song_time >> FIXED_SHIFT);
+   			stage.timer = Audio_GetLength(stage.stage_def->track) - (stage.song_time >> FIXED_SHIFT);
   }
 
   else //If not keep the timer at the song starting length	
- 	    stage.timer = Audio_GetLength(); //Seconds (ticks down)
+ 	    stage.timer = Audio_GetLength(stage.stage_def->track); //Seconds (ticks down)
 
   stage.timermin = stage.timer / 60; //Minutes left till song ends
   stage.timersec = stage.timer % 60; //Seconds left till song ends
@@ -584,7 +584,7 @@ static void Stage_TimerDraw(void)
 {
 	Stage_TimerTick();
 
-	RECT bar_fill = {0, 248,200 - (200 * stage.timer / Audio_GetLength()), 6};
+	RECT bar_fill = {0, 248,200 - (200 * stage.timer / Audio_GetLength(stage.stage_def->track)), 6};
 	RECT bar_back = {0, 248,200, 6};
 
 	RECT_FIXED bar_dst = {FIXED_DEC(-50,1), FIXED_DEC(-110,1), 0, FIXED_DEC(4,1)};
@@ -1241,7 +1241,7 @@ static void Stage_LoadMusic(void)
 		stage.gf->sing_end -= stage.note_scroll;
 	
 	//Find music file and begin seeking to it
-	Audio_LoadXA(stage.stage_def->music_track);
+	Audio_SeekXA_Track(stage.stage_def->track);
 	
 	//Initialize music state
 	stage.note_scroll = FIXED_DEC(-5 * 5 * 12,1);
@@ -1566,7 +1566,7 @@ void Stage_Tick(void)
 					{
 						//Song has started
 						playing = true;
-						Audio_PlayXA(0x40, 0, false);
+						Audio_PlayXA_Track(stage.stage_def->track, 0x40, stage.stage_def->channel, false);
 							
 						//Update song time
 						fixed_t audio_time = (fixed_t)Audio_TellXA_Milli() - stage.offset;
@@ -1952,8 +1952,7 @@ void Stage_Tick(void)
 			Gfx_LoadTex(&stage.tex_gameover, stage.gameover_tim, GFX_LOADTEX_FREE);
 
 			//Play Gameover music
-			Audio_LoadXA("\\STAGE\\GAMEOVER.MUS;1");
-			Audio_PlayXA(0x40, 0, true);
+			Audio_PlayXA_Track(XA_GameOver, 0x40, 0, true);
 			
 			stage.state = StageState_DeadLoop;
 			break;

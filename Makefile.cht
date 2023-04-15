@@ -1,6 +1,12 @@
+FILES = $(addsuffix .cht,  $(basename $(wildcard iso/songs/*.json))) \
+        $(addsuffix .cht,  $(basename $(wildcard iso/songs/*/*.json)))
+
 all: \
-  $(addsuffix .cht,  $(basename $(wildcard iso/songs/*.json))) \
-  $(addsuffix .cht,  $(basename $(wildcard iso/songs/*/*.json))) \
+    $(FILES) \
 
 iso/%.cht: iso/%.json
 	tools/funkinchtpak/funkinchtpak $< $@
+
+.PHONY: clean
+clean:
+  rm -f $(FILES)

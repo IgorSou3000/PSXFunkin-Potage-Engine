@@ -1,9 +1,15 @@
+FILES = $(addsuffix .xa,  $(basename $(wildcard iso/songs/*/*.ogg))) \
+  $(basename $(wildcard iso/songs/*.txt))
+
 all: \
-  $(addsuffix .xa,  $(basename $(wildcard iso/songs/*/*.ogg))) \
-  $(basename $(wildcard iso/songs/*/*.txt)) \
+  $(FILES) \
 
 # XA converts
 iso/songs/%.xa: iso/songs/%.ogg
 	tools/psxavenc/psxavenc -f 37800 -t xa -b 4 -c 2 -F 1 -C 0 $< $@
 iso/songs/%.mus:
 	tools/xainterleave/xainterleave $@
+
+.PHONY: clean
+clean:
+	rm -f $(FILES)

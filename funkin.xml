@@ -26,9 +26,6 @@
 			<dir name = "menu">
 				<file name = "loading.tim" type = "data" source = "iso/menu/loading.tim"/>
 				<file name = "menu.arc" type = "data" source = "iso/menu/menu.arc"/>
-
-				<!-- Menu songs -->
-				<file name = "menu.mus" type = "xa" source = "iso/songs/freaky/song.mus"/>
 			</dir>
 			
 			<!-- Fonts -->
@@ -42,9 +39,6 @@
 				<file name = "hud1.tim" type = "data" source = "iso/stage/hud1.tim"/>
 				<file name = "hud1spk.tim" type = "data" source = "iso/stage/hud1spk.tim"/>
 				<file name = "intro.tim" type = "data" source = "iso/stage/intro.tim"/>
-
-				<!-- Gameover songs -->
-				<file name = "gameover.mus" type = "xa" source = "iso/songs/gameover/song.mus"/>
 			</dir>
 			
 			<!-- Week 1 assets -->
@@ -69,12 +63,6 @@
 				<file name = "1.4e.cht" type = "data" source = "iso/songs/tutorial/tutorial-easy.cht"/>
 				<file name = "1.4n.cht" type = "data" source = "iso/songs/tutorial/tutorial.cht"/>
 				<file name = "1.4h.cht" type = "data" source = "iso/songs/tutorial/tutorial-hard.cht"/>
-
-				<!-- Week1 songs -->
-				<file name = "week1_1.mus" type = "xa" source = "iso/songs/bopeebo/song.mus"/>
-				<file name = "week1_2.mus" type = "xa" source = "iso/songs/fresh/song.mus"/>
-				<file name = "week1_3.mus" type = "xa" source = "iso/songs/dadbattle/song.mus"/>
-				<file name = "week1_4.mus" type = "xa" source = "iso/songs/tutorial/song.mus"/>
 			</dir>
 			<!-- Character assets -->
 			<dir name = "char">
@@ -108,6 +96,13 @@
 			<dir name = "str">
 				<!-- Week7 videos -->
 				<file name = "ugh.str" type = "str" source = "iso/movies/ugh.str"/>
+			</dir>
+
+			<!-- Songs -->
+			<dir name = "songs">
+				<file name = "menu.mus" type = "xa" source = "iso/songs/menu.mus"/>
+				<file name = "week1a.mus" type = "xa" source = "iso/songs/week1a.mus"/>
+				<file name = "week1b.mus" type = "xa" source = "iso/songs/week1b.mus"/>
 			</dir>
 			
 			<!-- Dummy sectors -->

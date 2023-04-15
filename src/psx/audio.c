@@ -52,7 +52,9 @@ static u8 xa_state, xa_resync, xa_volume, xa_channel;
 static u32 xa_pos, xa_start, xa_end;
 
 //XA files and tracks
-static CdlFILE xa_file;
+static CdlFILE xa_files[XA_Max];
+
+#include "audio_def.h"
 
 //Internal XA functions
 static u8 XA_BCD(u8 x)
@@ -162,6 +164,11 @@ void Audio_Init(void)
 	
 	//Set XA state
 	xa_state = 0;
+
+	//Get file positions
+	CdlFILE *filep = xa_files;
+	for (const char **pathp = xa_paths; *pathp != NULL; pathp++)
+		IO_FindFile(filep++, *pathp);
 }
 
 void Audio_Quit(void)
@@ -169,12 +176,11 @@ void Audio_Quit(void)
 	
 }
 
-
-void Audio_LoadXA(const char* path)
+static void Audio_GetXAFile(CdlFILE *file, XA_Track track)
 {
-	//Get file positions
-	IO_FindFile(&xa_file,  path);
-	IO_SeekFile(&xa_file);
+	const XA_TrackDef *track_def = &xa_tracks[track];
+	file->pos = xa_files[track_def->file].pos;
+	file->size = track_def->length;
 }
 
 static void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop)
@@ -196,10 +202,22 @@ static void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop
 	XA_SetVolume(volume);
 }
 
-void Audio_PlayXA(u8 volume, u8 channel, boolean loop)
+void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop)
 {
+	//Get track information
+	CdlFILE file;
+	Audio_GetXAFile(&file, track);
+	
 	//Play track
-	Audio_PlayXA_File(&xa_file, volume, channel, loop);
+	Audio_PlayXA_File(&file, volume, channel, loop);
+}
+
+void Audio_SeekXA_Track(XA_Track track)
+{
+	//Get track file and seek
+	CdlFILE file;
+	Audio_GetXAFile(&file, track);
+	IO_SeekFile(&file);
 }
 
 void Audio_PauseXA(void)
@@ -352,9 +370,9 @@ void Audio_ProcessXA(void)
 	}
 }
 
-u16 Audio_GetLength(void)
+u16 Audio_GetLength(XA_Track track)
 {
-	return (xa_file.size / 75) / IO_SECT_SIZE;
+	return (xa_tracks[track].length / 75) / IO_SECT_SIZE;
 }
 
 /*
