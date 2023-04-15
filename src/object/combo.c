@@ -248,21 +248,21 @@ void Obj_Combo_Free(Object *obj)
 	(void)obj;
 }
 
-Obj_Combo *Obj_Combo_New(fixed_t x, fixed_t y, u8 hit_type, u16 combo)
+Obj_Combo *Obj_Combo_New(Character* character, u8 hit_type, u16 combo)
 {
-	(void)x;
-	
 	//Allocate new object
 	Obj_Combo *this = (Obj_Combo*)Mem_Alloc(sizeof(Obj_Combo));
 	if (this == NULL)
 		return NULL;
+
+	fixed_t y;
 	
 	//Set object functions and position
 	if (stage.pixelcombo)
 	{
 		//Pixel combo
 		this->obj.tick = Obj_Combo_Tick_Weeb;
-		if ((x >= 0) ^ (stage.mode < StageMode_2P))
+		if (((character->spec & CHAR_SPEC_ISPLAYER) == 0) ^ (stage.mode < StageMode_2P))
 			this->x = FIXED_DEC(-70,1) - FIXED_DEC(SCREEN_WIDEADD,8);
 		else
 			this->x = FIXED_DEC(0,1) + FIXED_DEC(SCREEN_WIDEADD,8);
@@ -272,7 +272,7 @@ Obj_Combo *Obj_Combo_New(fixed_t x, fixed_t y, u8 hit_type, u16 combo)
 	{
 		//Regular combo
 		this->obj.tick = Obj_Combo_Tick;
-		if ((x >= 0) ^ (stage.mode < StageMode_2P))
+		if (((character->spec & CHAR_SPEC_ISPLAYER) == 0) ^ (stage.mode < StageMode_2P))
 			this->x = FIXED_DEC(-112,1) - FIXED_DEC(SCREEN_WIDEADD,4);
 		else
 			this->x = FIXED_DEC(30,1) + FIXED_DEC(SCREEN_WIDEADD,4);

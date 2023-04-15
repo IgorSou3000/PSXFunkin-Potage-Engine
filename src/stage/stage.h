@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_STAGE_H
-#define PSXF_GUARD_STAGE_H
+#pragma once 
 
 #include "events.h"
 #include "debug.h"
@@ -96,7 +95,8 @@ typedef struct
 	StageBack* (*back)();
 	
 	//Song info	
-	u8 week, week_song;
+	const char* week;
+	u8 week_song;
 	XA_Track track;
 	u8 channel;
 	
@@ -286,5 +286,3 @@ void Stage_LoadScr(StageId id, StageDiff difficulty, boolean story);
 void Stage_UnloadChart(Chart* chart);
 void Stage_Unload(void);
 void Stage_Tick(void);
-
-#endif

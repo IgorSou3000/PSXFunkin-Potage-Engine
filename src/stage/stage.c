@@ -39,8 +39,8 @@ static const u8 note_anims[4][3] = {
 #include "characters/dad.h"
 #include "characters/gf.h"
 
-#include "week0/dummy.h"
-#include "week1/week1.h"
+#include "weeks/dummy.h"
+#include "weeks/stage.h"
 
 static const StageDef stage_defs[StageId_Max] = {
 	#include "stagedef_disc1.h"
@@ -199,8 +199,7 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	
 	//Create combo object telling of our combo
 	Obj_Combo *combo = Obj_Combo_New(
-		this->character->focus_x,
-		this->character->focus_y,
+		this->character,
 		hit_type,
 		this->combo >= 10 ? this->combo : 0xFFFF
 	);
@@ -247,8 +246,7 @@ static void Stage_MissNote(PlayerState *this)
 		
 		//Create combo object telling of our lost combo
 		Obj_Combo *combo = Obj_Combo_New(
-			this->character->focus_x,
-			this->character->focus_y,
+			this->character,
 			0xFF,
 			0
 		);
@@ -1138,7 +1136,7 @@ static void Stage_LoadChart(void)
 	char chart_path[64];
 
 	//Use standard path convention
-	sprintf(chart_path, "\\WEEK%d\\%d.%d%c.CHT;1", stage.stage_def->week, stage.stage_def->week, stage.stage_def->week_song, "ENH"[stage.stage_diff]);
+	sprintf(chart_path, "\\%s\\%d%c.CHT;1", stage.stage_def->week, stage.stage_def->week_song, "ENH"[stage.stage_diff]);
 	
 	Stage_UnloadChart(&stage.main_chart);
 	Stage_UnloadChart(&stage.event_chart);
@@ -1149,7 +1147,7 @@ static void Stage_LoadChart(void)
 	GetChart_Values(&stage.main_chart);
 		
 
-	sprintf(chart_path, "\\WEEK%d\\%d.%dEVENT.CHT;1", stage.stage_def->week, stage.stage_def->week, stage.stage_def->week_song);
+	sprintf(chart_path, "\\%s\\%dEVENT.CHT;1", stage.stage_def->week, stage.stage_def->week_song);
 
 	if (IO_ExistFile(chart_path) == true)
 	{
@@ -1339,9 +1337,9 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	Stage_LoadGirlfriend();
 
 	//Load HUD textures
-	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
-	Gfx_LoadTex(&stage.tex_hud1, IO_Read("\\STAGE\\HUD1.TIM;1"), GFX_LOADTEX_FREE);
-	Gfx_LoadTex(&stage.tex_intro, IO_Read("\\STAGE\\INTRO.TIM;1"), GFX_LOADTEX_FREE);
+	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\HUD\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
+	Gfx_LoadTex(&stage.tex_hud1, IO_Read("\\HUD\\HUD1.TIM;1"), GFX_LOADTEX_FREE);
+	Gfx_LoadTex(&stage.tex_intro, IO_Read("\\HUD\\INTRO.TIM;1"), GFX_LOADTEX_FREE);
 	
 	//Load stage chart
 	Stage_LoadChart();

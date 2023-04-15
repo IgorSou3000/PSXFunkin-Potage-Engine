@@ -4,13 +4,13 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#include "week1.h"
+#include "stage.h"
 
 #include "psx/archive.h"
 #include "psx/mem.h"
 #include "stage/stage.h"
 
-//Week 1 background structure
+//Stage background structure
 typedef struct
 {
 	//Stage background base structure
@@ -19,12 +19,12 @@ typedef struct
 	//Textures
 	Gfx_Tex tex_back0; //Stage and back
 	Gfx_Tex tex_back1; //Curtains
-} Back_Week1;
+} Back_Stage;
 
-//Week 1 functions
-void Back_Week1_Tick(StageBack *back)
+//Stage functions
+void Back_Stage_Tick(StageBack *back)
 {
-	//Back_Week1 *this = (Back_Week1*)back;
+	//Back_Stage *this = (Back_Stage*)back;
 	(void)back; //Only for remove warning
 
 	//Stage specific events
@@ -52,9 +52,9 @@ void Back_Week1_Tick(StageBack *back)
 	}
 }
 
-void Back_Week1_DrawBG(StageBack *back)
+void Back_Stage_DrawBG(StageBack *back)
 {
-	Back_Week1 *this = (Back_Week1*)back;
+	Back_Stage *this = (Back_Stage*)back;
 	
 	fixed_t fx, fy, fscroll;
 
@@ -131,30 +131,30 @@ void Back_Week1_DrawBG(StageBack *back)
 	Gfx_DrawTex(&this->tex_back0, &backf_src, &backf_dst);
 }
 
-void Back_Week1_Free(StageBack *back)
+void Back_Stage_Free(StageBack *back)
 {
-	Back_Week1 *this = (Back_Week1*)back;
+	Back_Stage *this = (Back_Stage*)back;
 	
 	//Free structure
 	Mem_Free(this);
 }
 
-StageBack *Back_Week1_New(void)
+StageBack *Back_Stage_New(void)
 {
 	//Allocate background structure
-	Back_Week1 *this = (Back_Week1*)Mem_Alloc(sizeof(Back_Week1));
+	Back_Stage *this = (Back_Stage*)Mem_Alloc(sizeof(Back_Stage));
 	if (this == NULL)
 		return NULL;
 	
 	//Set background functions
-	this->back.tick = Back_Week1_Tick;
+	this->back.tick = Back_Stage_Tick;
 	this->back.draw_fg = NULL;
 	this->back.draw_md = NULL;
-	this->back.draw_bg = Back_Week1_DrawBG;
-	this->back.free = Back_Week1_Free;
+	this->back.draw_bg = Back_Stage_DrawBG;
+	this->back.free = Back_Stage_Free;
 	
 	//Load background textures
-	IO_Data arc_back = IO_Read("\\WEEK1\\BACK.ARC;1");
+	IO_Data arc_back = IO_Read("\\STAGE\\BACK.ARC;1");
 	Gfx_LoadTex(&this->tex_back0, Archive_Find(arc_back, "back0.tim"), 0);
 	Gfx_LoadTex(&this->tex_back1, Archive_Find(arc_back, "back1.tim"), 0);
 	Mem_Free(arc_back);

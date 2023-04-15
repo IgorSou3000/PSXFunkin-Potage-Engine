@@ -4,12 +4,9 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_DUMMY_H
-#define PSXF_GUARD_DUMMY_H
+#pragma once 
 
 #include "stage/stage.h"
 
 //Dummy functions
 StageBack *Back_Dummy_New();
-
-#endif

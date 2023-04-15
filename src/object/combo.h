@@ -34,6 +34,6 @@ typedef struct
 } Obj_Combo;
 
 //Combo object functions
-Obj_Combo *Obj_Combo_New(fixed_t x, fixed_t y, u8 hit_type, u16 combo);
+Obj_Combo *Obj_Combo_New(Character* character, u8 hit_type, u16 combo);
 
 #endif

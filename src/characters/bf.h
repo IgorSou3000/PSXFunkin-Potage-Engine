@@ -4,12 +4,9 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_BF_H
-#define PSXF_GUARD_BF_H
+#pragma once 
 
 #include "psx/player.h"
 
 //Boyfriend player functions
 Character *Char_BF_New(fixed_t x, fixed_t y);
-
-#endif

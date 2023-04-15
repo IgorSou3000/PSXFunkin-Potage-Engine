@@ -4,12 +4,9 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_GF_H
-#define PSXF_GUARD_GF_H
+#pragma once 
 
 #include "psx/character.h"
 
 //GF character functions
 Character *Char_GF_New(fixed_t x, fixed_t y);
-
-#endif

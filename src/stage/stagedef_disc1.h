@@ -5,10 +5,10 @@
 		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-10,1)},
 		
 		//Stage background
-		Back_Week1_New,
+		Back_Stage_New,
 		
 		//Song info
-		1, 1,
+		"STAGE", 1,
 		XA_Bopeebo, 0,
 		
 		StageId_Fresh, STAGE_LOAD_FLAG
@@ -20,10 +20,10 @@
 		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-10,1)},
 		
 		//Stage background
-		Back_Week1_New,
+		Back_Stage_New,
 		
 		//Song info
-		1, 2,
+		"STAGE", 2,
 		XA_Fresh, 2,
 		
 		StageId_DadBattle, STAGE_LOAD_FLAG
@@ -35,10 +35,10 @@
 		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-10,1)},
 		
 		//Stage background
-		Back_Week1_New,
+		Back_Stage_New,
 		
 		//Song info
-		1, 3,
+		"STAGE", 3,
 		XA_Dadbattle, 0,
 		
 		StageId_DadBattle, 0
@@ -50,10 +50,10 @@
 		{NULL,           FIXED_DEC(0,1),  FIXED_DEC(-10,1)},
 		
 		//Stage background
-		Back_Week1_New,
+		Back_Stage_New,
 		
 		//Song info
-		1, 4,
+		"STAGE", 4,
 		XA_Tutorial, 2,
 		
 		StageId_Tutorial, 0
