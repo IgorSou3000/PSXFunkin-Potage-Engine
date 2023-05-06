@@ -126,6 +126,8 @@ boolean ReadSave()
 
 void WriteSave()
 { 
+  stage.save.debug_mode = false;
+  
   #ifndef NOSAVE
   int fd = open(SaveTitle, 0x0002);
 

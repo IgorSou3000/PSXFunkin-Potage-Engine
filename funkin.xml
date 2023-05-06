@@ -41,27 +41,27 @@
 				<file name = "intro.tim" type = "data" source = "iso/hud/intro.tim"/>
 			</dir>
 			
-			<!-- Stage assets -->
-			<dir name = "stage">
+			<!-- Week1 assets -->
+			<dir name = "week1">
 				<!-- Background art -->
-				<file name = "back.arc" type = "data" source = "iso/stage/stage/back.arc"/>
+				<file name = "back.arc" type = "data" source = "iso/stage/week1/back.arc"/>
 				
-				<file name = "1e.cht" type = "data" source = "iso/songs/bopeebo/bopeebo-easy.cht"/>
-				<file name = "1n.cht" type = "data" source = "iso/songs/bopeebo/bopeebo.cht"/>
-				<file name = "1h.cht" type = "data" source = "iso/songs/bopeebo/bopeebo-hard.cht"/>
+				<file name = "1.1e.cht" type = "data" source = "iso/songs/bopeebo/bopeebo-easy.cht"/>
+				<file name = "1.1n.cht" type = "data" source = "iso/songs/bopeebo/bopeebo.cht"/>
+				<file name = "1.1h.cht" type = "data" source = "iso/songs/bopeebo/bopeebo-hard.cht"/>
 
-				<file name = "2e.cht" type = "data" source = "iso/songs/fresh/fresh-easy.cht"/>
-				<file name = "2n.cht" type = "data" source = "iso/songs/fresh/fresh.cht"/>
-				<file name = "2h.cht" type = "data" source = "iso/songs/fresh/fresh-hard.cht"/>
-				<file name = "2event.cht" type = "data" source = "iso/songs/fresh/events.cht"/>
+				<file name = "1.2e.cht" type = "data" source = "iso/songs/fresh/fresh-easy.cht"/>
+				<file name = "1.2n.cht" type = "data" source = "iso/songs/fresh/fresh.cht"/>
+				<file name = "1.2h.cht" type = "data" source = "iso/songs/fresh/fresh-hard.cht"/>
+				<file name = "1.2event.cht" type = "data" source = "iso/songs/fresh/events.cht"/>
 
-				<file name = "3e.cht" type = "data" source = "iso/songs/dadbattle/dadbattle-easy.cht"/>
-				<file name = "3n.cht" type = "data" source = "iso/songs/dadbattle/dadbattle.cht"/>
-				<file name = "3h.cht" type = "data" source = "iso/songs/dadbattle/dadbattle-hard.cht"/>
+				<file name = "1.3e.cht" type = "data" source = "iso/songs/dadbattle/dadbattle-easy.cht"/>
+				<file name = "1.3n.cht" type = "data" source = "iso/songs/dadbattle/dadbattle.cht"/>
+				<file name = "1.3h.cht" type = "data" source = "iso/songs/dadbattle/dadbattle-hard.cht"/>
 			
-				<file name = "4e.cht" type = "data" source = "iso/songs/tutorial/tutorial-easy.cht"/>
-				<file name = "4n.cht" type = "data" source = "iso/songs/tutorial/tutorial.cht"/>
-				<file name = "4h.cht" type = "data" source = "iso/songs/tutorial/tutorial-hard.cht"/>
+				<file name = "1.4e.cht" type = "data" source = "iso/songs/tutorial/tutorial-easy.cht"/>
+				<file name = "1.4n.cht" type = "data" source = "iso/songs/tutorial/tutorial.cht"/>
+				<file name = "1.4h.cht" type = "data" source = "iso/songs/tutorial/tutorial-hard.cht"/>
 			</dir>
 			<!-- Character assets -->
 			<dir name = "char">
@@ -94,7 +94,7 @@
 			<!-- Movies -->
 			<dir name = "str">
 				<!-- Week7 videos -->
-				<file name = "ugh.str" type = "str" source = "iso/movies/ugh.str"/>
+				<file name = "ugh.str" type = "str" source = "iso/movies/ughCutscene.str"/>
 			</dir>
 
 			<!-- Songs -->

@@ -1,0 +1,13 @@
+FILES = $(addsuffix .str, $(basename $(wildcard iso/movies/*.mp4))) \
+	$(addsuffix .str, $(basename $(wildcard iso/movies/*/*.mp4)))
+
+all: \
+	$(FILES) \
+
+# STR converts
+iso/movies/%.str: iso/movies/%.mp4
+	tools/psxavenc/psxavenc -t str2 -I -b 4 -c 1 -F 1 -C 0 $< $@
+
+.PHONY: clean
+clean:
+	rm -f $(FILES)

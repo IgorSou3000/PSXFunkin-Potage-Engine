@@ -35,8 +35,10 @@ build/
 *.tim
 *.arc
 *.xa
+*.mus
 *.cht
 *.vag
+*.str
 
 # Don't remove these bitch
 !makefile.cht

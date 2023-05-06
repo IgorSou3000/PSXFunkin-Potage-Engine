@@ -697,7 +697,7 @@ void Menu_Tick(void)
 				const char *tracks[3];
 			} menu_options[] = {
 				{NULL, StageId_Tutorial, "TUTORIAL", {"TUTORIAL", NULL, NULL}},
-				{"1", StageId_DadBattle, "DADDY DEAREST", {"BOPEEBO", "FRESH", "DADBATTLE"}},
+				{"1", StageId_Bopeebo, "DADDY DEAREST", {"BOPEEBO", "FRESH", "DADBATTLE"}},
 			};
 			
 			//Initialize page
@@ -939,10 +939,11 @@ void Menu_Tick(void)
 				{"SPICYJPEG"},
 				{"SPARK"},
 				{NULL},
-				{"special thanks"},
-				{NULL},
-				{"MAXDEV"},
+				{"og creator of psxfunkin"},
 				{"CUCKYDEV"},
+				{NULL},
+				{"special thanks"},
+				{"SPARK"},
 			};
 			
 			//Initialize page
@@ -1219,6 +1220,9 @@ void Menu_Tick(void)
 				{OptType_Boolean, "MIDDLESCROLL", &stage.save.middlescroll, {.spec_boolean = {0}}},
 				{OptType_Boolean, "BOTPLAY", &stage.save.botplay, {.spec_boolean = {0}}},
 				{OptType_Boolean, "SHOW TIMER", &stage.save.showtimer, {.spec_boolean = {0}}},
+				#ifndef RELEASE_MODE
+				{OptType_Boolean, "DEBUG MODE", &stage.save.debug_mode, {.spec_boolean = {0}}},
+				#endif
 			};
 			
 			//Initialize page

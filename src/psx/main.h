@@ -4,8 +4,14 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_MAIN_H
-#define PSXF_GUARD_MAIN_H
+#pragma once
+
+/*
+  If you finish your port, Remove the //
+  This will disable some stuffs like debug mode option
+*/
+
+//#define RELEASE_MODE
 
 //Game loop
 typedef enum
@@ -19,5 +25,3 @@ extern GameLoop gameloop;
 //Error handler
 extern char error_msg[0x200];
 void ErrorLock();
-
-#endif

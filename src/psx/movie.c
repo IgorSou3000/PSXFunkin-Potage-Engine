@@ -18,8 +18,6 @@
 #include "strplay.h"
 #include "stage/stage.h"
 
-#define DEBUG 1
-
 static const struct {
   const char* path; //path of the movie
   int frameCount; //frame count (you can get in MC32)

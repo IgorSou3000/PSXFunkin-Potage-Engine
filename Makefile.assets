@@ -3,3 +3,4 @@ all:
 	@ $(MAKE) -f Makefile.cht
 	@ $(MAKE) -f Makefile.xa
 	@ $(MAKE) -f Makefile.vag
+	@ $(MAKE) -f Makefile.str

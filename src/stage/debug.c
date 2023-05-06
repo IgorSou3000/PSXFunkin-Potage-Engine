@@ -7,14 +7,13 @@
 #include "debug.h"
 #include "psx/pad.h"
 #include "stage.h"
+#include "psx/mutil.h"
 
-#ifdef DEBUG_MODE
+#ifndef RELEASE_MODE
 Debug debug;
 
 void Debug_Load(void)
 {
-	stage.save.showtimer = false;
-	stage.save.botplay = true;
 	//Initializing this for avoid any memory issues
 	debug.select = 0;
 	debug.mode = debug.next_mode = 0;
@@ -45,6 +44,9 @@ void Debug_MoveTexture(RECT_FIXED* src, u8 select, const char* name, fixed_t cam
 
 void Debug_Tick(void)
 {
+	stage.save.showtimer = false;
+	stage.save.botplay = true;
+	
 	if (debug.mode != debug.next_mode)
 	{
 		debug.mode = debug.next_mode;
@@ -64,7 +66,8 @@ void Debug_Tick(void)
 	static const char* mode_options[] = {
 		"TEXTURE MODE",
 		"FREECAMERA MODE",
-		"CHARACTER MODE"
+		"CHARACTER MODE",
+		"CHARACTER CAMERA MODE"
 	};
 
 	sprintf(mode_text, "%s", mode_options[debug.mode]);
@@ -218,6 +221,51 @@ void Debug_Tick(void)
 					chars[debug.select]->y -= FIXED_DEC(1,1);
 				if (pad_state.held & PAD_DOWN)
 					chars[debug.select]->y += FIXED_DEC(1,1);
+			}
+			break;
+		}
+		case 3: //Character Camera mode
+		{
+			stage.camera.tx = chars[debug.select]->x + chars[debug.select]->focus_x;
+			stage.camera.ty = chars[debug.select]->y + chars[debug.select]->focus_y;
+			stage.camera.tz = chars[debug.select]->focus_zoom;
+			stage.camera.td = FIXED_UNIT / 24;;
+
+			//Scroll based off current divisor
+			stage.camera.x += Lerp(stage.camera.x, stage.camera.tx, stage.camera.td);
+			stage.camera.y += Lerp(stage.camera.y, stage.camera.ty, stage.camera.td);
+			stage.camera.zoom += Lerp(stage.camera.zoom, stage.camera.tz, stage.camera.td);
+
+			sprintf(name_text, "%d - Character Camera%d", debug.select, debug.select);
+			stage.font_cdr.draw(&stage.font_cdr,
+				name_text,
+				-140,
+				-112,
+				FontAlign_Left
+			);
+
+			if (debug.select < COUNT_OF(chars))
+			{
+				sprintf(texture_text, "X: %d, Y: %d", 
+				(chars[debug.select]->focus_x) >> FIXED_SHIFT,
+				(chars[debug.select]->focus_y) >> FIXED_SHIFT
+				);
+
+				stage.font_cdr.draw(&stage.font_cdr,
+					texture_text,
+					-160,
+					-52,
+					FontAlign_Left
+				);
+
+				if (pad_state.held & PAD_LEFT)
+					chars[debug.select]->focus_x -= FIXED_DEC(1,1);
+				if (pad_state.held & PAD_RIGHT)
+					chars[debug.select]->focus_x += FIXED_DEC(1,1);
+				if (pad_state.held & PAD_UP)
+					chars[debug.select]->focus_y -= FIXED_DEC(1,1);
+				if (pad_state.held & PAD_DOWN)
+					chars[debug.select]->focus_y += FIXED_DEC(1,1);
 			}
 			break;
 		}

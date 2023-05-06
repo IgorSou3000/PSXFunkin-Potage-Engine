@@ -11,7 +11,7 @@
 #include "psx/gfx.h"
 #include "psx/fixed.h"
 
-#ifdef DEBUG_MODE
+#ifndef RELEASE_MODE
 //Debug definitions
 typedef struct
 {

@@ -16,7 +16,7 @@ Events event_speed;
 #define EVENTS_TICK_DIVISOR 60
 #define EVENTS_POS_END 0xFFFF
 
-static void Events_Update_Variables(Event* event)
+static void Events_GetValues(Event* event)
 {
 	//Update variables based on found event flags
 	switch(event->event & EVENTS_FLAG_VARIANT)
@@ -46,7 +46,7 @@ static void Events_Update_Variables(Event* event)
 	}
 }
 
-static void Events_Update_Chart(Chart* chart)
+static void Events_CheckValues(Chart* chart)
 {
 	for (Event *event = chart->cur_event; event->pos != EVENTS_POS_END; event++)
 	{
@@ -60,7 +60,7 @@ static void Events_Update_Chart(Chart* chart)
 		if (event->event & EVENTS_FLAG_PLAYED)
 			continue;
 
-		Events_Update_Variables(event);
+		Events_GetValues(event);
 	}
 }
 
@@ -72,12 +72,10 @@ void Events_Tick(void)
 
 void Events_StartEvents(void)
 {
-	Events_Update_Chart(&stage.main_chart);
+	Events_CheckValues(&stage.chart);
 
-	if (stage.exist_event_json == true)
-	{
-		Events_Update_Chart(&stage.event_chart);
-	}
+	if (stage.event_chart.data != NULL)
+		Events_CheckValues(&stage.event_chart);
 
 	Events_Tick();
 }

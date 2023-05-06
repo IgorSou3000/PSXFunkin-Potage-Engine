@@ -95,8 +95,7 @@ typedef struct
 	StageBack* (*back)();
 	
 	//Song info	
-	const char* week;
-	u8 week_song;
+	u8 week, week_song;
 	XA_Track track;
 	u8 channel;
 	
@@ -174,7 +173,7 @@ typedef struct
 	//Variables that you want save
 	struct
 	{
-		boolean ghost, middlescroll, downscroll, healthdrain, showtimer, botplay, canbump, splash;
+		boolean ghost, middlescroll, downscroll, healthdrain, showtimer, botplay, canbump, splash, debug_mode;
 
 		u32 savescore[StageId_Max][StageDiff_Max];	
 	}save;
@@ -209,9 +208,8 @@ typedef struct
 	StageId stage_id;
 	StageDiff stage_diff;
 	
-	Chart main_chart;
-	Chart event_chart; //event.json
-	boolean exist_event_json;
+	Chart chart;
+	Chart event_chart;
 	
 	fixed_t speed, ogspeed;
 	fixed_t step_crochet, step_time;

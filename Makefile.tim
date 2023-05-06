@@ -12,7 +12,7 @@ all: \
 	iso/characters/dad/main.arc \
 	iso/characters/gf/main.arc \
 	iso/characters/gf/speaker.tim \
-	iso/stage/stage/back.arc \
+	iso/stage/week1/back.arc \
 
 iso/%.tim: iso/%.png
 	tools/funkintimpak/funkintimpak $@ $<
@@ -33,4 +33,4 @@ iso/characters/dad/main.arc: iso/characters/dad/idle0.tim iso/characters/dad/idl
 iso/characters/gf/main.arc: iso/characters/gf/gf0.tim iso/characters/gf/gf1.tim iso/characters/gf/gf2.tim iso/characters/gf/tut0.tim iso/characters/gf/tut1.tim
 
 # Week 1
-iso/stage/stage/back.arc: iso/stage/stage/back0.tim iso/stage/stage/back1.tim
+iso/stage/week1/back.arc: iso/stage/week1/back0.tim iso/stage/week1/back1.tim
