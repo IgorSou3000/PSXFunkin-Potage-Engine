@@ -24,6 +24,13 @@
 #include "stage/stage.h"
 #include "characters/gf.h"
 
+//Used in the option
+#define DESCRIPTION_BAR_WIDTH SCREEN_WIDTH
+#define DESCRIPTION_BAR_HEIGHT 32
+
+#define DESCRIPTION_POSX 30
+#define DESCRIPTION_POSY SCREEN_HEIGHT - 24
+
 //Menu messages
 static const char *funny_messages[][2] = {
 	{"PSX PORT BY CUCKYDEV", "YOU KNOW IT"},
@@ -1100,6 +1107,9 @@ void Menu_Tick(void)
 		}
 		case MenuOptions_Visual:
 		{
+			const RECT screen_src = {0, SCREEN_HEIGHT - DESCRIPTION_BAR_HEIGHT, DESCRIPTION_BAR_WIDTH, DESCRIPTION_BAR_HEIGHT};
+			Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
+
 			static const struct
 			{
 				enum
@@ -1107,6 +1117,7 @@ void Menu_Tick(void)
 					OptType_Boolean,
 				} type;
 				const char *text;
+				const char* description;
 				void *value;
 				union
 				{
@@ -1116,8 +1127,8 @@ void Menu_Tick(void)
 					} spec_boolean;
 				} spec;
 			} menu_options[] = {
-				{OptType_Boolean, "CAMERA ZOOM", &stage.save.canbump, {.spec_boolean = {0}}},
-				{OptType_Boolean, "SPLASH", &stage.save.splash, {.spec_boolean = {0}}},
+				{OptType_Boolean, "CAMERA ZOOM", "If unchecked, the camera won't zoom in on a beat hit.", &stage.save.canbump, {.spec_boolean = {0}}},
+				{OptType_Boolean, "SPLASH", "If unchecked, hitting \"Sick!\" notes won't show particles.", &stage.save.splash, {.spec_boolean = {0}}},
 			};
 			
 			//Initialize page
@@ -1157,6 +1168,17 @@ void Menu_Tick(void)
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
 			menu.scroll += (next_scroll - menu.scroll) / 16;
+
+			//Draw description
+			if (menu_options[menu.select].description != NULL)
+			{
+				menu.font_cdr.draw(&menu.font_cdr,
+					menu_options[menu.select].description,
+					DESCRIPTION_POSX,
+					DESCRIPTION_POSY,
+					FontAlign_Left
+				);
+			}
 			
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
@@ -1191,6 +1213,9 @@ void Menu_Tick(void)
 		}
 		case MenuOptions_Gameplay:
 		{
+			const RECT screen_src = {0, SCREEN_HEIGHT - DESCRIPTION_BAR_HEIGHT, DESCRIPTION_BAR_WIDTH, DESCRIPTION_BAR_HEIGHT};
+			Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
+
 			static const char *gamemode_strs[] = {"NORMAL", "SWAP", "TWO PLAYER"};
 			static const struct
 			{
@@ -1200,6 +1225,7 @@ void Menu_Tick(void)
 					OptType_Enum,
 				} type;
 				const char *text;
+				const char* description;
 				void *value;
 				union
 				{
@@ -1214,14 +1240,14 @@ void Menu_Tick(void)
 					} spec_enum;
 				} spec;
 			} menu_options[] = {
-				{OptType_Enum,    "GAMEMODE", &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
-				{OptType_Boolean, "GHOST TAP ", &stage.save.ghost, {.spec_boolean = {0}}},
-				{OptType_Boolean, "DOWNSCROLL", &stage.save.downscroll, {.spec_boolean = {0}}},
-				{OptType_Boolean, "MIDDLESCROLL", &stage.save.middlescroll, {.spec_boolean = {0}}},
-				{OptType_Boolean, "BOTPLAY", &stage.save.botplay, {.spec_boolean = {0}}},
-				{OptType_Boolean, "SHOW TIMER", &stage.save.showtimer, {.spec_boolean = {0}}},
+				{OptType_Enum,    "GAMEMODE", NULL, &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
+				{OptType_Boolean, "GHOST TAP ", "If checked, you won't get misses from pressing keys\nwhile there are no notes able to be hit.", &stage.save.ghost, {.spec_boolean = {0}}},
+				{OptType_Boolean, "DOWNSCROLL", "If checked, notes go down instead of up.", &stage.save.downscroll, {.spec_boolean = {0}}},
+				{OptType_Boolean, "MIDDLESCROLL", "If checked, your notes get centered.", &stage.save.middlescroll, {.spec_boolean = {0}}},
+				{OptType_Boolean, "BOTPLAY", "Pussy mode", &stage.save.botplay, {.spec_boolean = {0}}},
+				{OptType_Boolean, "SHOW TIMER", "What should the Time Bar display?", &stage.save.showtimer, {.spec_boolean = {0}}},
 				#ifndef RELEASE_MODE
-				{OptType_Boolean, "DEBUG MODE", &stage.save.debug_mode, {.spec_boolean = {0}}},
+				{OptType_Boolean, "DEBUG MODE", "If checked, the game will display debug info in the song", &stage.save.debug_mode, {.spec_boolean = {0}}},
 				#endif
 			};
 			
@@ -1275,6 +1301,17 @@ void Menu_Tick(void)
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
 			menu.scroll += (next_scroll - menu.scroll) / 16;
+
+			//Draw description
+			if (menu_options[menu.select].description != NULL)
+			{
+				menu.font_cdr.draw(&menu.font_cdr,
+					menu_options[menu.select].description,
+					DESCRIPTION_POSX,
+					DESCRIPTION_POSY,
+					FontAlign_Left
+				);
+			}
 			
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{

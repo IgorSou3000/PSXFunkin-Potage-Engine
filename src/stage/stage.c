@@ -501,43 +501,6 @@ void Stage_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_t
 	Stage_DrawTexCol(tex, src, dst, zoom, 0x80, 0x80, 0x80);
 }
 
-void Stage_DrawTex3DCol(Gfx_Tex *tex, const RECT *src, RECT_FIXED *dst, fixed_t camera_x, fixed_t camera_y, u8 r, u8 g, u8 b, fixed_t zoom)
-{
-	//Draw stage
-	fixed_t fx, fy;
-
-	fx = camera_x * 3 / 2;
-	fy = camera_y * 3 / 2;
-	
-	POINT_FIXED point_2 = {
-		dst->x - fx,
-		dst->y + dst->h - fy,
-	};
-	POINT_FIXED point_3 = {
-		dst->x + dst->w - fx,
-		dst->y + dst->h - fy,
-	};
-	
-	fx = camera_x >> 1;
-	fy = camera_y >> 1;
-	
-	POINT_FIXED point_0 = {
-		dst->x - fx,
-		dst->y - fy,
-	};
-	POINT_FIXED point_1 = {
-		dst->x + dst->w - fx,
-		dst->y - fy,
-	};
-
-	Stage_DrawTexArbCol(tex, src, &point_0, &point_1, &point_2, &point_3, r, g, b, zoom);
-}
-
-void Stage_DrawTex3D(Gfx_Tex *tex, const RECT *src, RECT_FIXED *dst, fixed_t camera_x, fixed_t camera_y, fixed_t zoom)
-{
-	Stage_DrawTex3DCol(tex, src, dst, camera_x, camera_y, 128, 128, 128, zoom);
-}
-
 void Stage_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, u8 r, u8 g, u8 b, fixed_t zoom)
 {
 	//Don't draw if HUD and HUD is disabled
