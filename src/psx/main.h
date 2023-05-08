@@ -11,7 +11,14 @@
   This will disable some stuffs like debug mode option
 */
 
-//#define RELEASE_MODE
+//#define RELEASE_MODE //Enable this when you finish your port
+
+//HBASCUS-scusid somename
+#define SaveTitle "bu00:BASCUS-54021funkin"
+//What will be displayed in memory card
+#define SaveName  "PSXFunkinPotageEngine"
+
+#define SAVE //Enable this if you want the save system
 
 //Game loop
 typedef enum

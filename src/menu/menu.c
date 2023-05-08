@@ -879,7 +879,7 @@ void Menu_Tick(void)
 			char scoredisp[0x100];
 			sprintf(scoredisp, "PERSONAL BEST: %d", stage.save.savescore[menu_options[menu.select].stage][menu.page_param.stage.diff] * 10);
 
-			#ifndef NOSAVE
+			#ifdef SAVE
 				menu.font_arial.draw(&menu.font_arial,
 					scoredisp,
 					SCREEN_WIDTH - 170,
@@ -1060,20 +1060,20 @@ void Menu_Tick(void)
 			}
 
 			//Save your game
-			#ifndef NOSAVE
+			#ifdef SAVE
 				if (pad_state.press & PAD_SELECT)
 					WriteSave();
 
-				RECT save_src = {0,120, 49, 7};
-				RECT save_dst = {20, 23, 49*2, 7 *2};
+				RECT save_src = {0, 78, 52, 12};
+				RECT save_dst = {20, 17, 104, 24};
 				Gfx_DrawTex(&menu.tex_story, &save_src, &save_dst);
 
 				//Reset Your Save
 				if (pad_state.press & PAD_TRIANGLE)
 					DefaultSettings();
 
-				RECT reset_src = {0, 64, 57, 14};
-				RECT reset_dst = {57*2 + 20, 9, 57*2, 14*2};
+				RECT reset_src = {0, 61, 58, 16};
+				RECT reset_dst = {20 + 116 + 2, 9, 116, 32};
 				Gfx_DrawTex(&menu.tex_story, &reset_src, &reset_dst);
 		  #endif
 			
