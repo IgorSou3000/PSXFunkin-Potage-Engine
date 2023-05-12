@@ -13,6 +13,8 @@
 
 static Gfx_Tex font_tex;
 
+FontData font_arial, font_cdr, font_bold;
+
 static void Font_DrawTex(struct FontData *this, RECT* src, s32 x, s32 y, u8 r, u8 g, u8 b, Gfx_Tex* tex)
 {
 	//Draw a stage font (it bump)
@@ -180,6 +182,11 @@ void Font_Draw(struct FontData *this, const char *text, s32 x, s32 y, FontAlign 
 //Font functions
 void Font_Init(void)
 {
+	//Load Fonts
+	FontData_Load(&font_cdr, Font_CDR, false);
+	FontData_Load(&font_bold, Font_Bold, false);
+	FontData_Load(&font_arial, Font_Arial, false);
+
 	Gfx_LoadTex(&font_tex, IO_Read("\\FONT\\FONT1.TIM;1"), GFX_LOADTEX_FREE);
 }
 void FontData_Load(FontData *this, Font font, boolean is_stage)

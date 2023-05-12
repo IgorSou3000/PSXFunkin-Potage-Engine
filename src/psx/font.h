@@ -31,12 +31,14 @@ typedef struct FontData
 	void (*draw_col)(struct FontData *this, const char *text, s32 x, s32 y, FontAlign align, u8 r, u8 g, u8 b);
 	void (*draw)(struct FontData *this, const char *text, s32 x, s32 y, FontAlign align);
 	
-	Gfx_Tex tex;
 	boolean is_stage;
 } FontData;
 
 //Font functions
 void Font_Init(void);
 void FontData_Load(FontData *this, Font font, boolean is_stage);
+
+//Font Stuff
+extern FontData font_arial, font_cdr, font_bold;
 
 #endif
