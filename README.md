@@ -1,4 +1,4 @@
-# PSXFunkin Potage
+# PSXFunkin Potage Engine
 Another Engine for PSXFunkin
 
 ## Compilation
