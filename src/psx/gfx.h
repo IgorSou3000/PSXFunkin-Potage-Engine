@@ -4,11 +4,11 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_GFX_H
-#define PSXF_GUARD_GFX_H
+#pragma once
 
 #include "psx.h"
 #include "io.h"
+#include "fixed.h"
 
 //Gfx constants
 #define SCREEN_WIDTH   320
@@ -58,10 +58,7 @@ void Gfx_LoadTex(Gfx_Tex *tex, IO_Data data, Gfx_LoadTex_Flag flag);
 
 void Gfx_DrawRect(const RECT *rect, u8 r, u8 g, u8 b);
 void Gfx_BlendRect(const RECT *rect, u8 r, u8 g, u8 b, u8 mode);
-void Gfx_DrawTexRotateCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 angle, u8 r, u8 g, u8 b);
-void Gfx_DrawTexRotate(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 angle);
+void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 b);
+void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y);
 void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, u8 b);
 void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst);
-void Gfx_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 r, u8 g, u8 b);
-void Gfx_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3);
-#endif

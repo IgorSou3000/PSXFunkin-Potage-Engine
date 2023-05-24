@@ -31,6 +31,13 @@
 #define DESCRIPTION_POSX 30
 #define DESCRIPTION_POSY SCREEN_HEIGHT - 24
 
+static const char* diffs[] = {
+	"< EASY >",
+	"< NORMAL >",
+	"< HARD >",
+};
+
+
 //Menu messages
 static const char *funny_messages[][2] = {
 	{"PSX PORT BY CUCKYDEV", "YOU KNOW IT"},
@@ -215,21 +222,12 @@ static void Menu_DifficultySelector(s32 x, s32 y)
 	
 	//Draw difficulty arrows
 	static const RECT arrow_src[2][2] = {
-		{{223, 64, 16, 32}, {223, 96, 16, 32}}, //left
-		{{239, 64, 16, 32}, {239, 96, 16, 32}}, //right
+		{{224, 64, 16, 32}, {224, 96, 16, 32}}, //left
+		{{240, 64, 16, 32}, {240, 96, 16, 32}}, //right
 	};
-
-	RECT arrow_dst[2] = {
-		{x - 40 - 16, y - 16, 16, 32}, //left
-		{x + 40, y - 16, 16, 32}, //right
-	};
-
-	//Check if pad left or right has pressed
-	u8 left_pressed = ((pad_state.held & PAD_LEFT) != 0);
-	u8 right_pressed = ((pad_state.held & PAD_RIGHT) != 0);
 	
-	Gfx_DrawTex(&menu.tex_story, &arrow_src[0][left_pressed], &arrow_dst[0]);
-	Gfx_DrawTex(&menu.tex_story, &arrow_src[1][right_pressed], &arrow_dst[1]);
+	Gfx_BlitTex(&menu.tex_story, &arrow_src[0][(pad_state.held & PAD_LEFT) != 0], x - 40 - 16, y - 16);
+	Gfx_BlitTex(&menu.tex_story, &arrow_src[1][(pad_state.held & PAD_RIGHT) != 0], x + 40, y - 16);
 	
 	//Draw difficulty
 	static const RECT diff_srcs[] = {
@@ -239,15 +237,7 @@ static void Menu_DifficultySelector(s32 x, s32 y)
 	};
 	
 	const RECT *diff_src = &diff_srcs[menu.page_param.stage.diff];
-
-	RECT diff_dst = {
-		x - (diff_src->w / 2),
-		y - 9 + ((pad_state.press & (PAD_LEFT | PAD_RIGHT)) != 0),
-		diff_src->w,
-		diff_src->h,
-	};
-
-	Gfx_DrawTex(&menu.tex_story, diff_src, &diff_dst);
+	Gfx_BlitTex(&menu.tex_story, diff_src, x - (diff_src->w >> 1), y - 9 + ((pad_state.press & (PAD_LEFT | PAD_RIGHT)) != 0));
 }
 
 static void Menu_DrawWeek(const char *week, s32 x, s32 y, boolean flash)
@@ -300,10 +290,12 @@ static void Menu_DrawWeek(const char *week, s32 x, s32 y, boolean flash)
 	}
 }
 
-static void Menu_DrawHealth(u8 i, s16 x, s16 y)
+static void Menu_DrawHealth(u8 i, s16 x, s16 y, boolean is_selected)
 {
 	//Icon Size
 	u8 icon_size = 38;
+
+	u8 col = (is_selected) ? 128 : 64;
 
 	//Get src and dst
 	RECT src = {
@@ -320,7 +312,7 @@ static void Menu_DrawHealth(u8 i, s16 x, s16 y)
 	};
 	
 	//Draw health icon
-	Gfx_DrawTex(&stage.tex_hud1, &src, &dst);
+	Gfx_DrawTexCol(&stage.tex_hud1, &src, &dst, col, col, col);
 }
 
 //Menu functions
@@ -354,7 +346,7 @@ void Menu_Load(MenuPage page)
 	{
 		case MenuPage_Opening:
 			//Get funny message to use
-				menu.page_state.opening.funny_message = ((*((volatile u32*)0xBF801120)) / 8) % COUNT_OF(funny_messages); //sysclk seeding
+				menu.page_state.opening.funny_message = ((*((volatile u32*)0xBF801120)) >> 3) % COUNT_OF(funny_messages); //sysclk seeding
 			break;
 		default:
 			break;
@@ -570,21 +562,19 @@ void Menu_Tick(void)
 			if (menu.next_page == menu.page)
 			{
 				//Blinking blue
-				s16 press_lerp = (MUtil_Cos(animf_count * 8) + 256) / 2;
-				u8 press_r = 51 / 2;
-				u8 press_g = (58  + ((press_lerp * (255 - 58))  / 256)) / 2;
-				u8 press_b = (206 + ((press_lerp * (255 - 206)) / 256)) / 2;
+				s16 press_lerp = (MUtil_Cos(animf_count << 3) + 0x100) >> 1;
+				u8 press_r = 51 >> 1;
+				u8 press_g = (58  + ((press_lerp * (255 - 58))  >> 8)) >> 1;
+				u8 press_b = (206 + ((press_lerp * (255 - 206)) >> 8)) >> 1;
 				
-				RECT press_src = {0, 203, 207, 18};
-				RECT press_dst = {50, SCREEN_HEIGHT - 35, 207, 18};
-				Gfx_DrawTexCol(&menu.tex_title, &press_src, &press_dst, press_r, press_g, press_b);
+				RECT press_src = {0, 112, 256, 32};
+				Gfx_BlitTexCol(&menu.tex_title, &press_src, (SCREEN_WIDTH - 256) / 2, SCREEN_HEIGHT - 48, press_r, press_g, press_b);
 			}
 			else
 			{
 				//Flash white
-				RECT press_src = {0, (animf_count & 1) ? 203 : 221, 207, 18};
-				RECT press_dst = {50, SCREEN_HEIGHT - 35, 207, 18};
-				Gfx_DrawTex(&menu.tex_title, &press_src, &press_dst);
+				RECT press_src = {0, (animf_count & 1) ? 144 : 112, 256, 32};
+				Gfx_BlitTex(&menu.tex_title, &press_src, (SCREEN_WIDTH - 256) / 2, SCREEN_HEIGHT - 48);
 			}
 			
 			//Draw Girlfriend
@@ -669,7 +659,7 @@ void Menu_Tick(void)
 					menu.font_bold.draw(&menu.font_bold,
 						Menu_LowerIf(menu_options[i], menu.select != i),
 						SCREEN_WIDTH2,
-						SCREEN_HEIGHT2 + (i * 32) - 48 - (menu.scroll / FIXED_UNIT),
+						SCREEN_HEIGHT2 + (i * 32) - 48 - (menu.scroll >> FIXED_SHIFT),
 						FontAlign_Center
 					);
 				}
@@ -680,7 +670,7 @@ void Menu_Tick(void)
 				menu.font_bold.draw(&menu.font_bold,
 					menu_options[menu.select],
 					SCREEN_WIDTH2,
-					SCREEN_HEIGHT2 + (menu.select * 32) - 48 - (menu.scroll / FIXED_UNIT),
+					SCREEN_HEIGHT2 + (menu.select * 32) - 48 - (menu.scroll >> FIXED_SHIFT),
 					FontAlign_Center
 				);
 			}
@@ -762,11 +752,14 @@ void Menu_Tick(void)
 			}
 			
 			//Draw week name and tracks
-			menu.font_arial.draw(&menu.font_arial,
+			menu.font_arial.draw_col(&menu.font_arial,
 				menu_options[menu.select].name,
 				SCREEN_WIDTH - 12,
 				10,
-				FontAlign_Right
+				FontAlign_Right,
+				64,
+				64,
+				64
 			);
 			
 			const char * const *trackp = menu_options[menu.select].tracks;
@@ -800,12 +793,12 @@ void Menu_Tick(void)
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(48,1);
-			menu.scroll += Lerp(menu.scroll,next_scroll, FIXED_DEC(1,1) / 8);
+			menu.scroll += Lerp(menu.scroll,next_scroll, FIXED_DEC(1,1) >> 3);
 			
 			//Draw all options
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
-				s32 y = 132 + (i * 48) - (menu.scroll / FIXED_UNIT);
+				s32 y = 132 + (i * 48) - (menu.scroll >> FIXED_SHIFT);
 				if (y <= 16)
 					continue;
 				if (y >= SCREEN_HEIGHT)
@@ -813,7 +806,7 @@ void Menu_Tick(void)
 
 				//Draw the selected option with a cool effect
 				if (menu.next_page == MenuPage_Stage && animf_count & 2)
-					Menu_DrawWeek(menu_options[menu.select].week, SCREEN_WIDTH2 - 64, 132 + (menu.select * 48) - (menu.scroll / FIXED_UNIT), true);
+					Menu_DrawWeek(menu_options[menu.select].week, SCREEN_WIDTH2 - 64, 132 + (menu.select * 48) - (menu.scroll >> FIXED_SHIFT), true);
 
 				//Draw all options
 				Menu_DrawWeek(menu_options[i].week, SCREEN_WIDTH2 - 64, y, false);
@@ -846,7 +839,7 @@ void Menu_Tick(void)
 			}
 			
 			//Draw difficulty selector
-			Menu_DifficultySelector(SCREEN_WIDTH - 100, SCREEN_HEIGHT2 - 48);
+			Menu_DifficultySelector(SCREEN_WIDTH + 100, SCREEN_HEIGHT2 - 48);
 			
 			//Handle option and selection
 			if (menu.next_page == menu.page && Trans_Idle())
@@ -880,36 +873,52 @@ void Menu_Tick(void)
 			sprintf(scoredisp, "PERSONAL BEST: %d", stage.save.savescore[menu_options[menu.select].stage][menu.page_param.stage.diff] * 10);
 
 			#ifdef SAVE
+			//Draw "PERSONAL BEST"
 				menu.font_arial.draw(&menu.font_arial,
 					scoredisp,
-					SCREEN_WIDTH - 170,
-					SCREEN_HEIGHT / 2 - 75,
-					FontAlign_Left
+					SCREEN_WIDTH - 12,
+					10,
+					FontAlign_Right
 				);
+
+				//Draw difficulty
+				menu.font_arial.draw(&menu.font_arial,
+					diffs[menu.page_param.stage.diff],
+					SCREEN_WIDTH + 45 - (strlen(scoredisp) * 7),
+					20,
+					FontAlign_Center
+				);
+
+				RECT screen_src = {SCREEN_WIDTH - (strlen(scoredisp) << 3), 0, (strlen(scoredisp) << 3), 30};
+
+				Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
 			#endif
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(30,1);
-			menu.scroll += Lerp(menu.scroll, next_scroll, FIXED_DEC(1,1) / 16);
+			menu.scroll += Lerp(menu.scroll, next_scroll, FIXED_DEC(1,1) >> 4);
 			
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 30) - (menu.scroll / FIXED_UNIT);
+				s32 y = (i * 30) - (menu.scroll >> FIXED_SHIFT);
 				if (y <= -SCREEN_HEIGHT2 - 8)
 					continue;
 				if (y >= SCREEN_HEIGHT2 + 8)
 					break;
 
 				//Draw Icon
-				Menu_DrawHealth(menu_options[i].icon, strlen(menu_options[i].text) * 13 + 38 + 4 + (y / 6), SCREEN_HEIGHT2 + y - 38);
+				Menu_DrawHealth(menu_options[i].icon, strlen(menu_options[i].text) * 13 + 38 + 4 + (y / 6), SCREEN_HEIGHT2 + y - 38, menu.select == i);
 				
 				//Draw text
-				menu.font_bold.draw(&menu.font_bold,
-					Menu_LowerIf(menu_options[i].text, menu.select != i),
+				menu.font_bold.draw_col(&menu.font_bold,
+					menu_options[i].text,
 					48 + (y / 6),
 					SCREEN_HEIGHT2 - 16 + y - 8,
-					FontAlign_Left
+					FontAlign_Left,
+					(menu.select == i) ? 128 : 64,
+					(menu.select == i) ? 128 : 64,
+					(menu.select == i) ? 128 : 64
 				);
 			}
 			
@@ -918,16 +927,16 @@ void Menu_Tick(void)
 			fixed_t tgt_g = (fixed_t)((menu_options[menu.select].col >>  8) & 0xFF) * FIXED_UNIT;
 			fixed_t tgt_b = (fixed_t)((menu_options[menu.select].col >>  0) & 0xFF) * FIXED_UNIT;
 			
-			menu.page_state.freeplay.back_r += Lerp(menu.page_state.freeplay.back_r, tgt_r, FIXED_DEC(1,1) / 16);
-			menu.page_state.freeplay.back_g += Lerp(menu.page_state.freeplay.back_g, tgt_g, FIXED_DEC(1,1) / 16);
-			menu.page_state.freeplay.back_b += Lerp(menu.page_state.freeplay.back_b, tgt_b, FIXED_DEC(1,1) / 16);
+			menu.page_state.freeplay.back_r += Lerp(menu.page_state.freeplay.back_r, tgt_r, FIXED_DEC(1,1) >> 4);
+			menu.page_state.freeplay.back_g += Lerp(menu.page_state.freeplay.back_g, tgt_g, FIXED_DEC(1,1) >> 4);
+			menu.page_state.freeplay.back_b += Lerp(menu.page_state.freeplay.back_b, tgt_b, FIXED_DEC(1,1) >> 4);
 			
 			Menu_DrawBack(
 				true,
 				8,
-				menu.page_state.freeplay.back_r / (FIXED_UNIT * 2),
-				menu.page_state.freeplay.back_g / (FIXED_UNIT * 2),
-				menu.page_state.freeplay.back_b / (FIXED_UNIT * 2),
+				menu.page_state.freeplay.back_r >> (FIXED_SHIFT + 1),
+				menu.page_state.freeplay.back_g >> (FIXED_SHIFT + 1),
+				menu.page_state.freeplay.back_b >> (FIXED_SHIFT + 1),
 				0, 0, 0
 			);
 			break;
@@ -989,23 +998,26 @@ void Menu_Tick(void)
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
-			menu.scroll += (next_scroll - menu.scroll) / 16;
+			menu.scroll += (next_scroll - menu.scroll) >> 4;
 			
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 24) - 8 - (menu.scroll / FIXED_UNIT);
+				s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
 				if (y <= -SCREEN_HEIGHT2 - 8)
 					continue;
 				if (y >= SCREEN_HEIGHT2 + 8)
 					break;
 				
 				//Draw text
-				menu.font_bold.draw(&menu.font_bold,
-					Menu_LowerIf(menu_options[i].text, menu.select != i),
+				menu.font_bold.draw_col(&menu.font_bold,
+					menu_options[i].text,
 					SCREEN_WIDTH2,
 					SCREEN_HEIGHT2 + y - 8,
-					FontAlign_Center
+					FontAlign_Center,
+					(menu.select == i) ? 128 : 64,
+					(menu.select == i) ? 128 : 64,
+					(menu.select == i) ? 128 : 64
 				);
 			}
 			
@@ -1078,21 +1090,26 @@ void Menu_Tick(void)
 		  #endif
 			
 			//Draw options
+			s32 next_scroll = 0;
+			menu.scroll += (next_scroll - menu.scroll) >> 4;
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 24) - 8;
+				s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
 				if (y <= -SCREEN_HEIGHT2 - 8)
 					continue;
 				if (y >= SCREEN_HEIGHT2 + 8)
 					break;
 				
 				//Draw text
-				menu.font_bold.draw(&menu.font_bold,
-					Menu_LowerIf(menu_options[i].text, menu.select != i),
+				menu.font_bold.draw_col(&menu.font_bold,
+					menu_options[i].text,
 					SCREEN_WIDTH2,
 					SCREEN_HEIGHT2 + y - 8,
-					FontAlign_Center
+					FontAlign_Center,
+					(menu.select == i) ? 128 : 64,
+					(menu.select == i) ? 128 : 64,
+					(menu.select == i) ? 128 : 64
 				);
 			}
 			
@@ -1167,7 +1184,7 @@ void Menu_Tick(void)
 
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
-			menu.scroll += (next_scroll - menu.scroll) / 16;
+			menu.scroll += (next_scroll - menu.scroll) >> 4;
 
 			//Draw description
 			if (menu_options[menu.select].description != NULL)
@@ -1183,7 +1200,7 @@ void Menu_Tick(void)
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 24) - 8 - (menu.scroll / FIXED_UNIT);
+				s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
 				if (y <= -SCREEN_HEIGHT2 - 8)
 					continue;
 				if (y >= SCREEN_HEIGHT2 + 8)
@@ -1194,11 +1211,14 @@ void Menu_Tick(void)
 				sprintf(text, "%s %s", menu_options[i].text, *((boolean*)menu_options[i].value) ? "ON" : "OFF");
 
 				//Draw text
-				menu.font_bold.draw(&menu.font_bold,
-					Menu_LowerIf(text, menu.select != i),
+				menu.font_bold.draw_col(&menu.font_bold,
+					text,
 					48 + (y / 4),
 					SCREEN_HEIGHT2 - 16 + y - 8,
-					FontAlign_Left
+					FontAlign_Left,
+					(menu.select == i) ? 128 : 64,
+					(menu.select == i) ? 128 : 64,
+					(menu.select == i) ? 128 : 64
 				);
 			}
 			
@@ -1300,7 +1320,7 @@ void Menu_Tick(void)
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(24,1);
-			menu.scroll += (next_scroll - menu.scroll) / 16;
+			menu.scroll += (next_scroll - menu.scroll) >> 4;
 
 			//Draw description
 			if (menu_options[menu.select].description != NULL)
@@ -1316,7 +1336,7 @@ void Menu_Tick(void)
 			for (u8 i = 0; i < COUNT_OF(menu_options); i++)
 			{
 				//Get position on screen
-				s32 y = (i * 24) - 8 - (menu.scroll / FIXED_UNIT);
+				s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
 				if (y <= -SCREEN_HEIGHT2 - 8)
 					continue;
 				if (y >= SCREEN_HEIGHT2 + 8)
@@ -1333,11 +1353,14 @@ void Menu_Tick(void)
 						sprintf(text, "%s %s", menu_options[i].text, menu_options[i].spec.spec_enum.strs[*((s32*)menu_options[i].value)]);
 						break;
 				}
-				menu.font_bold.draw(&menu.font_bold,
-					Menu_LowerIf(text, menu.select != i),
+				menu.font_bold.draw_col(&menu.font_bold,
+					text,
 					48 + (y / 4),
 					SCREEN_HEIGHT2 - 16 + y - 8,
-					FontAlign_Left
+					FontAlign_Left,
+					(menu.select == i) ? 128 : 64,
+					(menu.select == i) ? 128 : 64,
+					(menu.select == i) ? 128 : 64
 				);
 			}
 			

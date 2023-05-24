@@ -1,7 +1,7 @@
 /*
-  This Source Code Form is subject to the terms of the Mozilla Public
-  License, v. 2.0. If a copy of the MPL was not distributed with this
-  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	This Source Code Form is subject to the terms of the Mozilla Public
+	License, v. 2.0. If a copy of the MPL was not distributed with this
+	file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
 #include "gfx.h"
@@ -195,9 +195,36 @@ void Gfx_BlendRect(const RECT *rect, u8 r, u8 g, u8 b, u8 mode)
 	nextpri += sizeof(DR_TPAGE);
 }
 
+void Gfx_BlitTexCol(Gfx_Tex *tex, const RECT *src, s32 x, s32 y, u8 r, u8 g, u8 b)
+{
+	//Add sprite
+	SPRT *sprt = (SPRT*)nextpri;
+	setSprt(sprt);
+	setXY0(sprt, x, y);
+	setWH(sprt, src->w, src->h);
+	setUV0(sprt, src->x, src->y);
+	setRGB0(sprt, r, g, b);
+	sprt->clut = tex->clut;
+	
+	addPrim(ot[db], sprt);
+	nextpri += sizeof(SPRT);
+	
+	//Add tpage change (TODO: reduce tpage changes)
+	DR_TPAGE *tpage = (DR_TPAGE*)nextpri;
+	setDrawTPage(tpage, 0, 1, tex->tpage);
+	
+	addPrim(ot[db], tpage);
+	nextpri += sizeof(DR_TPAGE);
+}
+
+void Gfx_BlitTex(Gfx_Tex *tex, const RECT *src, s32 x, s32 y)
+{
+	Gfx_BlitTexCol(tex, src, x, y, 0x80, 0x80, 0x80);
+}
+
 void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, u8 b)
 {	
-  //Add quad
+	//Add quad
 	POLY_FT4 *quad = (POLY_FT4*)nextpri;
 	setPolyFT4(quad);
 	setUVWH(quad, src->x, src->y, src->w, src->h);
@@ -213,24 +240,4 @@ void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, 
 void Gfx_DrawTex(Gfx_Tex *tex, const RECT *src, const RECT *dst)
 {
 	Gfx_DrawTexCol(tex, src, dst, 128, 128, 128);
-}
-
-void Gfx_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3, u8 r, u8 g, u8 b)
-{
-	//Add quad
-	POLY_FT4 *quad = (POLY_FT4*)nextpri;
-	setPolyFT4(quad);
-	setUVWH(quad, src->x, src->y, src->w, src->h);
-	setXY4(quad, p0->x, p0->y, p1->x, p1->y, p2->x, p2->y, p3->x, p3->y);
-	setRGB0(quad, r, g, b);
-	quad->tpage = tex->tpage;
-	quad->clut = tex->clut;
-	
-	addPrim(ot[db], quad);
-	nextpri += sizeof(POLY_FT4);
-}
-
-void Gfx_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT *p0, const POINT *p1, const POINT *p2, const POINT *p3)
-{
-	Gfx_DrawTexArbCol(tex, src, p0, p1, p2, p3, 0x80, 0x80, 0x80);
 }
