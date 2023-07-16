@@ -9,9 +9,9 @@
 #include "save.h"
 
 #include <libmcrd.h>
-#include "mem.h"
-#include "main.h"
-#include "stage/stage.h"
+#include "psx/mem.h"
+#include "psx/main.h"
+#include "game/stage.h"
 
 // Pallete Offset: 0x00000014 to 0x00000033
 // Image Offset:   0x00000040 to 0x000000BF

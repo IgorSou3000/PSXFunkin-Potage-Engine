@@ -7,7 +7,7 @@
 #ifndef PSXF_GUARD_FONT_H
 #define PSXF_GUARD_FONT_H
 
-#include "gfx.h"
+#include "psx/gfx.h"
 
 //Font types
 typedef enum

@@ -61,6 +61,10 @@ static void Events_CheckValues(Chart* chart)
 			continue;
 
 		Events_GetValues(event);
+
+		printf("%d\n", event->pos);
+
+		event->event |= EVENTS_FLAG_PLAYED;
 	}
 }
 

@@ -6,8 +6,8 @@
 
 #include "font.h"
 
-#include "timer.h"
-#include "stage/stage.h"
+#include "psx/timer.h"
+#include "game/stage.h"
 
 #include <string.h>
 
@@ -20,7 +20,7 @@ static void Font_DrawTex(struct FontData *this, RECT* src, s32 x, s32 y, u8 r, u
 	//Draw a stage font (it bump)
 	if (this->is_stage)
 	{
-		RECT_FIXED dst = {x * FIXED_UNIT, y * FIXED_UNIT, src->w * FIXED_UNIT, src->h * FIXED_UNIT};
+		RECT_FIXED dst = {x << FIXED_SHIFT, y << FIXED_SHIFT, src->w << FIXED_SHIFT, src->h << FIXED_SHIFT};
 		Stage_DrawTexCol(tex, src, &dst, stage.bump, r, g, b);
 	}
 	else
@@ -187,7 +187,7 @@ void Font_Init(void)
 	FontData_Load(&font_bold, Font_Bold, false);
 	FontData_Load(&font_arial, Font_Arial, false);
 
-	Gfx_LoadTex(&font_tex, IO_Read("\\FONT\\FONT1.TIM;1"), GFX_LOADTEX_FREE);
+	Gfx_LoadTex(&font_tex, IO_Read("\\FONT\\FONTS.TIM;1"), GFX_LOADTEX_FREE);
 }
 void FontData_Load(FontData *this, Font font, boolean is_stage)
 {

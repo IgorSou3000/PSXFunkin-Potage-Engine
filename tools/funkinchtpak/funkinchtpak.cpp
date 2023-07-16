@@ -15,44 +15,46 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
-#define SECTION_FLAG_OPPFOCUS (1 << 15) //Focus on opponent
-#define SECTION_FLAG_BPM_MASK 0x7FFF //1/24
+// Constants for section flags
+#define SECTION_FLAG_OPPFOCUS (1 << 15)
+#define SECTION_FLAG_BPM_MASK 0x7FFF
 
+// Constants for note flags
+#define NOTE_FLAG_OPPONENT    (1 << 2)
+#define NOTE_FLAG_SUSTAIN     (1 << 3)
+#define NOTE_FLAG_SUSTAIN_END (1 << 4)
+#define NOTE_FLAG_ALT_ANIM    (1 << 5)
+#define NOTE_FLAG_MINE        (1 << 6)
+#define NOTE_FLAG_HIT         (1 << 7)
+
+// Constants for event flags
+#define EVENTS_FLAG_VARIANT   0xFFFC
+#define EVENTS_FLAG_SPEED     (1 << 2)
+#define EVENTS_FLAG_GF        (1 << 3)
+#define EVENTS_FLAG_CAMZOOM   (1 << 4)
+#define EVENTS_FLAG_PLAYED    (1 << 15)
+
+// Structure to represent a section
 struct Section
 {
-	uint16_t end;
-	uint16_t flag = 0;
+    uint16_t end;
+    uint16_t flag = 0;
 };
 
-#define NOTE_FLAG_OPPONENT    (1 << 2) //Note is opponent's
-#define NOTE_FLAG_SUSTAIN     (1 << 3) //Note is a sustain note
-#define NOTE_FLAG_SUSTAIN_END (1 << 4) //Is either end of sustain
-#define NOTE_FLAG_ALT_ANIM    (1 << 5) //Note plays alt animation
-#define NOTE_FLAG_MINE        (1 << 6) //Note is a mine
-#define NOTE_FLAG_HIT         (1 << 7) //Note has been hit
-
+// Structure to represent a note
 struct Note
 {
-	uint16_t pos; //1/12 steps
-	uint16_t type;
+    uint16_t pos; // 1/12 steps
+    uint16_t type;
 };
 
-//EVENTS
-#define EVENTS_FLAG_VARIANT 0xFFFC
-
-#define EVENTS_FLAG_SPEED     (1 << 2) //Change Scroll Speed
-#define EVENTS_FLAG_GF        (1 << 3) //Set GF Speed
-#define EVENTS_FLAG_CAMZOOM   (1 << 4) //Add Camera Zoom
-
-#define EVENTS_FLAG_PLAYED     (1 << 15) //Event has been already played
-
+// Structure to represent an event
 struct Event
 {
-	//psych engine events
-	uint16_t pos; //1/12 steps
-	uint16_t event;
-	uint16_t value1;
-	uint16_t value2;
+    uint16_t pos = 0; // 1/12 steps
+    uint16_t event = 0;
+    uint16_t value1 = 0;
+    uint16_t value2 = 0;
 };
 
 typedef int32_t fixed_t;
@@ -60,79 +62,74 @@ typedef int32_t fixed_t;
 #define FIXED_SHIFT (10)
 #define FIXED_UNIT  (1 << FIXED_SHIFT)
 
+// Function to round a position to the nearest multiple of a given crochet
 uint16_t PosRound(double pos, double crochet)
 {
-	return (uint16_t)std::floor(pos / crochet + 0.5);
+    return static_cast<uint16_t>(std::floor(pos / crochet + 0.5));
 }
 
+// Function to write a 16-bit word to the output stream
 void WriteWord(std::ostream &out, uint16_t word)
 {
-	out.put(word >> 0);
-	out.put(word >> 8);
+    out.put(word >> 0);
+    out.put(word >> 8);
 }
 
+// Function to write a 32-bit word to the output stream
 void WriteLong(std::ostream &out, uint32_t word)
 {
-	out.put(word >> 0);
-	out.put(word >> 8);
-	out.put(word >> 16);
-	out.put(word >> 24);
+    out.put(word >> 0);
+    out.put(word >> 8);
+    out.put(word >> 16);
+    out.put(word >> 24);
 }
 
-//Made that function for compatibilty with older psych engine version
-void Events_Read(json& i, Event& event_src, std::vector<Event>& event_target, uint8_t position)
+// Function to read events from the input json and populate the event_target vector
+void Events_Read(json& i, Event& event_src, std::vector<Event>& event_target)
 {
-	//Start with 0 for avoid bugs
-	event_src.event = 0;
-
-	if (i[0 + position] == "Change Scroll Speed")
+    if (i[0] == "Change Scroll Speed")
 		event_src.event |= EVENTS_FLAG_SPEED;
 
-	if (i[0 + position] == "Set GF Speed")
+	if (i[0] == "Set GF Speed")
 		event_src.event |= EVENTS_FLAG_GF;
 
-	if (i[0 + position] == "Add Camera Zoom")
+	if (i[0] == "Add Camera Zoom")
 		event_src.event |= EVENTS_FLAG_CAMZOOM;
 	
 	if (event_src.event & EVENTS_FLAG_VARIANT)
 	{
+		// Check if Change speed event flag is set
 		if (event_src.event & EVENTS_FLAG_SPEED)
 		{
-			//Default values
-			if (i[1 + position] == "")
-				i[1 + position] = "1";
-
-			if (i[2 + position] == "")
-				i[2 + position] = "0";
+			// Set default values for the first and second values if they are empty strings
+		    i[1] = (i[1] == "") ? "1" : i[1];
+		    i[2] = (i[2] == "") ? "0" : i[2];
 		}
 
+		// Check if GF event flag is set
 		if (event_src.event & EVENTS_FLAG_GF)
 		{
-			//Default values
-			if (i[1 + position] == "")
-				i[1 + position] = "1";
-
-			if (i[2 + position] == "")
-				i[2 + position] = "0";
+		    // Set default values for the first and second values if they are empty strings
+		    i[1] = (i[1] == "") ? "1" : i[1];
+		    i[2] = (i[2] == "") ? "0" : i[2];
 		}
+
+		// Check if CAMZOOM event flag is set
 		if (event_src.event & EVENTS_FLAG_CAMZOOM)
 		{
-			//Default values
-			if (i[1 + position] == "")
-				i[1 + position] = "0.015"; //cam zoom
-
-			if (i[2 + position] == "")
-				i[2 + position] = "0.03"; //hud zoom
+		    // Set default values for the first and second values if they are empty strings
+		    i[1] = (i[1] == "") ? "0.015" : i[1]; // cam zoom
+		    i[2] = (i[2] == "") ? "0.03" : i[2]; // hud zoom
 		}
 
 		//Get values information
-		std::string value1 =  i[1 + position];
-		std::string value2 =  i[2 + position];
+		std::string value1 =  i[1];
+		std::string value2 =  i[2];
 
 		//fixed values by 1024
-		event_src.value1 = std::stof(value1) * FIXED_UNIT;
-		event_src.value2 = std::stof(value2) * FIXED_UNIT;
-		std::cout << "Found event!: " << i[0 + position] << '\n';
+		event_src.value1 = static_cast<uint16_t>(std::stof(value1) * FIXED_UNIT);
+		event_src.value2 = static_cast<uint16_t>(std::stof(value2) * FIXED_UNIT);
+		std::cout << "Found event!: " << i[0] << '\n';
 
 		event_target.push_back(event_src);
 	}
@@ -140,7 +137,7 @@ void Events_Read(json& i, Event& event_src, std::vector<Event>& event_target, ui
 
 int main(int argc, char *argv[])
 {
-	if (argc < 2)
+    if (argc < 2)
 	{
 		std::cout << "usage: funkinchtpak in_json" << std::endl;
 		return 0;
@@ -157,42 +154,37 @@ int main(int argc, char *argv[])
 	i >> j;
 	
 	auto song_info = j["song"];
-	
-	//Need do this if statement in bpm and speed for not get errors since event.json don't contain these values
-	double bpm = 0;
 
-	if (song_info["bpm"] > 0)
-		bpm  = song_info["bpm"];
+    // Process the song_info section to extract bpm and speed information
+    double bpm = song_info.value("bpm", 0);
+    double crochet = (60.0 / bpm) * 1000;
+    double step_crochet = crochet / 4;
 
-	double crochet = (60.0 / bpm) * 1000.0;
-	double step_crochet = crochet / 4;
-	
-	double speed = 0;
+    double speed = song_info.value("speed", 0);
 
-	if (song_info["speed"] > 0)
-		speed = song_info["speed"];
-	
 	std::cout << argv[1] << " speed: " << speed << " ini bpm: " << bpm << " step_crochet: " << step_crochet << std::endl;
 	
 	double milli_base = 0;
 	uint16_t step_base = 0;
-	
-	std::vector<Section> sections;
-	std::vector<Note> notes;
-	std::vector<Event> events;
-	
-	uint16_t section_end = 0;
+
+    std::vector<Section> sections;
+    std::vector<Note> notes;
+    std::vector<Event> events;
+
+    uint16_t section_end = 0;
 	int score = 0, dups = 0;
 	std::unordered_set<uint32_t> note_fudge;
-	for (auto &i : song_info["notes"]) //Iterate through sections
-	{
-		bool is_opponent = i["mustHitSection"] != true; //Note: swapped
+
+    // Iterate through the song_info to process sections and notes
+    for (auto &i : song_info["notes"])
+    {
+        bool is_opponent = i["mustHitSection"] != true; //Note: swapped
 		
-		//Read section
+		// Read section
 		Section new_section;
 		if (i["changeBPM"] == true)
 		{
-			//Update BPM (THIS IS HELL!)
+			// Update BPM (THIS IS HELL!)
 			milli_base += step_crochet * (section_end - step_base);
 			step_base = section_end;
 			
@@ -202,30 +194,21 @@ int main(int argc, char *argv[])
 			
 			std::cout << "chg bpm: " << bpm << " step_crochet: " << step_crochet << " milli_base: " << milli_base << " step_base: " << step_base << std::endl;
 		}
-		new_section.end = (section_end += 16) * 12; //(uint16_t)i["lengthInSteps"]) * 12; //I had to do this for compatibility
+		new_section.end = (section_end += 16) * 12; // (uint16_t)i["lengthInSteps"]) * 12; //I had to do this for compatibility
 		new_section.flag = PosRound(bpm, 1.0 / 24.0) & SECTION_FLAG_BPM_MASK; 
 		bool is_alt = i["altAnim"] == true;
 		if (is_opponent)
 			new_section.flag |= SECTION_FLAG_OPPFOCUS;
 		sections.push_back(new_section);
-		
-		//Read notes
-		for (auto &j : i["sectionNotes"])
-		{
-			//Push main event
-			Event new_event;
 
-			new_event.pos = (step_base * 12) + PosRound(((double)j[0] - milli_base) * 12.0, step_crochet);
-
-			//Older psych engine events version
-			Events_Read(j, new_event, events, 2);
-			Events_Read(j, new_event, events, 3);
-
-			//Push main note
+        // Read notes
+        for (auto &j : i["sectionNotes"])
+        {
+            //Push main note
 			Note new_note;
 
-			//invalid type
-			if (j[1] < 0)
+			//Event type
+			if (j[1] == -1)
 				continue;
 			
 			int sustain = (int)PosRound(j[2], step_crochet) - 1;
@@ -242,6 +225,7 @@ int main(int argc, char *argv[])
 			if (((uint8_t)j[1]) & 8 || j[3] == "Hurt Note")
 				new_note.type |= NOTE_FLAG_MINE;
 			
+			// Process notes data and add them to the notes vector
 			if (note_fudge.count(*((uint32_t*)&new_note)))
 			{
 				dups += 1;
@@ -253,21 +237,22 @@ int main(int argc, char *argv[])
 			if (!(new_note.type & NOTE_FLAG_OPPONENT))
 				score += 350;
 			
-			//Push sustain notes
+			// Push sustain notes
 			for (int k = 0; k <= sustain; k++)
 			{
 				Note sustain_note;
 				sustain_note.pos = new_note.pos + ((k + 1) * 12);
 				sustain_note.type = new_note.type | NOTE_FLAG_SUSTAIN;
 				if (k != sustain)
-					sustain_note.type &= ~NOTE_FLAG_SUSTAIN_END; //sustain didn't end yet
+					sustain_note.type &= ~NOTE_FLAG_SUSTAIN_END; // sustain didn't end yet
 				notes.push_back(sustain_note);
-			}
-		}
-	}
-	std::cout << "max score: " << score << " dups excluded: " << dups << std::endl;
+        	}
+        }
+    }
+
+    std::cout << "max score: " << score << " dups excluded: " << dups << std::endl;
 	
-	//Sort notes
+	// Sort notes
 	std::sort(notes.begin(), notes.end(), [](Note a, Note b) {
 		if (a.pos == b.pos)
 			return (b.type & NOTE_FLAG_SUSTAIN) && !(a.type & NOTE_FLAG_SUSTAIN);
@@ -275,7 +260,7 @@ int main(int argc, char *argv[])
 			return a.pos < b.pos;
 	});
 
-	//Read Events lol
+	// Read Events
 	for (auto &i : song_info["events"]) //Iterate through sections
 	{
 		for (auto &j : i[1])
@@ -285,75 +270,61 @@ int main(int argc, char *argv[])
 
 			new_event.pos = (step_base * 12) + PosRound(((double)i[0] - milli_base) * 12.0, step_crochet);
 			//Newer psych engine events version
-			Events_Read(j, new_event, events, 0);
+			Events_Read(j, new_event, events);
 		}
 	}
-	
-	//Push dummy section and note
-	Section dum_section;
-	dum_section.end = 0xFFFF;
 
-	/*
-	Since event.json don't use sections in the newers versions of psych engine
-	I need make sure if the size of section size be 0, it not use the flag of sections variable
-	Otherwise it will have the segmentation fault
-	*/
-	uint16_t section_size = sections.size();
+    // Push dummy section and note
+    Section dummy_section;
+    dummy_section.end = 0xFFFF;
+    dummy_section.flag = (sections.empty() ? 0 : sections.back().flag);
+    sections.push_back(dummy_section);
 
-	if (section_size == 0)
-		dum_section.flag = 0;
-	else
-		dum_section.flag = sections[sections.size() - 1].flag;
+    Note dummy_note;
+    dummy_note.pos = 0xFFFF;
+    dummy_note.type = NOTE_FLAG_HIT;
+    notes.push_back(dummy_note);
 
-	sections.push_back(dum_section);
-	
-	Note dum_note;
-	dum_note.pos = 0xFFFF;
-	dum_note.type = NOTE_FLAG_HIT;
-	notes.push_back(dum_note);
+    Event dummy_event;
+    dummy_event.pos = 0xFFFF;
+    dummy_event.event = EVENTS_FLAG_PLAYED;
+    events.push_back(dummy_event);
 
-	Event dum_event;
-	dum_event.pos = 0xFFFF;
-	dum_event.event = EVENTS_FLAG_PLAYED;
-	dum_event.value1 = dum_event.value2 = 0;
-	events.push_back(dum_event);
-	
-	//Write to output
-	std::ofstream out(std::string(argv[2]), std::ostream::binary);
-	if (!out.is_open())
-	{
-		std::cout << "Failed to open " << argv[2] << std::endl;
-		return 1;
-	}
-	
-	//Write header
-	WriteLong(out, (fixed_t)(speed * FIXED_UNIT)); //The speed of the chart (first 4 bytes)
-	WriteWord(out, 8 + (sections.size() * 4)); //Get the notes address (2 bytes)
-	WriteWord(out, (notes.size() * 4)); //Get the event address(2 bytes)
-	
-	
-	//Write sections
-	for (auto &i : sections)
-	{
-		WriteWord(out, i.end);
-		WriteWord(out, i.flag);
-	}
-	
-	//Write notes
-	for (auto &i : notes)
-	{
-		WriteWord(out, i.pos);
-		WriteWord(out, i.type);
-	}
+    // Write to output binary file
+    std::ofstream out(std::string(argv[2]), std::ostream::binary);
+    if (!out.is_open())
+    {
+        std::cout << "Failed to open " << argv[2] << std::endl;
+        return 1;
+    }
 
-	//Write events
-	for (auto &i : events)
-	{
-		WriteWord(out, i.pos);
-		WriteWord(out, i.event);
-		WriteWord(out,i.value1);
-		WriteWord(out,i.value2);
-	}
+    // Write header
+    WriteLong(out, static_cast<fixed_t>(speed * FIXED_UNIT));
+    WriteWord(out, 8 + (sections.size() * 4));
+    WriteWord(out, static_cast<uint16_t>(notes.size() * 4));
 
-	return 0;
+    // Write sections
+    for (auto &section : sections)
+    {
+        WriteWord(out, section.end);
+        WriteWord(out, section.flag);
+    }
+
+    // Write notes
+    for (auto &note : notes)
+    {
+        WriteWord(out, note.pos);
+        WriteWord(out, note.type);
+    }
+
+    // Write events
+    for (auto &event : events)
+    {
+        WriteWord(out, event.pos);
+        WriteWord(out, event.event);
+        WriteWord(out, event.value1);
+        WriteWord(out, event.value2);
+    }
+
+    return 0;
 }

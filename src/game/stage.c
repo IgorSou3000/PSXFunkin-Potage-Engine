@@ -38,8 +38,8 @@ static const u8 note_anims[4][3] = {
 #include "characters/dad.h"
 #include "characters/gf.h"
 
-#include "weeks/dummy.h"
-#include "weeks/week1.h"
+#include "stages/dummy.h"
+#include "stages/week1.h"
 
 static const StageDef stage_defs[StageId_Max] = {
 	#include "stagedef_disc1.h"
@@ -523,10 +523,10 @@ static void Stage_TimerDraw(void)
 {
 	Stage_TimerTick();
 
-	RECT bar_fill = {0, 248,200 - (200 * stage.timer / Audio_GetLength(stage.stage_def->track)), 6};
-	RECT bar_back = {0, 248,200, 6};
+	RECT bar_fill = {0, 240,100 - (100 * stage.timer / Audio_GetLength(stage.stage_def->track)), 6};
+	RECT bar_back = {0, 240,100, 6};
 
-	RECT_FIXED bar_dst = {FIXED_DEC(-50,1), FIXED_DEC(-110,1), 0, FIXED_DEC(4,1)};
+	RECT_FIXED bar_dst = {FIXED_DEC(-50,1), FIXED_DEC(-110,1), 0, FIXED_DEC(6,1)};
 
 	if (stage.save.downscroll)
 		bar_dst.y = -bar_dst.y - bar_dst.h;
@@ -548,9 +548,9 @@ static void Stage_TimerDraw(void)
 			FontAlign_Left
 		);
 
-		bar_dst.w = (bar_fill.w / 2) << FIXED_SHIFT;
+		bar_dst.w = bar_fill.w  << FIXED_SHIFT;
 		Stage_DrawTex(&stage.tex_hud1, &bar_fill, &bar_dst, stage.bump);
-		bar_dst.w = (bar_back.w / 2) << FIXED_SHIFT;
+		bar_dst.w = bar_back.w  << FIXED_SHIFT;
 		Stage_DrawTexCol(&stage.tex_hud1, &bar_back, &bar_dst, stage.bump, 0, 0, 0);
 	}
 }

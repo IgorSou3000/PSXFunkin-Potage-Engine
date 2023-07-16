@@ -1,5 +1,5 @@
 FILES = $(addsuffix .xa,  $(basename $(wildcard iso/songs/*/*.ogg))) \
-  $(basename $(wildcard iso/songs/*.txt))
+ 				$(basename $(wildcard iso/songs/*.txt))
 
 all: \
   $(FILES) \

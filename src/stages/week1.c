@@ -8,7 +8,6 @@
 
 #include "psx/archive.h"
 #include "psx/mem.h"
-#include "stage/stage.h"
 
 //Stage background structure
 typedef struct

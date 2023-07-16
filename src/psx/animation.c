@@ -6,7 +6,7 @@
 
 #include "animation.h"
 
-#include "stage/stage.h"
+#include "game/stage.h"
 #include "timer.h"
 
 //Animation functions

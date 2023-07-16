@@ -4,11 +4,10 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_COMBO_H
-#define PSXF_GUARD_COMBO_H
+#pragma once
 
 #include "psx/object.h"
-#include "stage/stage.h"
+#include "game/stage.h"
 
 //Combo object structure
 typedef struct
@@ -35,5 +34,3 @@ typedef struct
 
 //Combo object functions
 Obj_Combo *Obj_Combo_New(Character* character, u8 hit_type, u16 combo);
-
-#endif

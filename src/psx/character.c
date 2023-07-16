@@ -7,7 +7,7 @@
 #include "character.h"
 
 #include "mem.h"
-#include "stage/stage.h"
+#include "game/stage.h"
 
 //Character functions
 void Character_Free(Character *this)

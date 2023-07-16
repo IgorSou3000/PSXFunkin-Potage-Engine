@@ -4,11 +4,10 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_SPLASH_H
-#define PSXF_GUARD_SPLASH_H
+#pragma once
 
 #include "psx/object.h"
-#include "stage/stage.h"
+#include "game/stage.h"
 
 //Splash object structure
 typedef struct
@@ -24,5 +23,3 @@ typedef struct
 
 //Splash object functions
 Obj_Splash *Obj_Splash_New(fixed_t x, fixed_t y, u8 colour);
-
-#endif

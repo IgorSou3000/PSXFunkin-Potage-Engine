@@ -16,7 +16,7 @@
 #include "movie.h"
 
 #include "strplay.h"
-#include "stage/stage.h"
+#include "game/stage.h"
 
 static const struct {
   const char* path; //path of the movie

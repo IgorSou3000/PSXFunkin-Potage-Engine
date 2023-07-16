@@ -6,7 +6,7 @@
 
 #pragma once 
 
-#include "stage/stage.h"
+#include "game/stage.h"
 
 //Stage functions
 StageBack *Back_Week1_New();

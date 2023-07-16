@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_OBJECT_H
-#define PSXF_GUARD_OBJECT_H
+#pragma once
 
 #include "psx.h"
 
@@ -27,5 +26,3 @@ void ObjectList_Add(ObjectList *list, Object *obj);
 void ObjectList_Remove(ObjectList *list, Object *obj);
 void ObjectList_Tick(ObjectList *list);
 void ObjectList_Free(ObjectList *list);
-
-#endif

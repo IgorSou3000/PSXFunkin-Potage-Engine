@@ -14,7 +14,7 @@
 #include "save.h"
 
 #include "menu/menu.h"
-#include "stage/stage.h"
+#include "game/stage.h"
 
 //Game loop
 GameLoop gameloop;

@@ -30,21 +30,20 @@
 			
 			<!-- Fonts -->
 			<dir name = "font">
-				<file name = "font1.tim" type = "data" source = "iso/font/font1.tim"/>
+				<file name = "fonts.tim" type = "data" source = "iso/fonts/fonts.tim"/>
 			</dir>
 			
 			<!-- Stage assets -->
 			<dir name = "hud">
 				<file name = "hud0.tim" type = "data" source = "iso/hud/hud0.tim"/>
 				<file name = "hud1.tim" type = "data" source = "iso/hud/hud1.tim"/>
-				<file name = "hud1spk.tim" type = "data" source = "iso/hud/hud1spk.tim"/>
 				<file name = "intro.tim" type = "data" source = "iso/hud/intro.tim"/>
 			</dir>
 			
 			<!-- Week1 assets -->
 			<dir name = "week1">
 				<!-- Background art -->
-				<file name = "back.arc" type = "data" source = "iso/stage/week1/back.arc"/>
+				<file name = "back.arc" type = "data" source = "iso/stages/week1/back.arc"/>
 				
 				<file name = "1.1e.cht" type = "data" source = "iso/songs/bopeebo/bopeebo-easy.cht"/>
 				<file name = "1.1n.cht" type = "data" source = "iso/songs/bopeebo/bopeebo.cht"/>

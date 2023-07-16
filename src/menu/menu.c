@@ -17,11 +17,10 @@
 #include "psx/mutil.h"
 #include "psx/save.h"
 
-#include "psx/font.h"
+#include "fonts/font.h"
 #include "psx/trans.h"
 #include "psx/loadscr.h"
 
-#include "stage/stage.h"
 #include "characters/gf.h"
 
 //Used in the option

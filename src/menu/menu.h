@@ -7,7 +7,7 @@
 #ifndef PSXF_GUARD_MENU_H
 #define PSXF_GUARD_MENU_H
 
-#include "stage/stage.h"
+#include "game/stage.h"
 
 //Menu enums
 typedef enum

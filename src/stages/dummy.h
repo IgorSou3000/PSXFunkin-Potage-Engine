@@ -6,7 +6,7 @@
 
 #pragma once 
 
-#include "stage/stage.h"
+#include "game/stage.h"
 
 //Dummy functions
 StageBack *Back_Dummy_New();

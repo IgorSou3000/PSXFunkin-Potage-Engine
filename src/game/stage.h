@@ -18,7 +18,7 @@
 #include "psx/object.h"
 
 #include "psx/audio.h"
-#include "psx/font.h"
+#include "fonts/font.h"
 
 //Stage constants
 #define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE)
