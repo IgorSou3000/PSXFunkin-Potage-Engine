@@ -1,0 +1,1 @@
+	{"\\STR\\UGH.STR;1", StageId_Max},

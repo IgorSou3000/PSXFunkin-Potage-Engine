@@ -46,6 +46,8 @@ typedef struct
 void Gfx_Init(void);
 void Gfx_Quit(void);
 void Gfx_Flip(void);
+void Gfx_FlipWithoutOT(void);
+RECT* Gfx_GetDrawClip(void);
 void Gfx_SetClear(u8 r, u8 g, u8 b);
 void Gfx_EnableClear(void);
 void Gfx_DisableClear(void);

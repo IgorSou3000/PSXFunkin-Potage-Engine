@@ -2,9 +2,10 @@ TARGET = funkin
 TYPE = ps-exe
 
 SRCS = $(wildcard src/*.c) \
-       $(wildcard src/*/*.c) \
-       $(wildcard src/*/*/*.c) \
-       mips/common/crt0/crt0.s
+		$(wildcard src/*/*.c) \
+		$(wildcard src/*/*/*.c) \
+		src/psx/psn00b/vlc2.s \
+		mips/common/crt0/crt0.s
 
 CPPFLAGS += -Wall -Wextra -pedantic -Isrc/ -mno-check-zero-division
 LDFLAGS += -Wl,--start-group

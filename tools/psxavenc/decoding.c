@@ -24,8 +24,6 @@ freely, subject to the following restrictions:
 
 #include "common.h"
 
-static void poll_av_packet(settings_t *settings, AVPacket *packet);
-
 int decode_frame(AVCodecContext *codec, AVFrame *frame, int *frame_size, AVPacket *packet) {
 	int ret;
 
@@ -50,7 +48,6 @@ bool open_av_data(const char *filename, settings_t *settings, bool use_audio, bo
 	av_decoder_state_t* av = &(settings->decoder_state_av);
 	av->video_next_pts = 0.0;
 	av->frame = NULL;
-	av->video_frame_src_size = 0;
 	av->video_frame_dst_size = 0;
 	av->audio_stream_index = -1;
 	av->video_stream_index = -1;
@@ -204,8 +201,13 @@ bool open_av_data(const char *filename, settings_t *settings, bool use_audio, bo
 			NULL,
 			NULL
 		);
-		// Is this even necessary? -- spicyjpeg
-		sws_setColorspaceDetails(
+		if (av->scaler == NULL) {
+			return false;
+		}
+#if 0
+		// FIXME: if this is uncommented libswscale may produce completely black
+		// frames for whatever reason...
+		if (sws_setColorspaceDetails(
 			av->scaler,
 			sws_getCoefficients(av->video_codec_context->colorspace),
 			(av->video_codec_context->color_range == AVCOL_RANGE_JPEG),
@@ -214,14 +216,16 @@ bool open_av_data(const char *filename, settings_t *settings, bool use_audio, bo
 			0,
 			0,
 			0
-		);
+		) < 0) {
+			return false;
+		}
+#endif
 		if (settings->swscale_options) {
 			if (av_opt_set_from_string(av->scaler, settings->swscale_options, NULL, "=", ":,") < 0) {
 				return false;
 			}
 		}
 
-		av->video_frame_src_size = 4*av->video_codec_context->width*av->video_codec_context->height;
 		av->video_frame_dst_size = 3*settings->video_width*settings->video_height/2;
 	}
 
@@ -271,7 +275,7 @@ static void poll_av_packet_video(settings_t *settings, AVPacket *packet)
 	};
 
 	if (decode_frame(av->video_codec_context, av->frame, &frame_size, packet)) {
-		if (!av->frame->width || !av->frame->height || !av->frame->data) {
+		if (!av->frame->width || !av->frame->height || !av->frame->data[0]) {
 			return;
 		}
 

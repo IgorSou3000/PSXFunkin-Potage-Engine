@@ -355,7 +355,6 @@ void encode_file_str(settings_t *settings, FILE *output) {
 		}
 	}
 
-	fprintf(stderr, "\n\rTotal Frames: %4d", settings->state_vid.frame_index);
 	free(settings->state_vid.frame_output);
 }
 

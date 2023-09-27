@@ -12,6 +12,7 @@
 #include "audio.h"
 #include "pad.h"
 #include "save.h"
+#include "str.h"
 
 #include "menu/menu.h"
 #include "game/stage.h"
@@ -39,7 +40,7 @@ void ErrorLock(void)
 #undef MEM_IMPLEMENTATION
 
 #ifndef PSXF_STDMEM
-static u8 malloc_heap[0x190000];
+static u8 malloc_heap[0x1B0000];
 #endif
 
 //Entry point
@@ -58,6 +59,7 @@ int main(int argc, char **argv)
 	Audio_Init();
 	Gfx_Init();
 	Pad_Init();
+	Str_Init();
 	
 	Timer_Init();
 	Font_Init();
@@ -79,8 +81,7 @@ int main(int argc, char **argv)
 	
 	//Game loop
 	while (true)
-	{
-		//Prepare frame
+	{		
 		Timer_Tick();
 		Audio_ProcessXA();
 		Pad_Update();

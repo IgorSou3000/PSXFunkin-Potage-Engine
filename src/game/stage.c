@@ -12,7 +12,7 @@
 #include "psx/pad.h"
 #include "psx/main.h"
 #include "psx/random.h"
-#include "psx/movie.h"
+#include "psx/str.h"
 #include "psx/mutil.h"
 
 #include "menu/menu.h"
@@ -1267,7 +1267,7 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	//Check movies
 	//Don't play movie if you are retrying the song
 	if (stage.trans != StageTrans_Reload)
-		CheckMovies();
+		Str_CanPlayDef();
 	
 	//Load stage background
 	Stage_LoadStage();
@@ -1376,7 +1376,7 @@ static boolean Stage_NextLoad(void)
 		stage.stage_def = &stage_defs[stage.stage_id = stage.stage_def->next_stage];
 
 		//Check movies
-		CheckMovies();
+		Str_CanPlayDef();
 		
 		//Load stage background
 		if (load & STAGE_LOAD_STAGE)

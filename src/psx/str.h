@@ -8,7 +8,11 @@
 #define PSXF_GUARD_STRPLAY_H
 
 #include "psx.h"
+#include <libpress.h>
 
-int PlayStr(int xres, int yres, int xpos, int ypos, const char *filedir, int framecount);
+void Str_Init(void);
+void Str_Play(const char *filedir);
+void Str_CanPlayDef(void);
 
+extern boolean movie_is_playing;
 #endif

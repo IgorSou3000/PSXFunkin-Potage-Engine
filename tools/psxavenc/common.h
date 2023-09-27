@@ -30,12 +30,7 @@ freely, subject to the following restrictions:
 #include <string.h>
 #include <math.h>
 #include <time.h>
-
-#ifdef _WIN32
-#include <io.h>
-#else
 #include <unistd.h>
-#endif
 
 #include <libavutil/opt.h>
 #include <libavcodec/avcodec.h>
@@ -74,7 +69,6 @@ typedef struct {
 } vid_encoder_state_t;
 
 typedef struct {
-	int video_frame_src_size;
 	int video_frame_dst_size;
 	int audio_stream_index;
 	int video_stream_index;
