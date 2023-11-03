@@ -20,10 +20,11 @@
 #include "fonts/font.h"
 #include "psx/trans.h"
 #include "psx/loadscr.h"
+#include "psx/configuration.h"
 
 #include "characters/gf.h"
 
-//Used in the option
+//Used in the options
 #define DESCRIPTION_BAR_WIDTH SCREEN_WIDTH
 #define DESCRIPTION_BAR_HEIGHT 32
 

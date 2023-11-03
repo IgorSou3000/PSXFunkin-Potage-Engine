@@ -1,12 +1,10 @@
-FILES = $(addsuffix .cht,  $(basename $(wildcard iso/songs/*.json))) \
-		$(addsuffix .cht,  $(basename $(wildcard iso/songs/*/*.json)))
-
 all: \
-	$(FILES) \
+	$(addsuffix .cht,  $(basename $(wildcard iso/songs/*.json))) \
+	$(addsuffix .cht,  $(basename $(wildcard iso/songs/*/*.json))) \
 
 iso/%.cht: iso/%.json
 	tools/funkinchtpak/funkinchtpak $< $@
 
-.PHONY: clean
 clean:
-	rm -f $(FILES)
+	echo "Cleaning .cht files:"
+	find iso -type f \( -name "*.cht" \) -print -delete

@@ -1132,6 +1132,7 @@ static void Stage_LoadChart(void)
 		stage.max_score = stage.player_state[0].max_score;
 	
 	stage.speed = stage.ogspeed = *((fixed_t*)stage.chart.data); //Get the speed value (4 bytes)
+	printf("%d\n", stage.speed);
 	
 	stage.step_crochet = 0;
 	stage.time_base = 0;

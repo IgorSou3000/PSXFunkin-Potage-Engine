@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
     double crochet = (60.0 / bpm) * 1000;
     double step_crochet = crochet / 4;
 
-    double speed = song_info.value("speed", 0);
+    double speed = song_info.value("speed", 0.0);
 
 	std::cout << argv[1] << " speed: " << speed << " ini bpm: " << bpm << " step_crochet: " << step_crochet << std::endl;
 	

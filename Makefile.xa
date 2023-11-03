@@ -1,8 +1,6 @@
-FILES = $(addsuffix .xa,  $(basename $(wildcard iso/songs/*/*.ogg))) \
- 				$(basename $(wildcard iso/songs/*.txt))
-
 all: \
-  $(FILES) \
+  $(addsuffix .xa,  $(basename $(wildcard iso/songs/*/*.ogg))) \
+ 	$(basename $(wildcard iso/songs/*.txt))
 
 # XA converts
 iso/songs/%.xa: iso/songs/%.ogg
@@ -12,4 +10,5 @@ iso/songs/%.mus:
 
 .PHONY: clean
 clean:
-	rm -f $(FILES)
+	echo "Cleaning .xa files:"
+	find iso -type f \( -name "*.xa" \) -print -delete

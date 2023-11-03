@@ -12,6 +12,7 @@
 #include "psx/mem.h"
 #include "psx/main.h"
 #include "game/stage.h"
+#include "psx/configuration.h"
 
 // Pallete Offset: 0x00000014 to 0x00000033
 // Image Offset:   0x00000040 to 0x000000BF

@@ -1,13 +1,11 @@
-FILES = $(addsuffix .vag, $(basename $(wildcard iso/sounds/*.ogg))) \
- $(addsuffix .vag, $(basename $(wildcard iso/sounds/*/*.ogg)))
-
 all: \
-		$(FILES) \
-
+	$(addsuffix .vag, $(basename $(wildcard iso/sounds/*.ogg))) \
+ 	$(addsuffix .vag, $(basename $(wildcard iso/sounds/*/*.ogg)))
+ 	
 # SFX converts
 iso/sounds/%.vag: iso/sounds/%.ogg
 	tools/psxavenc/psxavenc -f 44100 -t vag -b 4 -c 1 -F 1 -C 0 $< $@
 
-.PHONY: clean
 clean:
-	rm -f $(FILES)
+	echo "Cleaning .vag files:"
+	find iso -type f \( -name "*.vag" \) -print -delete

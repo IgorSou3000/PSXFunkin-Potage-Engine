@@ -1,13 +1,11 @@
-FILES = $(addsuffix .str, $(basename $(wildcard iso/movies/*.mp4))) \
-	$(addsuffix .str, $(basename $(wildcard iso/movies/*/*.mp4)))
-
 all: \
-	$(FILES) \
+	$(addsuffix .str, $(basename $(wildcard iso/movies/*.mp4))) \
+	$(addsuffix .str, $(basename $(wildcard iso/movies/*/*.mp4)))
 
 # STR converts
 iso/movies/%.str: iso/movies/%.mp4
 	tools/psxavenc/psxavenc -t str2 -r 15 -I -b 4 -c 2 -x 2 $< $@
 
-.PHONY: clean
 clean:
-	rm -f $(FILES)
+	echo "Cleaning .str files:"
+	find iso -type f \( -name "*.str" \) -print -delete

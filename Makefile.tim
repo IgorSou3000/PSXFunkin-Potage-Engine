@@ -33,3 +33,7 @@ iso/characters/gf/main.arc: iso/characters/gf/gf0.tim iso/characters/gf/gf1.tim 
 
 # Week 1
 iso/stages/week1/back.arc: iso/stages/week1/back0.tim iso/stages/week1/back1.tim
+
+clean:
+	echo "Cleaning .arc and .tim files:"
+	find iso -type f \( -name "*.arc" -o -name "*.tim" \) -print -delete
