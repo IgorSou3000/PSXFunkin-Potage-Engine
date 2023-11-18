@@ -6,7 +6,7 @@
 
 #pragma once 
 
-#include "game/stage.h"
+#include "psx/stage.h"
 
 //Dummy functions
 StageBack *Back_Dummy_New();

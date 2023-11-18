@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_ANIMATION_H
-#define PSXF_GUARD_ANIMATION_H
+#pragma once
 
 #include "psx.h"
 
@@ -38,5 +37,3 @@ void Animatable_Init(Animatable *this, const Animation *anims);
 void Animatable_SetAnim(Animatable *this, u8 anim);
 void Animatable_Animate(Animatable *this, void *user, void (*set_frame)(void*, u8));
 boolean Animatable_Ended(Animatable *this);
-
-#endif

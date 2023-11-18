@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_AUDIO_H
-#define PSXF_GUARD_AUDIO_H
+#pragma once
 
 #include "psx.h"
 
@@ -55,5 +54,3 @@ u16 Audio_GetLength(XA_Track track);
 void Audio_ClearAlloc(void);
 u32 Audio_LoadSFX(const char* path);
 void Audio_PlaySFX(SFX addr, u16 volume);
-
-#endif

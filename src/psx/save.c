@@ -11,7 +11,7 @@
 #include <libmcrd.h>
 #include "psx/mem.h"
 #include "psx/main.h"
-#include "game/stage.h"
+#include "psx/stage.h"
 #include "psx/configuration.h"
 
 // Pallete Offset: 0x00000014 to 0x00000033
@@ -103,7 +103,7 @@ boolean ReadSave()
       printf("Failed To Load Save!\n");
       return false;
     }
-   memcpy((void *) &stage.save, (const void *) file.saveData, sizeof(stage.save));
+    memcpy((void *) &stage.save, (const void *) file.saveData, sizeof(stage.save));
     close(fd);
     return true;
   }
@@ -126,7 +126,7 @@ void WriteSave()
 
   SaveFile file;
   InitSaveFile(&file, SaveName);
-    memcpy((void *) file.saveData, (const void *) &stage.save, sizeof(stage.save));
+  memcpy((void *) file.saveData, (const void *) &stage.save, sizeof(stage.save));
   
   if (fd >= 0) 
   {

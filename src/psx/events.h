@@ -38,9 +38,6 @@ typedef struct
 void Events_ScrollSpeed(void);
 
 void Events_Tick(void);
-void Events_StartEvents(void);
 void Events_Load(void);
-
-extern Events event_speed;
 
 #endif

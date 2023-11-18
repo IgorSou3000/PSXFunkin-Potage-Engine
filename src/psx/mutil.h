@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_MUTIL_H
-#define PSXF_GUARD_MUTIL_H
+#pragma once
 
 #include "psx.h"
 
@@ -18,5 +17,3 @@ void MUtil_RotatePoint(POINT *p, s16 s, s16 c);
 
 //OG Code by lucky
 fixed_t Lerp(fixed_t position, fixed_t target, fixed_t speed);
-
-#endif

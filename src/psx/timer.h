@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_TIMER_H
-#define PSXF_GUARD_TIMER_H
+#pragma once
 
 #include "psx.h"
 #include "fixed.h"
@@ -18,5 +17,3 @@ extern fixed_t timer_sec, timer_dt;
 void Timer_Init(void);
 void Timer_Tick(void);
 void Timer_Reset(void);
-
-#endif

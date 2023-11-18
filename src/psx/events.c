@@ -10,7 +10,7 @@
 #include "psx/random.h"
 #include "psx/mutil.h"
 
-Events event_speed;
+static Events event_speed;
 
 #define GF_SPEED_FACTOR 4
 #define EVENTS_TICK_DIVISOR 60
@@ -62,8 +62,6 @@ static void Events_CheckValues(Chart* chart)
 
 		Events_GetValues(event);
 
-		printf("%d\n", event->pos);
-
 		event->event |= EVENTS_FLAG_PLAYED;
 	}
 }
@@ -71,17 +69,12 @@ static void Events_CheckValues(Chart* chart)
 void Events_Tick(void)
 {
 	//Scroll Speed!
-	stage.speed += (FIXED_MUL(stage.ogspeed, event_speed.value1) - stage.speed) / (((event_speed.value2 / 60) + 1));
-}
+	stage.speed += (FIXED_MUL(stage.previous_speed, event_speed.value1) - stage.speed) / (((event_speed.value2 / 60) + 1));
 
-void Events_StartEvents(void)
-{
 	Events_CheckValues(&stage.chart);
 
 	if (stage.event_chart.data != NULL)
 		Events_CheckValues(&stage.event_chart);
-
-	Events_Tick();
 }
 
 //Initialize some stuffs

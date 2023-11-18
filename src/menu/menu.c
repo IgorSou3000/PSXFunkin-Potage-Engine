@@ -880,6 +880,7 @@ void Menu_Tick(void)
 					10,
 					FontAlign_Right
 				);
+			#endif
 
 				//Draw difficulty
 				menu.font_arial.draw(&menu.font_arial,
@@ -892,7 +893,6 @@ void Menu_Tick(void)
 				RECT screen_src = {SCREEN_WIDTH - (strlen(scoredisp) << 3), 0, (strlen(scoredisp) << 3), 30};
 
 				Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
-			#endif
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(30,1);

@@ -1131,8 +1131,7 @@ static void Stage_LoadChart(void)
 	else
 		stage.max_score = stage.player_state[0].max_score;
 	
-	stage.speed = stage.ogspeed = *((fixed_t*)stage.chart.data); //Get the speed value (4 bytes)
-	printf("%d\n", stage.speed);
+	stage.speed = stage.previous_speed = *((fixed_t*)stage.chart.data); //Get the speed value (4 bytes)
 	
 	stage.step_crochet = 0;
 	stage.time_base = 0;
@@ -1570,6 +1569,10 @@ void Stage_Tick(void)
 
 			//Clear per-frame flags
 			stage.flag &= ~(STAGE_FLAG_JUST_STEP);
+
+			#ifndef RELEASE_MODE
+				FntPrint("Step:%d\nBpm:%d\n", stage.song_step, (stage.chart.cur_section->flag & SECTION_FLAG_BPM_MASK) / 24);
+			#endif
 			
 			RecalcScroll:;
 			//Update song scroll and step
@@ -1609,9 +1612,7 @@ void Stage_Tick(void)
 
 			//Go to pause state
 			if (stage.flag & STAGE_FLAG_PAUSED)
-			{
 				Stage_DrawPause();
-			}
 
 			if (playing && pad_state.press & PAD_START)
 			{
@@ -1623,7 +1624,7 @@ void Stage_Tick(void)
   		}
 
   		//Psych events
-  		Events_StartEvents();
+  		Events_Tick();
 
 			//Tick stage
 			if (stage.back->tick != NULL)

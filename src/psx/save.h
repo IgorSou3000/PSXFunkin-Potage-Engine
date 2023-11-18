@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_SAVE_H
-#define PSXF_GUARD_SAVE_H
+#pragma once
 
 #include "psx.h"
 
@@ -26,5 +25,3 @@ boolean CheckSave();
 boolean ReadSave();
 void WriteSave();
 void MCRD_Init(void);
-
-#endif

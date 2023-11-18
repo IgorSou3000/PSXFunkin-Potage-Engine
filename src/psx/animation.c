@@ -6,7 +6,7 @@
 
 #include "animation.h"
 
-#include "game/stage.h"
+#include "psx/stage.h"
 #include "timer.h"
 
 //Animation functions

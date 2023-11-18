@@ -211,7 +211,7 @@ typedef struct
 	Chart chart;
 	Chart event_chart;
 	
-	fixed_t speed, ogspeed;
+	fixed_t speed, previous_speed;
 	fixed_t step_crochet, step_time;
 	fixed_t early_safe, late_safe, early_sus_safe, late_sus_safe;
 	

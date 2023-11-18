@@ -7,7 +7,7 @@
 #pragma once
 
 #include "psx/object.h"
-#include "game/stage.h"
+#include "psx/stage.h"
 
 //Splash object structure
 typedef struct

@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_PLAYER_H
-#define PSXF_GUARD_PLAYER_H
+#pragma once
 
 #include "character.h"
 
@@ -26,5 +25,3 @@ typedef struct
 	s16 x, y;
 	s16 xsp, ysp;
 } SkullFragment;
-
-#endif

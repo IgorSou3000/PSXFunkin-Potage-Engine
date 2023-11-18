@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_IO_H
-#define PSXF_GUARD_IO_H
+#pragma once
 
 #include "psx.h"
 
@@ -26,5 +25,3 @@ IO_Data IO_Read(const char *path);
 IO_Data IO_AsyncRead(const char *path);
 boolean IO_IsSeeking(void);
 boolean IO_IsReading(void);
-
-#endif

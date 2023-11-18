@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_PAD_H
-#define PSXF_GUARD_PAD_H
+#pragma once
 
 #include "psx.h"
 
@@ -47,5 +46,3 @@ extern Pad pad_state, pad_state_2;
 void Pad_Init(void);
 void Pad_Quit(void);
 void Pad_Update(void);
-
-#endif

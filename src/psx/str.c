@@ -45,7 +45,7 @@
 #include "gfx.h"
 #include "psn00b/strnoob.h"
 #include "mem.h"
-#include "game/stage.h"
+#include "psx/stage.h"
 
 boolean movie_is_playing;
 

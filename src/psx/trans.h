@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_TRANS_H
-#define PSXF_GUARD_TRANS_H
+#pragma once
 
 #include "psx.h"
 
@@ -15,5 +14,3 @@ void Trans_Clear(void);
 void Trans_Start(void);
 boolean Trans_Tick(void);
 boolean Trans_Idle(void);
-
-#endif

@@ -8,7 +8,7 @@
 
 #include "psx/mem.h"
 #include "psx/archive.h"
-#include "game/stage.h"
+#include "psx/stage.h"
 #include "psx/random.h"
 #include "psx/main.h"
 

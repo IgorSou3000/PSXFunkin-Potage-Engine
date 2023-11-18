@@ -1,7 +1,7 @@
 TARGET = funkin
 TYPE = ps-exe
 
-SRCS = $(wildcard src/*.c) \
+SRCS =  $(wildcard src/*.c) \
 		$(wildcard src/*/*.c) \
 		$(wildcard src/*/*/*.c) \
 		src/psx/psn00b/vlc2.s \

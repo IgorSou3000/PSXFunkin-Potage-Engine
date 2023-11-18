@@ -7,7 +7,7 @@
 #include "font.h"
 
 #include "psx/timer.h"
-#include "game/stage.h"
+#include "psx/stage.h"
 
 #include <string.h>
 

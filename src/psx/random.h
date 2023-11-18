@@ -4,8 +4,7 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_RANDOM_H
-#define PSXF_GUARD_RANDOM_H
+#pragma once
 
 #include "psx.h"
 
@@ -16,5 +15,3 @@ u8 Random8();
 u16 Random16();
 u32 Random32();
 s32 RandomRange(s32 x, s32 y);
-
-#endif

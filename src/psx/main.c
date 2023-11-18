@@ -15,7 +15,7 @@
 #include "str.h"
 
 #include "menu/menu.h"
-#include "game/stage.h"
+#include "psx/stage.h"
 
 //Game loop
 GameLoop gameloop;

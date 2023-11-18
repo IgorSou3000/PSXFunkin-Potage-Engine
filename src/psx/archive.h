@@ -4,12 +4,9 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PSXF_GUARD_ARCHIVE_H
-#define PSXF_GUARD_ARCHIVE_H
+#pragma once
 
 #include "io.h"
 
 //Archive functions
 IO_Data Archive_Find(IO_Data arc, const char *path);
-
-#endif
