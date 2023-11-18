@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
 	auto song_info = j["song"];
 
     // Process the song_info section to extract bpm and speed information
-    double bpm = song_info.value("bpm", 0,0);
+    double bpm = song_info.value("bpm", 0.0);
     double crochet = (60.0 / bpm) * 1000;
     double step_crochet = crochet / 4;
 
