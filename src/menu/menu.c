@@ -130,6 +130,32 @@ static struct
 	Character *gf; //Title Girlfriend
 } menu;
 
+typedef struct
+{
+	enum
+	{
+		OptType_Boolean,
+		OptType_Enum,
+	} type;
+
+	const char *text;
+	const char* description;
+	void *value;
+	union
+	{
+		struct
+		{
+			int a;
+		} spec_boolean;
+		struct
+		{
+			s32 max;
+			const char **strs;
+		} spec_enum;
+	} spec;
+	
+} MenuOption;
+
 //Internal menu functions
 char menu_text_buffer[0x100];
 
@@ -1119,26 +1145,7 @@ void Menu_Tick(void)
 		}
 		case MenuSubPage_Visual:
 		{
-			const RECT screen_src = {0, SCREEN_HEIGHT - DESCRIPTION_BAR_HEIGHT, DESCRIPTION_BAR_WIDTH, DESCRIPTION_BAR_HEIGHT};
-			Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
-
-			static const struct
-			{
-				enum
-				{
-					OptType_Boolean,
-				} type;
-				const char *text;
-				const char* description;
-				void *value;
-				union
-				{
-					struct
-					{
-						int a;
-					} spec_boolean;
-				} spec;
-			} menu_options[] = {
+			static const MenuOption menu_options[] = {
 				{OptType_Boolean, "CAMERA ZOOM", "If unchecked, the camera won't zoom in on a beat hit.", &stage.save.canbump, {.spec_boolean = {0}}},
 				{OptType_Boolean, "SPLASH", "If unchecked, hitting \"Sick!\" notes won't show particles.", &stage.save.splash, {.spec_boolean = {0}}},
 			};
@@ -1208,6 +1215,10 @@ void Menu_Tick(void)
 					(menu.select == i) ? 128 : 64
 				);
 			}
+
+			//Draw description rectangle
+			const RECT description_rect_src = {0, SCREEN_HEIGHT - DESCRIPTION_BAR_HEIGHT, DESCRIPTION_BAR_WIDTH, DESCRIPTION_BAR_HEIGHT};
+			Gfx_BlendRect(&description_rect_src, 0, 0, 0, 0);
 			
 			//Draw background
 			Menu_DrawBack(
@@ -1220,33 +1231,8 @@ void Menu_Tick(void)
 		}
 		case MenuSubPage_Gameplay:
 		{
-			const RECT screen_src = {0, SCREEN_HEIGHT - DESCRIPTION_BAR_HEIGHT, DESCRIPTION_BAR_WIDTH, DESCRIPTION_BAR_HEIGHT};
-			Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
-
 			static const char *gamemode_strs[] = {"NORMAL", "SWAP", "TWO PLAYER"};
-			static const struct
-			{
-				enum
-				{
-					OptType_Boolean,
-					OptType_Enum,
-				} type;
-				const char *text;
-				const char* description;
-				void *value;
-				union
-				{
-					struct
-					{
-						int a;
-					} spec_boolean;
-					struct
-					{
-						s32 max;
-						const char **strs;
-					} spec_enum;
-				} spec;
-			} menu_options[] = {
+			static const MenuOption menu_options[] = {
 				{OptType_Enum,    "GAMEMODE", NULL, &stage.mode, {.spec_enum = {COUNT_OF(gamemode_strs), gamemode_strs}}},
 				{OptType_Boolean, "GHOST TAP ", "If checked, you won't get misses from pressing keys\nwhile there are no notes able to be hit.", &stage.save.ghost, {.spec_boolean = {0}}},
 				{OptType_Boolean, "DOWNSCROLL", "If checked, notes go down instead of up.", &stage.save.downscroll, {.spec_boolean = {0}}},
@@ -1342,6 +1328,10 @@ void Menu_Tick(void)
 					(menu.select == i) ? 128 : 64
 				);
 			}
+
+			//Draw description rectangle
+			const RECT description_rect_src = {0, SCREEN_HEIGHT - DESCRIPTION_BAR_HEIGHT, DESCRIPTION_BAR_WIDTH, DESCRIPTION_BAR_HEIGHT};
+			Gfx_BlendRect(&description_rect_src, 0, 0, 0, 0);
 			
 			//Draw background
 			Menu_DrawBack(

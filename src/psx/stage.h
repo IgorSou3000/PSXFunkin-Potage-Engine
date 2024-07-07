@@ -28,7 +28,8 @@
 
 #define STAGE_FLAG_JUST_STEP     (1 << 0) //Song just stepped this frame
 #define STAGE_FLAG_VOCAL_ACTIVE  (1 << 1) //Song's vocal track is currently active
-#define STAGE_FLAG_PAUSED 			 (1 << 2) //Game Is Paused
+#define STAGE_FLAG_PAUSED				 (1 << 2) //Game Is Paused
+#define STAGE_FLAG_OPPONENT_HIT  (1 << 3) //Opponent first note hit
 
 #define STAGE_LOAD_PLAYER     (1 << 0) //Reload player character
 #define STAGE_LOAD_OPPONENT   (1 << 1) //Reload opponent character

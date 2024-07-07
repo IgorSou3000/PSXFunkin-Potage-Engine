@@ -353,6 +353,9 @@ static void Stage_SustainCheck(PlayerState *this, u8 type)
 		
 		//Hit the note
 		note->type |= NOTE_FLAG_HIT;
+
+		if (this->character == stage.opponent)
+			stage.flag |= STAGE_FLAG_OPPONENT_HIT;
 		
 		//Make character sing if he exist
 		if (this->character != NULL)
@@ -509,9 +512,9 @@ static void Stage_TimerTick(void)
 	//Has the song started?
 	if (stage.song_step >= 0) //If song starts decrease the timer
 	{
-			//Don't change anything if timer be 0
-			if (stage.timer != 0)
-				stage.timer = Audio_GetLength(stage.stage_def->track) - (stage.song_time >> FIXED_SHIFT);
+		//Don't change anything if timer be 0
+		if (stage.timer != 0)
+			stage.timer = Audio_GetLength(stage.stage_def->track) - (stage.song_time >> FIXED_SHIFT);
 	}
 
 	else //If not keep the timer at the song starting length	
@@ -602,7 +605,19 @@ static void Stage_DrawHealthBar(u32 health_bar_color, s8 offsetx)
 	u8 b = ((health_bar_color) & 0xFF) / 2;
 
 	// Determine the width of the health bar based on player position
-	u8 health_width = (offsetx > 0) ? 200 : (200 - (200 * stage.player_state[0].health / 20000));
+	u8 health_width;
+
+	if (offsetx > 0)
+		health_width = 200;
+
+	else
+	{
+		if (stage.mode == StageMode_Swap)
+			health_width = (200 * stage.player_state[0].health / 20000);
+
+		else
+			health_width = 200 - (200 * stage.player_state[0].health / 20000);
+	}
 
 	//Get src and dst
 	RECT health_src = {0, 248, health_width, 6};
@@ -621,13 +636,20 @@ static void Stage_DrawHealthIcon(s16 health, Character* this, s8 offsetx)
 
 	//Check if we should use 'dying' icon
 	s8 dying;
-	if (offsetx < 0)
+	if ((offsetx < 0 && stage.mode != StageMode_Swap) || (offsetx > 0 && stage.mode == StageMode_Swap))
 		dying = (health >= 18000) * icon_size;
 	else
 		dying = (health <= 2000) * icon_size;
 	
 	//Get src and dst
-	fixed_t hx = (100 << FIXED_SHIFT) * (10000 - health) / 10000;
+	fixed_t hx;
+
+	if (stage.mode == StageMode_Swap)
+		hx = (100 << FIXED_SHIFT) * (health - 10000) / 10000;
+
+	else
+		hx = (100 << FIXED_SHIFT) * (10000 - health) / 10000;
+
 	RECT src = {
 		(this->health_i % 3) * (icon_size * 2) + dying,
 		(this->health_i / 3) * icon_size,
@@ -644,13 +666,6 @@ static void Stage_DrawHealthIcon(s16 health, Character* this, s8 offsetx)
 
 	if (stage.save.downscroll)
 		dst.y = -dst.y - dst.h;
-
-	//Swap icons X if be swap mode
-	if (stage.mode == StageMode_Swap)
-	{
-		dst.x += dst.w;
-		dst.w = -dst.w;
-	}
 
 	//Swap icon if character is player
 	if (this->spec & CHAR_SPEC_ISPLAYER)
@@ -1568,7 +1583,7 @@ void Stage_Tick(void)
 					boolean is_bump_step = (stage.song_step % 16) == 0;
 					
 					//Bump screen
-					if (is_bump_step && stage.save.canbump == true)
+					if (is_bump_step && stage.save.canbump == true && stage.flag & STAGE_FLAG_OPPONENT_HIT)
 					{
 						stage.bump += FIXED_DEC(3,100); //0.03
 						stage.character_bump += FIXED_DEC(15,1000); //0.015
@@ -1605,6 +1620,7 @@ void Stage_Tick(void)
 						if (playing && ((note->type ^ stage.note_swap) & NOTE_FLAG_OPPONENT) && !(note->type & NOTE_FLAG_HIT))
 						{
 							//Opponent hits note
+							stage.flag |= STAGE_FLAG_OPPONENT_HIT;
 							stage.player_state[1].arrow_hitan[note->type % 4] = stage.step_time; //Opponent strum notes light up
 							Stage_StartVocal();
 
@@ -1741,12 +1757,12 @@ void Stage_Tick(void)
 					stage.player_state[0].health = 20000;
 				
 				//Draw health heads
-				Stage_DrawHealthIcon(stage.player_state[0].health, stage.player_state[0].character,  1);
-				Stage_DrawHealthIcon(stage.player_state[0].health, stage.player_state[1].character, -1);
+				Stage_DrawHealthIcon(stage.player_state[0].health, stage.player,  1);
+				Stage_DrawHealthIcon(stage.player_state[0].health, stage.opponent, -1);
 				
 				//Draw health bar
-				Stage_DrawHealthBar(stage.player_state[1].character->health_b, -1);
-				Stage_DrawHealthBar(stage.player_state[0].character->health_b,  1);
+				Stage_DrawHealthBar(stage.opponent->health_b, -1);
+				Stage_DrawHealthBar(stage.player->health_b,  1);
 			}
 			
 			//Draw stage foreground
