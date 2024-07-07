@@ -8,6 +8,7 @@
 
 //Potage Engine Options
 
+#define POTAGE_ENGINE_VERSION "1.0 Beta"
 //#define RELEASE_MODE //Enable this when you finish your port
 
 //#define SAVE //Enable this if you want the save system

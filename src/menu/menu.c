@@ -594,11 +594,14 @@ void Menu_Tick(void)
 			if (menu.page_swap)
 				menu.scroll = menu.select * FIXED_DEC(8,1);
 			
+			char version_identifier[64];
+			sprintf(version_identifier, "Potage Engine - %s", POTAGE_ENGINE_VERSION);
+
 			//Draw version identification
-			menu.font_bold.draw(&menu.font_bold,
-				"PSXFUNKIN BY CUCKYDEV",
-				16,
-				SCREEN_HEIGHT - 32,
+			menu.font_cdr.draw(&menu.font_cdr,
+				version_identifier,
+				8,
+				SCREEN_HEIGHT - 24,
 				FontAlign_Left
 			);
 			
