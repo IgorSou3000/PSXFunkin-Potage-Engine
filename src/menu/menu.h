@@ -19,8 +19,10 @@ typedef enum
 	MenuPage_Freeplay,
 	MenuPage_Credits,
 	MenuPage_Options,
-	MenuOptions_Visual,
-	MenuOptions_Gameplay,
+
+	MenuSubPage_Visual,
+	MenuSubPage_Gameplay,
+	MenuSubPage_Save,
 	
 	MenuPage_Stage, //Changes game loop
 } MenuPage;

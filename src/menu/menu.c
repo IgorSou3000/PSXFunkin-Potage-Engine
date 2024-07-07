@@ -6,6 +6,8 @@
 
 #include "menu.h"
 
+#include "configuration.h"
+
 #include "psx/mem.h"
 #include "psx/main.h"
 #include "psx/timer.h"
@@ -20,7 +22,6 @@
 #include "fonts/font.h"
 #include "psx/trans.h"
 #include "psx/loadscr.h"
-#include "psx/configuration.h"
 
 #include "characters/gf.h"
 
@@ -32,9 +33,9 @@
 #define DESCRIPTION_POSY SCREEN_HEIGHT - 24
 
 static const char* diffs[] = {
-	"< EASY >",
-	"< NORMAL >",
-	"< HARD >",
+	"EASY",
+	"NORMAL",
+	"HARD",
 };
 
 
@@ -884,14 +885,22 @@ void Menu_Tick(void)
 			);
 
 			//Draw difficulty
+			char diff_text[32];
+
+			sprintf(diff_text, "< %s >", diffs[menu.page_param.stage.diff]);
 			menu.font_arial.draw(&menu.font_arial,
-				diffs[menu.page_param.stage.diff],
+				diff_text,
 				SCREEN_WIDTH + 45 - (strlen(scoredisp) * 7),
 				20,
 				FontAlign_Center
 			);
 
-			RECT screen_src = {SCREEN_WIDTH - (strlen(scoredisp) * 8), 0, (strlen(scoredisp) * 8), 30};
+			RECT screen_src = {
+				SCREEN_WIDTH - strlen(scoredisp) * 8, 
+				0, 
+				strlen(scoredisp) * 8, 
+				30
+			};
 
 			Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
 			
@@ -1038,8 +1047,11 @@ void Menu_Tick(void)
 				const char *text;
 				u8 page;
 			} menu_options[] = {
-				{"VISUAL", MenuOptions_Visual},
-				{"GAMEPLAY", MenuOptions_Gameplay},
+				{"VISUAL", MenuSubPage_Visual},
+				{"GAMEPLAY", MenuSubPage_Gameplay},
+				#ifdef SAVE
+				{"SAVE", MenuSubPage_Save},
+				#endif
 			};
 
 			//Initialize page
@@ -1071,24 +1083,6 @@ void Menu_Tick(void)
 					Trans_Start();
 				}
 			}
-
-			//Save your game
-			#ifdef SAVE
-				if (pad_state.press & PAD_SELECT)
-					WriteSave();
-
-				RECT save_src = {0, 78, 52, 12};
-				RECT save_dst = {20, 17, 104, 24};
-				Gfx_DrawTex(&menu.tex_story, &save_src, &save_dst);
-
-				//Reset Your Save
-				if (pad_state.press & PAD_TRIANGLE)
-					DefaultSettings();
-
-				RECT reset_src = {0, 61, 58, 16};
-				RECT reset_dst = {20 + 116 + 2, 9, 116, 32};
-				Gfx_DrawTex(&menu.tex_story, &reset_src, &reset_dst);
-		  #endif
 			
 			//Draw options
 			s32 next_scroll = 0;
@@ -1123,7 +1117,7 @@ void Menu_Tick(void)
 			);
 			break;
 		}
-		case MenuOptions_Visual:
+		case MenuSubPage_Visual:
 		{
 			const RECT screen_src = {0, SCREEN_HEIGHT - DESCRIPTION_BAR_HEIGHT, DESCRIPTION_BAR_WIDTH, DESCRIPTION_BAR_HEIGHT};
 			Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
@@ -1153,16 +1147,8 @@ void Menu_Tick(void)
 			if (menu.page_swap)
 			{
 				menu.select = 0;
-				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
+				menu.scroll = 0;
 			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"VISUALS AND UI",
-				16,
-				16,
-				FontAlign_Left
-			);
 			
 			//Handle option and selection
 			if (menu.next_page == menu.page && Trans_Idle())
@@ -1232,7 +1218,7 @@ void Menu_Tick(void)
 			);
 			break;
 		}
-		case MenuOptions_Gameplay:
+		case MenuSubPage_Gameplay:
 		{
 			const RECT screen_src = {0, SCREEN_HEIGHT - DESCRIPTION_BAR_HEIGHT, DESCRIPTION_BAR_WIDTH, DESCRIPTION_BAR_HEIGHT};
 			Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
@@ -1276,17 +1262,9 @@ void Menu_Tick(void)
 			if (menu.page_swap)
 			{
 				menu.select = 0;
-				menu.scroll = COUNT_OF(menu_options) * FIXED_DEC(24 + SCREEN_HEIGHT2,1);
+				menu.scroll = 0;
 			}
-			
-			//Draw page label
-			menu.font_bold.draw(&menu.font_bold,
-				"GAMEPLAY",
-				16,
-				16,
-				FontAlign_Left
-			);
-			
+
 			//Handle option and selection
 			if (menu.next_page == menu.page && Trans_Idle())
 			{
@@ -1362,6 +1340,105 @@ void Menu_Tick(void)
 					(menu.select == i) ? 128 : 64,
 					(menu.select == i) ? 128 : 64,
 					(menu.select == i) ? 128 : 64
+				);
+			}
+			
+			//Draw background
+			Menu_DrawBack(
+				true,
+				8,
+				253 / 2, 113 / 2, 155 / 2,
+				0, 0, 0
+			);
+			break;
+		}
+
+		case MenuSubPage_Save:
+		{
+			if (menu.trans_time > 0)
+				menu.trans_time -= timer_dt;
+
+			if (menu.trans_time < 0)
+			{
+				menu.trans_time = 0;
+			}
+
+			static const struct
+			{
+				const char *text;
+				void (*func)();
+			} menu_options[] = {
+				{"SAVE", WriteSave},
+				{"LOAD", ReadSave},
+				{"RESET", DefaultSettings},
+			};
+
+			//Initialize page
+			if (menu.page_swap)
+			{
+				menu.select = 0;
+				menu.scroll = 0;
+			}
+			
+			//Handle option and selection
+			if (menu.next_page == menu.page && Trans_Idle())
+			{
+				menu.select = Menu_Scroll(menu.select, COUNT_OF(menu_options) - 1, &menu.sounds[0]);
+				
+				//Go to option when cross is pressed
+				if (pad_state.press & (PAD_CROSS | PAD_START))
+				{
+					menu_options[menu.select].func();
+					menu.trans_time = FIXED_UNIT;
+					Audio_PlaySFX(menu.sounds[1], 80);
+				}
+
+				//Return to main menu if circle is pressed
+				if (pad_state.press & PAD_CIRCLE)
+				{
+					//Play Cancel Sound
+					Audio_PlaySFX(menu.sounds[2], 80);
+
+					menu.page = menu.next_page = MenuPage_Options;
+				}
+			}
+			
+			//Draw options
+			s32 next_scroll = 0;
+			menu.scroll += (next_scroll - menu.scroll) >> 4;
+
+			if (!menu.trans_time)
+			{
+				for (u8 i = 0; i < COUNT_OF(menu_options); i++)
+				{
+					//Get position on screen
+					s32 y = (i * 24) - 8 - (menu.scroll >> FIXED_SHIFT);
+					if (y <= -SCREEN_HEIGHT2 - 8)
+						continue;
+					if (y >= SCREEN_HEIGHT2 + 8)
+						break;
+					
+					//Draw text
+					menu.font_bold.draw_col(&menu.font_bold,
+						menu_options[i].text,
+						SCREEN_WIDTH2,
+						SCREEN_HEIGHT2 + y - 8,
+						FontAlign_Center,
+						(menu.select == i) ? 128 : 64,
+						(menu.select == i) ? 128 : 64,
+						(menu.select == i) ? 128 : 64
+					);
+				}
+			}
+
+			else if (animf_count & 2)
+			{
+				//Draw text
+				menu.font_bold.draw(&menu.font_bold,
+					menu_options[menu.select].text,
+					SCREEN_WIDTH2,
+					SCREEN_HEIGHT2 + (menu.select * 24) - 8 - (menu.scroll >> FIXED_SHIFT) - 8,
+					FontAlign_Center
 				);
 			}
 			

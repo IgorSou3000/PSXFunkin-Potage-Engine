@@ -10,7 +10,7 @@
 #include "psx/io.h"
 #include "psx/gfx.h"
 #include "psx/fixed.h"
-#include "psx/configuration.h"
+#include "configuration.h"
 
 #ifndef RELEASE_MODE
 //Debug definitions

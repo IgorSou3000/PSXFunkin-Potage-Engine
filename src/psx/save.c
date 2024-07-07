@@ -12,10 +12,8 @@
 #include "psx/mem.h"
 #include "psx/main.h"
 #include "psx/stage.h"
-#include "psx/configuration.h"
 
-// Pallete Offset: 0x00000014 to 0x00000033
-// Image Offset:   0x00000040 to 0x000000BF
+#include "configuration.h"
 
 static IO_Data saveIcon_tex;
 
@@ -115,7 +113,6 @@ void WriteSave()
 { 
   stage.save.debug_mode = false;
   
-  #ifdef SAVE
   int fd = open(SaveTitle, 0x0002);
 
   if (fd < 0) // if save doesnt exist make one
@@ -138,16 +135,13 @@ void WriteSave()
   } 
   else 
     printf("Not Managed To Save %d\n", fd);  // failed to save
-  #endif
 }
 
-//Initiliaze memory card
+//Initialize memory card
 void MCRD_Init(void)
 {
-  //InitPAD(0);
   InitCARD(1);
   StartCARD();
   _bu_init();
-  ChangeClearPAD(0);
   saveIcon_tex =  IO_Read("\\SAVE16.TIM;1");
 }

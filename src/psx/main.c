@@ -71,12 +71,8 @@ int main(int argc, char **argv)
 	//Start game
 	gameloop = GameLoop_Menu;
 
-	//If not found any save, enable default settings and load opening
-	if (CheckSave() == false)
-		DefaultSettings();
-	else
-		ReadSave();
-
+	DefaultSettings();
+	
 	Menu_Load(MenuPage_Opening);
 	
 	//Game loop
