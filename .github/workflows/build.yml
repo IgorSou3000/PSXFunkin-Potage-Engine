@@ -86,7 +86,7 @@ jobs:
               
     - name: Compile PSXFunkin
       run: |
-        sed -i 's/\/\/#define RELEASE_MODE/#define RELEASE_MODE/' src/psx/configuration.h
+        sed -i 's/\/\/#define RELEASE_MODE/#define RELEASE_MODE/' src/configuration.h
         make -f Makefile.assets
         make
         mkpsxiso -y funkin.xml
