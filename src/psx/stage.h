@@ -1,7 +1,7 @@
 /*
-  This Source Code Form is subject to the terms of the Mozilla Public
-  License, v. 2.0. If a copy of the MPL was not distributed with this
-  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	This Source Code Form is subject to the terms of the Mozilla Public
+	License, v. 2.0. If a copy of the MPL was not distributed with this
+	file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
 #pragma once 
@@ -198,10 +198,6 @@ typedef struct
 	//Sound Effects
 	SFX introsound[4];
 	SFX sounds[6];
-
-	//Pause state
-	u8 pause_select;
-  fixed_t pause_scroll;
 	
 	//Stage data
 	const StageDef *stage_def;

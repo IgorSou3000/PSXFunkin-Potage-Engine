@@ -1,7 +1,7 @@
 /*
-  This Source Code Form is subject to the terms of the Mozilla Public
-  License, v. 2.0. If a copy of the MPL was not distributed with this
-  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	This Source Code Form is subject to the terms of the Mozilla Public
+	License, v. 2.0. If a copy of the MPL was not distributed with this
+	file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
 #include "stage.h"
@@ -21,6 +21,8 @@
 
 #include "object/combo.h"
 #include "object/splash.h"
+
+#include "pause.h"
 
 //Stage constants
 #define NOTE_SIZE 32
@@ -509,14 +511,14 @@ static void Stage_TimerTick(void)
 	{
 			//Don't change anything if timer be 0
 			if (stage.timer != 0)
-   			stage.timer = Audio_GetLength(stage.stage_def->track) - (stage.song_time >> FIXED_SHIFT);
-  }
+				stage.timer = Audio_GetLength(stage.stage_def->track) - (stage.song_time >> FIXED_SHIFT);
+	}
 
-  else //If not keep the timer at the song starting length	
- 	    stage.timer = Audio_GetLength(stage.stage_def->track); //Seconds (ticks down)
+	else //If not keep the timer at the song starting length	
+			stage.timer = Audio_GetLength(stage.stage_def->track); //Seconds (ticks down)
 
-  stage.timermin = stage.timer / 60; //Minutes left till song ends
-  stage.timersec = stage.timer % 60; //Seconds left till song ends
+	stage.timermin = stage.timer / 60; //Minutes left till song ends
+	stage.timersec = stage.timer % 60; //Seconds left till song ends
 }
 
 static void Stage_TimerDraw(void)
@@ -595,12 +597,12 @@ static void Stage_DrawCountdown(void)
 static void Stage_DrawHealthBar(u32 health_bar_color, s8 offsetx)
 {
 	//Extract the RGB components of the healthBarColor
-  u8 r = ((health_bar_color >> 16) & 0xFF) / 2;
-  u8 g = ((health_bar_color >> 8) & 0xFF) / 2;
-  u8 b = ((health_bar_color) & 0xFF) / 2;
+	u8 r = ((health_bar_color >> 16) & 0xFF) / 2;
+	u8 g = ((health_bar_color >> 8) & 0xFF) / 2;
+	u8 b = ((health_bar_color) & 0xFF) / 2;
 
 	// Determine the width of the health bar based on player position
-  u8 health_width = (offsetx > 0) ? 200 : (200 - (200 * stage.player_state[0].health / 20000));
+	u8 health_width = (offsetx > 0) ? 200 : (200 - (200 * stage.player_state[0].health / 20000));
 
 	//Get src and dst
 	RECT health_src = {0, 248, health_width, 6};
@@ -697,74 +699,6 @@ static void Stage_DrawStrum(u8 i, RECT *note_src, RECT_FIXED *note_dst)
 		note_src->x = 0;
 		note_src->y = i * 32;
 	}
-}
-
-//When You Paused The Game
-static void Stage_DrawPause(void)
-{
-  static const char *stage_options[] = {
-        "RESUME",
-        "RESTART SONG",
-        "EXIT TO MENU"
-      };
-
-  //Select option if cross or start is pressed
-  if (pad_state.press & (PAD_CROSS | PAD_START))
-  {
-    switch (stage.pause_select)
-    {
-      case 0: //Resume
-        stage.flag &= ~STAGE_FLAG_PAUSED;
-        Audio_ResumeXA();
-        break;
-      case 1: //Retry
-        stage.trans = StageTrans_Reload;
-        Trans_Start();
-        break;
-      case 2: //Quit
-        stage.trans = StageTrans_Menu;
-        Trans_Start();
-        break;
-    }
-  }
-
-   //Change option
-   stage.pause_select = Menu_Scroll(stage.pause_select, COUNT_OF(stage_options) - 1, &stage.sounds[0]);
-        
-
-  //Draw options
-  if (stage.pause_scroll == -1)
-      stage.pause_scroll = COUNT_OF(stage_options) * FIXED_DEC(33,1);
-
-  //Draw options
-  s32 next_scroll = stage.pause_select * FIXED_DEC(33,1);
-  stage.pause_scroll += Lerp(stage.pause_scroll, next_scroll, FIXED_DEC(1,1) / 8);
-
-  for (u8 i = 0; i < COUNT_OF(stage_options); i++)
-  {
-    //Get position on screen
-    s32 y = (i * 33) - 8 - (stage.pause_scroll >> FIXED_SHIFT);
-    if (y <= -SCREEN_HEIGHT2 - 8)
-      continue;
-    if (y >= SCREEN_HEIGHT2 + 8)
-      break;
-        
-    //Draw text
-    stage.font_bold.draw_col(&stage.font_bold,
-    stage_options[i],
-    20 + y /4,
-    y + 120,
-    FontAlign_Left,
-    //if the option is the one you are selecting, draw in normal color, else, draw gray
-    (i == stage.pause_select) ? 0x80 : 160 / 2,
-    (i == stage.pause_select) ? 0x80 : 160 / 2,
-    (i == stage.pause_select) ? 0x80 : 160 / 2
-    );
-  }
-  //50% Blend
-  RECT screen_src = {0, 0 ,SCREEN_WIDTH, SCREEN_HEIGHT};
-
-  Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
 }
 
 static void Stage_DrawNotes(void)
@@ -1059,60 +993,46 @@ static void Stage_LoadStage(void)
 
 static void Stage_GetChart_Values(Chart* chart)
 {
+	if (chart->data == NULL)
+	{
+		chart->cur_section = chart->sections = NULL;
+		chart->cur_note = chart->notes = NULL;
+		chart->cur_event = chart->events = NULL;	
+		return;	
+	}
+
 	u8 *chart_byte = (u8*)(chart->data);
 
 	u8* section_address = chart_byte + 8; //Get the section (skip the speed bytes (4 bytes) and section size (2 bytes))
 	u16 section_size = *((u16*)(chart_byte + 4)); //Get the section size (2 bytes)
 	u16 note_size = *((u16*)(chart_byte + 6)); //Get the note size (2 bytes)
 
-	if (chart->data != NULL)
-	{
-		//Directly use section, notes and events pointers
-		chart->sections = (Section*)section_address;
-		chart->notes = (Note*)(chart_byte + section_size);
-		chart->events = (Event*)(chart_byte + section_size + note_size);
+	//Directly use section, notes and events pointers
+	chart->sections = (Section*)section_address;
+	chart->notes = (Note*)(chart_byte + section_size);
+	chart->events = (Event*)(chart_byte + section_size + note_size);
 
-		chart->cur_section = chart->sections;
-		chart->cur_note = chart->notes;
-		chart->cur_event = chart->events;
-	}
-	else
-	{
-		chart->cur_section = chart->sections = NULL;
-		chart->cur_note = chart->notes = NULL;
-		chart->cur_event = chart->events = NULL;
-	}
+	chart->cur_section = chart->sections;
+	chart->cur_note = chart->notes;
+	chart->cur_event = chart->events;
 }
 
 static void Stage_LoadChart(void)
 {
 	//Load stage data
 	char chart_path[64];
+	char event_path[64];
 
 	//Use standard path convention
 	sprintf(chart_path, "\\WEEK%d\\%d.%d%c.CHT;1", stage.stage_def->week, stage.stage_def->week, stage.stage_def->week_song, "ENH"[stage.stage_diff]);
-	
-	Stage_UnloadChart(&stage.chart);
-	Stage_UnloadChart(&stage.event_chart);
+	sprintf(event_path, "\\WEEK%d\\%d.%dEVENT.CHT;1", stage.stage_def->week, stage.stage_def->week, stage.stage_def->week_song);
 
+	//Load charts
 	stage.chart.data = IO_Read(chart_path);
+	stage.event_chart.data = (IO_ExistFile(event_path)) ? IO_Read(event_path) : NULL;
 
-	//Normal chart
 	Stage_GetChart_Values(&stage.chart);
-		
-	sprintf(chart_path, "\\WEEK%d\\%d.%dEVENT.CHT;1", stage.stage_def->week, stage.stage_def->week, stage.stage_def->week_song);
-
-	if (IO_ExistFile(chart_path) == true)
-	{
-		stage.event_chart.data = IO_Read(chart_path);
-		//Events.json chart
-		Stage_GetChart_Values(&stage.event_chart);
-	}
-	else
-	{
-		stage.event_chart.data = NULL;
-		Stage_GetChart_Values(&stage.event_chart);
-	}
+	Stage_GetChart_Values(&stage.event_chart);
 	
 	//Count max scores
 	stage.player_state[0].max_score = 0;
@@ -1562,6 +1482,7 @@ void Stage_Tick(void)
 							if (stage.player_state[0].score > (s32)stage.save.savescore[stage.stage_id][stage.stage_diff] && stage.save.botplay == false)
 									stage.save.savescore[stage.stage_id][stage.stage_diff] = stage.player_state[0].score;
 						}
+
 						stage.trans = StageTrans_Menu;
 						Trans_Start();
 					}
@@ -1612,19 +1533,20 @@ void Stage_Tick(void)
 
 			//Go to pause state
 			if (stage.flag & STAGE_FLAG_PAUSED)
-				Stage_DrawPause();
+				Pause_Tick();
 
 			if (playing && pad_state.press & PAD_START)
 			{
 				Audio_PauseXA();
+
 				//Initialize pause variables
 				stage.flag |= STAGE_FLAG_PAUSED;
-			  stage.pause_scroll = -1;
-			  stage.pause_select = 0;
-  		}
+				pause.scroll = -1;
+				pause.select = 0;
+			}
 
-  		//Psych events
-  		Events_Tick();
+			//Psych events
+			Events_Tick();
 
 			//Tick stage
 			if (stage.back->tick != NULL)
@@ -1744,7 +1666,7 @@ void Stage_Tick(void)
 				PlayerState *this = &stage.player_state[i];
 				
 				//Calculate accuracy
-				if (this->max_accuracy) // Prevent division by zero
+				if (this->max_accuracy) //Prevent division by zero
 					this->accuracy = (this->min_accuracy * 100) / (this->max_accuracy);
 
 				//Check if should update the info
