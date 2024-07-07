@@ -872,27 +872,25 @@ void Menu_Tick(void)
 			char scoredisp[0x100];
 			sprintf(scoredisp, "PERSONAL BEST: %d", stage.save.savescore[menu_options[menu.select].stage][menu.page_param.stage.diff] * 10);
 
-			#ifdef SAVE
 			//Draw "PERSONAL BEST"
-				menu.font_arial.draw(&menu.font_arial,
-					scoredisp,
-					SCREEN_WIDTH - 12,
-					10,
-					FontAlign_Right
-				);
-			#endif
+			menu.font_arial.draw(&menu.font_arial,
+				scoredisp,
+				SCREEN_WIDTH - 12,
+				10,
+				FontAlign_Right
+			);
 
-				//Draw difficulty
-				menu.font_arial.draw(&menu.font_arial,
-					diffs[menu.page_param.stage.diff],
-					SCREEN_WIDTH + 45 - (strlen(scoredisp) * 7),
-					20,
-					FontAlign_Center
-				);
+			//Draw difficulty
+			menu.font_arial.draw(&menu.font_arial,
+				diffs[menu.page_param.stage.diff],
+				SCREEN_WIDTH + 45 - (strlen(scoredisp) * 7),
+				20,
+				FontAlign_Center
+			);
 
-				RECT screen_src = {SCREEN_WIDTH - (strlen(scoredisp) << 3), 0, (strlen(scoredisp) << 3), 30};
+			RECT screen_src = {SCREEN_WIDTH - (strlen(scoredisp) * 8), 0, (strlen(scoredisp) * 8), 30};
 
-				Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
+			Gfx_BlendRect(&screen_src, 0, 0, 0, 0);
 			
 			//Draw options
 			s32 next_scroll = menu.select * FIXED_DEC(30,1);

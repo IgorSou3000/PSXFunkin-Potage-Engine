@@ -10,7 +10,7 @@
 #include "main.h"
 #include "mem.h"
 
-//Sfx stuff
+//Sound effect state
 #define BUFFER_SIZE (13 << 11) //13 sectors
 #define CHUNK_SIZE (BUFFER_SIZE)
 #define CHUNK_SIZE_MAX (BUFFER_SIZE)
@@ -50,6 +50,7 @@ static volatile u32 audio_alloc_ptr = 0;
 #define XA_STATE_SEEKING (1 << 3)
 static u8 xa_state, xa_resync, xa_volume, xa_channel;
 static u32 xa_pos, xa_start, xa_end;
+static s16 xa_offset;
 
 //XA files and tracks
 static CdlFILE xa_files[XA_Max];
@@ -91,7 +92,7 @@ static void XA_Init(void)
 	SpuCommonAttr spu_attr;
 	spu_attr.mask = SPU_COMMON_CDMIX | SPU_COMMON_CDVOLL | SPU_COMMON_CDVOLR;
 	spu_attr.cd.mix = SPU_ON;
-	spu_attr.cd.volume.left = spu_attr.cd.volume.right = 0x6000; //Lame magic number
+	spu_attr.cd.volume.left = spu_attr.cd.volume.right = 0x7fff; //Lame magic number
 	SpuSetCommonAttr(&spu_attr);
 	
 	//Set initial volume
@@ -200,6 +201,9 @@ static void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop
 	//Start seeking to XA and use parameters
 	XA_SetFilter(channel);
 	XA_SetVolume(volume);
+
+	//Shitty emulator average user smh
+	xa_offset = XA_TellSector() - xa_start;
 }
 
 void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop)
@@ -346,7 +350,7 @@ void Audio_ProcessXA(void)
 		}
 		
 		//Get CD position
-		u32 next_pos = XA_TellSector();
+		u32 next_pos = XA_TellSector() - xa_offset;
 		if (next_pos > xa_pos)
 			xa_pos = next_pos;
 		

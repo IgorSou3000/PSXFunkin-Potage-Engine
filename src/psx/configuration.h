@@ -12,7 +12,7 @@
 
 //#define SAVE //Enable this if you want the save system
 
-//HBASCUS-scusid somename
+//BASCUS-scusid somename
 #define SaveTitle "bu00:BASCUS-54021funkin"
 
 //What will be displayed in memory card

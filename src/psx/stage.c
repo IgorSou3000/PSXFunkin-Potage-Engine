@@ -1571,7 +1571,7 @@ void Stage_Tick(void)
 			stage.flag &= ~(STAGE_FLAG_JUST_STEP);
 
 			#ifndef RELEASE_MODE
-				FntPrint("Step:%d\nBpm:%d\n", stage.song_step, (stage.chart.cur_section->flag & SECTION_FLAG_BPM_MASK) / 24);
+				FntPrint("Step:%d\n", stage.song_step);
 			#endif
 			
 			RecalcScroll:;
