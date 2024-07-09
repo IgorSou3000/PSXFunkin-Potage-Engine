@@ -56,6 +56,7 @@ void Gfx_Init(void)
 	
 	//Set draw background
 	draw[0].isbg = draw[1].isbg = 1;
+	draw[0].dtd = draw[1].dtd = false;
 	setRGB0(&draw[0], 0, 0, 0);
 	setRGB0(&draw[1], 0, 0, 0);
 	
