@@ -286,7 +286,7 @@ int psx_audio_xa_encode(psx_audio_xa_settings_t settings, psx_audio_encoder_stat
 void psx_audio_xa_encode_finalize(psx_audio_xa_settings_t settings, uint8_t *output, int output_length) {
 	if (output_length >= 2336) {
 		output[output_length - 2352 + 0x12] |= 0x80;
-		output[output_length - 2352 + 0x18] |= 0x80;
+		output[output_length - 2352 + 0x16] |= 0x80;
 	}
 }
 

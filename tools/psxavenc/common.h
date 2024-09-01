@@ -34,21 +34,35 @@ freely, subject to the following restrictions:
 
 #include <libavutil/opt.h>
 #include <libavcodec/avcodec.h>
+#include <libavcodec/avdct.h>
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
 #include "libpsxav/libpsxav.h"
 
-#define NUM_FORMATS 9
-#define FORMAT_XA 0
-#define FORMAT_XACD 1
-#define FORMAT_SPU 2
-#define FORMAT_SPUI 3
-#define FORMAT_VAG 4
-#define FORMAT_VAGI 5
-#define FORMAT_STR2 6
-#define FORMAT_STR2CD 7
-#define FORMAT_SBS2 8
+#define NUM_FORMATS 10
+#define NUM_FRAME_FORMATS 3
+
+typedef enum {
+	FORMAT_XA,
+	FORMAT_XACD,
+	FORMAT_SPU,
+	FORMAT_SPUI,
+	FORMAT_VAG,
+	FORMAT_VAGI,
+	FORMAT_STR,
+	FORMAT_STRCD,
+	FORMAT_STRV,
+	FORMAT_SBS,
+	FORMAT_INVALID
+} format_t;
+
+typedef enum {
+	FRAME_FORMAT_V2,
+	FRAME_FORMAT_V3,
+	FRAME_FORMAT_V3B,
+	FRAME_FORMAT_INVALID
+} frame_format_t;
 
 typedef struct {
 	int frame_index;
@@ -57,6 +71,8 @@ typedef struct {
 	int frame_block_base_overflow;
 	int frame_block_overflow_num;
 	int frame_block_overflow_den;
+	int block_type;
+	int16_t last_dc_values[3];
 	uint16_t bits_value;
 	int bits_left;
 	uint8_t *frame_output;
@@ -65,7 +81,13 @@ typedef struct {
 	int uncomp_hwords_used;
 	int quant_scale;
 	int quant_scale_sum;
-	float *dct_block_lists[6];
+
+	uint32_t *ac_huffman_map;
+	uint32_t *dc_huffman_map;
+	int16_t *coeff_clamp_map;
+	int16_t *delta_clamp_map;
+	int16_t *dct_block_lists[6];
+	AVDCT *dct_context;
 } vid_encoder_state_t;
 
 typedef struct {
@@ -90,7 +112,9 @@ typedef struct {
 	bool quiet;
 	bool show_progress;
 
-	int format; // FORMAT_*
+	format_t format;
+	frame_format_t frame_format;
+
 	int channels;
 	int cd_speed; // 1 or 2
 	int frequency; // 18900 or 37800 Hz
@@ -106,6 +130,7 @@ typedef struct {
 	int video_fps_num; // FPS numerator
 	int video_fps_den; // FPS denominator
 	bool ignore_aspect_ratio;
+	bool trailing_audio;
 
 	char *swresample_options;
 	char *swscale_options;
@@ -142,5 +167,7 @@ void encode_file_str(settings_t *settings, FILE *output);
 void encode_file_sbs(settings_t *settings, FILE *output);
 
 // mdec.c
+bool init_encoder_state(settings_t *settings);
+void destroy_encoder_state(settings_t *settings);
 void encode_frame_bs(uint8_t *video_frame, settings_t *settings);
 void encode_sector_str(uint8_t *video_frames, uint8_t *output, settings_t *settings);

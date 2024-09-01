@@ -24,15 +24,20 @@ freely, subject to the following restrictions:
 #include "common.h"
 
 void init_sector_buffer_video(uint8_t *buffer, settings_t *settings) {
+	if (settings->format == FORMAT_STRV) {
+		memset(buffer, 0, 2048);
+		return;
+	}
+
 	int offset;
-	if (settings->format == FORMAT_STR2CD) {
+	if (settings->format == FORMAT_STR) {
+		memset(buffer, 0, 2336);
+		offset = 0;
+	} else {
 		memset(buffer, 0, 2352);
 		memset(buffer+0x001, 0xFF, 10);
 		buffer[0x00F] = 0x02;
 		offset = 0x10;
-	} else {
-		memset(buffer, 0, 2336);
-		offset = 0;
 	}
 
 	buffer[offset+0] = settings->file_number;

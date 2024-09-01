@@ -24,18 +24,14 @@ freely, subject to the following restrictions:
 
 #include "common.h"
 
-// high 8 bits = bit count
-// low 24 bits = value
-uint32_t huffman_encoding_map[0x10000];
-bool dct_done_init = false;
-
 #define MAKE_HUFFMAN_PAIR(zeroes, value) (((zeroes)<<10)|((+(value))&0x3FF)),(((zeroes)<<10)|((-(value))&0x3FF))
+
 const struct {
 	int c_bits;
 	uint32_t c_value;
 	uint16_t u_hword_pos;
 	uint16_t u_hword_neg;
-} huffman_lookup[] = {
+} ac_huffman_lookup[] = {
 	// Fuck this Huffman tree in particular --GM
 	{2,0x3,MAKE_HUFFMAN_PAIR(0,1)},
 	{3,0x3,MAKE_HUFFMAN_PAIR(1,1)},
@@ -149,7 +145,44 @@ const struct {
 	{16,0x001E,MAKE_HUFFMAN_PAIR(28,1)},
 	{16,0x001F,MAKE_HUFFMAN_PAIR(27,1)},
 };
-#undef MAKE_HUFFMAN_PAIR
+
+const struct {
+	int c_bits;
+	uint32_t c_value;
+	int sign_bits;
+	int value_bits;
+} dc_c_huffman_lookup[] = {
+	{2,0x0,0,0},
+	{2,0x1,1,0},
+	{2,0x2,1,1},
+	{3,0x6,1,2},
+	{4,0xE,1,3},
+	{5,0x1E,1,4},
+	{6,0x3E,1,5},
+	{7,0x7E,1,6},
+	{8,0xFE,1,7},
+};
+
+const struct {
+	int c_bits;
+	uint32_t c_value;
+	int sign_bits;
+	int value_bits;
+} dc_y_huffman_lookup[] = {
+	{3,0x4,0,0},
+	{2,0x0,1,0},
+	{2,0x1,1,1},
+	{3,0x5,1,2},
+	{3,0x6,1,3},
+	{4,0xE,1,4},
+	{5,0x1E,1,5},
+	{6,0x3E,1,6},
+	{7,0x7E,1,7},
+};
+
+const uint8_t dc_coeff_indices[6] = {
+	0, 1, 2, 2, 2, 2
+};
 
 const uint8_t quant_dec[8*8] = {
 	 2, 16, 19, 22, 26, 27, 29, 34,
@@ -195,19 +228,69 @@ const int16_t dct_scale_table[8*8] = {
 	+0x18F8, -0x471D, +0x6A6D, -0x7D8B, +0x7D8A, -0x6A6E, +0x471C, -0x18F9,
 };
 
-static void init_dct_data(void)
+// https://stackoverflow.com/a/60011209
+//#define DIVIDE_ROUNDED(n, d) (((n) >= 0) ? (((n) + (d)/2) / (d)) : (((n) - (d)/2) / (d)))
+#define DIVIDE_ROUNDED(n, d) ((int)round((double)(n) / (double)(d)))
+
+static void init_dct_data(vid_encoder_state_t *state)
 {
 	for(int i = 0; i <= 0xFFFF; i++) {
-		huffman_encoding_map[i] = ((6+16)<<24)|((0x01<<16)|(i));
+		// high 8 bits = bit count
+		// low 24 bits = value
+		state->ac_huffman_map[i] = ((6+16)<<24)|((0x01<<16)|(i));
+
+		int16_t coeff = (int16_t)i;
+		if (coeff < -0x200) { coeff = -0x200; }
+		if (coeff > +0x1FE) { coeff = +0x1FE; } // 0x1FF = v2 end of frame
+		state->coeff_clamp_map[i] = coeff;
+
+		int16_t delta = (int16_t)i;
+		delta = DIVIDE_ROUNDED(delta, 4);
+		if (delta < -0xFF) { delta = -0xFF; }
+		if (delta > +0xFF) { delta = +0xFF; }
+		state->delta_clamp_map[i] = delta;
 	}
 
-	for(int i = 0; i < sizeof(huffman_lookup)/sizeof(huffman_lookup[0]); i++) {
-		int bits = huffman_lookup[i].c_bits+1;
-		uint32_t base_value = huffman_lookup[i].c_value;
-		huffman_encoding_map[huffman_lookup[i].u_hword_pos] = (bits<<24)|(base_value<<1)|0;
-		huffman_encoding_map[huffman_lookup[i].u_hword_neg] = (bits<<24)|(base_value<<1)|1;
+	for(int i = 0; i < sizeof(ac_huffman_lookup)/sizeof(ac_huffman_lookup[0]); i++) {
+		int bits = ac_huffman_lookup[i].c_bits + 1;
+		uint32_t base_value = ac_huffman_lookup[i].c_value << 1;
+
+		state->ac_huffman_map[ac_huffman_lookup[i].u_hword_pos] = (bits<<24)|base_value|0;
+		state->ac_huffman_map[ac_huffman_lookup[i].u_hword_neg] = (bits<<24)|base_value|1;
 	}
 
+	for(int i = 0; i < sizeof(dc_c_huffman_lookup)/sizeof(dc_c_huffman_lookup[0]); i++) {
+		int dc_bits = dc_c_huffman_lookup[i].sign_bits + dc_c_huffman_lookup[i].value_bits;
+		int bits = dc_c_huffman_lookup[i].c_bits + dc_bits;
+		uint32_t base_value = dc_c_huffman_lookup[i].c_value << dc_bits;
+
+		for(int j = 0; j < (1<<dc_bits); j++) {
+			int delta = j;
+			if (!(j >> dc_c_huffman_lookup[i].value_bits)) {
+				delta -= (1<<dc_bits) - 1;
+				delta &= 0x1FF;
+			}
+
+			state->dc_huffman_map[(0<<9)|delta] = (bits<<24)|base_value|j;
+			state->dc_huffman_map[(1<<9)|delta] = (bits<<24)|base_value|j;
+		}
+	}
+
+	for(int i = 0; i < sizeof(dc_y_huffman_lookup)/sizeof(dc_y_huffman_lookup[0]); i++) {
+		int dc_bits = dc_y_huffman_lookup[i].sign_bits + dc_y_huffman_lookup[i].value_bits;
+		int bits = dc_y_huffman_lookup[i].c_bits + dc_bits;
+		uint32_t base_value = dc_y_huffman_lookup[i].c_value << dc_bits;
+
+		for(int j = 0; j < (1<<dc_bits); j++) {
+			int delta = j;
+			if (!(j >> dc_y_huffman_lookup[i].value_bits)) {
+				delta -= (1<<dc_bits) - 1;
+				delta &= 0x1FF;
+			}
+
+			state->dc_huffman_map[(2<<9)|delta] = (bits<<24)|base_value|j;
+		}
+	}
 }
 
 static bool flush_bits(vid_encoder_state_t *state)
@@ -279,102 +362,82 @@ static bool encode_bits(vid_encoder_state_t *state, int bits, uint32_t val)
 	return true;
 }
 
-static bool encode_ac_value(vid_encoder_state_t *state, uint16_t value)
+static void transform_dct_block(vid_encoder_state_t *state, int16_t *block)
 {
-	assert(0 <= value && value <= 0xFFFF);
-
 #if 0
-	for(int i = 0; i < sizeof(huffman_lookup)/sizeof(huffman_lookup[0]); i++) {
-		if(value == huffman_lookup[i].u_hword_pos) {
-			return encode_bits(state, huffman_lookup[i].c_bits+1, (((uint32_t)huffman_lookup[i].c_value)<<1)|0);
-		}
-		else if(value == huffman_lookup[i].u_hword_neg) {
-			return encode_bits(state, huffman_lookup[i].c_bits+1, (((uint32_t)huffman_lookup[i].c_value)<<1)|1);
-		}
-	}
+	// Apply DCT to block
+	int midblock[8*8];
 
-	// Use an escape
-	return encode_bits(state, 6+16, (0x01<<16)|(0xFFFF&(uint32_t)value));
+	for (int i = 0; i < 8; i++) {
+	for (int j = 0; j < 8; j++) {
+		int v = 0;
+		for(int k = 0; k < 8; k++) {
+			v += (int)block[8*j+k] * (int)dct_scale_table[8*i+k] / 8;
+		}
+		midblock[8*i+j] = (v + 0xFFF) >> 13;
+	}
+	}
+	for (int i = 0; i < 8; i++) {
+	for (int j = 0; j < 8; j++) {
+		int v = 0;
+		for(int k = 0; k < 8; k++) {
+			v += (int)midblock[8*j+k] * (int)dct_scale_table[8*i+k];
+		}
+		block[8*i+j] = (int16_t)((v + 0xFFF) >> 13);
+	}
+	}
 #else
-	uint32_t outword = huffman_encoding_map[value];
-	return encode_bits(state, outword>>24, outword&0xFFFFFF);
+	state->dct_context->fdct(block);
 #endif
 }
 
-static void transform_dct_block(vid_encoder_state_t *state, float *block)
+static bool encode_dct_block(vid_encoder_state_t *state, const int16_t *block, const int16_t *quant_table, frame_format_t frame_format)
 {
-	// Apply DCT to block
-	float midblock[8*8];
+	int dc = DIVIDE_ROUNDED(block[0], quant_table[0]);
+	dc = state->coeff_clamp_map[dc&0xFFFF];
 
-	for (int i = 0; i < 8; i++) {
-	for (int j = 0; j < 8; j++) {
-		float v = 0.0f;
-		for(int k = 0; k < 8; k++) {
-			v += block[8*j+k] * (float)dct_scale_table[8*i+k] / (float)(1 << 16);
+	if (frame_format == FRAME_FORMAT_V2) {
+		if (!encode_bits(state, 10, dc&0x3FF)) {
+			return false;
 		}
-		midblock[8*i+j] = v;
-	}
-	}
-	for (int i = 0; i < 8; i++) {
-	for (int j = 0; j < 8; j++) {
-		float v = 0.0f;
-		for(int k = 0; k < 8; k++) {
-			v += midblock[8*j+k] * (float)dct_scale_table[8*i+k] / (float)(1 << 16);
-		}
-		block[8*i+j] = v;
-	}
-	}
-}
+	} else {
+		// TODO: implement DC wrapping (v3b format)
+		int index = dc_coeff_indices[state->block_type];
+		int last = state->last_dc_values[index];
 
-static bool encode_dct_block(vid_encoder_state_t *state, float *block)
-{
-	int16_t coeffs[64];
-	float scale = 8.0f / (float)state->quant_scale;
+		int delta = state->delta_clamp_map[(dc-last)&0xFFFF];
+		state->last_dc_values[index] = last + delta*4;
 
-	for (int i = 0; i < 64; i++) {
-		// The DC coefficient is not affected by the quantization scale.
-		float x = block[i];
-		if (i) { x *= scale; }
-
-		int v = (int)roundf(x / (float)quant_dec[i]);
-		if (v < -0x200) { v = -0x200; }
-		if (v > +0x1FF) { v = +0x1FF; }
-		coeffs[i] = v;
-	}
-
-	if (!encode_bits(state, 10, coeffs[0]&0x3FF)) {
-		return false;
-	}
-
-	// Build RLE output
-	uint16_t zero_rle_data[8*8];
-	int zero_rle_words = 0;
-	for (int i = 1, zeroes = 0; i < 64; i++) {
-		int ri = dct_zagzig_table[i];
-		//int ri = dct_zigzag_table[i];
-		if (coeffs[ri] == 0) {
-			zeroes++;
-		} else {
-			zero_rle_data[zero_rle_words++] = (zeroes<<10)|(coeffs[ri]&0x3FF);
-			zeroes = 0;
-			state->uncomp_hwords_used += 1;
-		}
-	}
-
-	// Now Huffman-code the data
-	for (int i = 0; i < zero_rle_words; i++) {
-		if (!encode_ac_value(state, zero_rle_data[i])) {
+		uint32_t outword = state->dc_huffman_map[(index<<9)|(delta&0x1FF)];
+		if (!encode_bits(state, outword>>24, outword&0xFFFFFF)) {
 			return false;
 		}
 	}
 
-	//fprintf(stderr, "dc %08X rles %2d\n", coeffs[0], zero_rle_words);
-	//assert(coeffs[0] >= -0x200); assert(coeffs[0] <  +0x200);
+	for (int i = 1, zeroes = 0; i < 64; i++) {
+		int ri = dct_zagzig_table[i];
+		int ac = DIVIDE_ROUNDED(block[ri], quant_table[ri]);
+		ac = state->coeff_clamp_map[ac&0xFFFF];
+
+		if (ac == 0) {
+			zeroes++;
+		} else {
+			uint32_t outword = state->ac_huffman_map[(zeroes<<10)|(ac&0x3FF)];
+			if (!encode_bits(state, outword>>24, outword&0xFFFFFF)) {
+				return false;
+			}
+			zeroes = 0;
+			state->uncomp_hwords_used++;
+		}
+	}
 
 	// Store end of block
 	if (!encode_bits(state, 2, 0x2)) {
 		return false;
 	}
+
+	state->block_type++;
+	state->block_type %= 6;
 	state->uncomp_hwords_used += 2;
 	//state->uncomp_hwords_used = (state->uncomp_hwords_used+0xF)&~0xF;
 	return true;
@@ -404,31 +467,87 @@ static int reduce_dct_block(vid_encoder_state_t *state, int32_t *block, int32_t 
 }
 #endif
 
-void encode_frame_bs(uint8_t *video_frame, settings_t *settings)
+bool init_encoder_state(settings_t *settings)
 {
-	int pitch = settings->video_width;
-	/*int real_index = (settings->state_vid.frame_index-1);
-	if (real_index > video_frame_count-1) {
-		real_index = video_frame_count-1;
+	if (settings->state_vid.ac_huffman_map) {
+		return true;
 	}
-	uint8_t *y_plane = video_frames + settings->video_width*settings->video_height*3/2*real_index;*/
-	uint8_t *y_plane = video_frame;
-	uint8_t *c_plane = y_plane + (settings->video_width*settings->video_height);
 
-	if (!dct_done_init) {
-		init_dct_data();
-		dct_done_init = true;
+	settings->state_vid.ac_huffman_map = malloc(0x10000*sizeof(uint32_t));
+	settings->state_vid.dc_huffman_map = malloc(0x600*sizeof(uint32_t));
+	settings->state_vid.coeff_clamp_map = malloc(0x10000*sizeof(int16_t));
+	settings->state_vid.delta_clamp_map = malloc(0x10000*sizeof(int16_t));
+	if (!settings->state_vid.ac_huffman_map || !settings->state_vid.dc_huffman_map ||
+		!settings->state_vid.coeff_clamp_map || !settings->state_vid.delta_clamp_map) {
+		return false;
 	}
+	init_dct_data(&(settings->state_vid));
+
+	settings->state_vid.dct_context = avcodec_dct_alloc();
+	if (!settings->state_vid.dct_context) {
+		return false;
+	}
+	avcodec_dct_init(settings->state_vid.dct_context);
 
 	int dct_block_count_x = (settings->video_width+15)/16;
 	int dct_block_count_y = (settings->video_height+15)/16;
 
-	if (settings->state_vid.dct_block_lists[0] == NULL) {
-		int dct_block_size = dct_block_count_x*dct_block_count_y*sizeof(float)*8*8;
-		for (int i = 0; i < 6; i++) {
-			settings->state_vid.dct_block_lists[i] = malloc(dct_block_size);
+	int dct_block_size = dct_block_count_x*dct_block_count_y*sizeof(int16_t)*8*8;
+	for (int i = 0; i < 6; i++) {
+		settings->state_vid.dct_block_lists[i] = malloc(dct_block_size);
+		if (!settings->state_vid.dct_block_lists[i]) {
+			return false;
 		}
 	}
+
+	return true;
+}
+
+void destroy_encoder_state(settings_t *settings)
+{
+	if (settings->state_vid.ac_huffman_map) {
+		free(settings->state_vid.ac_huffman_map);
+		settings->state_vid.ac_huffman_map = NULL;
+	}
+	if (settings->state_vid.dc_huffman_map) {
+		free(settings->state_vid.dc_huffman_map);
+		settings->state_vid.dc_huffman_map = NULL;
+	}
+	if (settings->state_vid.coeff_clamp_map) {
+		free(settings->state_vid.coeff_clamp_map);
+		settings->state_vid.coeff_clamp_map = NULL;
+	}
+	if (settings->state_vid.delta_clamp_map) {
+		free(settings->state_vid.delta_clamp_map);
+		settings->state_vid.delta_clamp_map = NULL;
+	}
+	if (settings->state_vid.dct_context) {
+		av_free(settings->state_vid.dct_context);
+		settings->state_vid.dct_context = NULL;
+	}
+	if (settings->state_vid.dct_block_lists[0]) {
+		for (int i = 0; i < 6; i++) {
+			free(settings->state_vid.dct_block_lists[i]);
+			settings->state_vid.dct_block_lists[i] = NULL;
+		}
+	}
+}
+
+void encode_frame_bs(uint8_t *video_frame, settings_t *settings)
+{
+	int pitch = settings->video_width;
+#if 0
+	int real_index = (settings->state_vid.frame_index-1);
+	if (real_index > video_frame_count-1) {
+		real_index = video_frame_count-1;
+	}
+	uint8_t *y_plane = video_frames + settings->video_width*settings->video_height*3/2*real_index;
+#endif
+	uint8_t *y_plane = video_frame;
+	uint8_t *c_plane = y_plane + (settings->video_width*settings->video_height);
+
+	int dct_block_count_x = (settings->video_width+15)/16;
+	int dct_block_count_y = (settings->video_height+15)/16;
 
 	// TODO: non-16x16-aligned videos
 	assert((settings->video_width % 16) == 0);
@@ -439,7 +558,7 @@ void encode_frame_bs(uint8_t *video_frame, settings_t *settings)
 	for(int fy = 0; fy < dct_block_count_y; fy++) {
 		// Order: Cr Cb [Y1|Y2\nY3|Y4]
 		int block_offs = 64 * (fy*dct_block_count_x + fx);
-		float *blocks[6] = {
+		int16_t *blocks[6] = {
 			settings->state_vid.dct_block_lists[0] + block_offs,
 			settings->state_vid.dct_block_lists[1] + block_offs,
 			settings->state_vid.dct_block_lists[2] + block_offs,
@@ -456,12 +575,12 @@ void encode_frame_bs(uint8_t *video_frame, settings_t *settings)
 			int lx = fx*16 + x;
 			int ly = fy*16 + y;
 
-			blocks[0][k] = (float)c_plane[pitch*cy + 2*cx + 0] - 128.0f;
-			blocks[1][k] = (float)c_plane[pitch*cy + 2*cx + 1] - 128.0f;
-			blocks[2][k] = (float)y_plane[pitch*(ly+0) + (lx+0)] - 128.0f;
-			blocks[3][k] = (float)y_plane[pitch*(ly+0) + (lx+8)] - 128.0f;
-			blocks[4][k] = (float)y_plane[pitch*(ly+8) + (lx+0)] - 128.0f;
-			blocks[5][k] = (float)y_plane[pitch*(ly+8) + (lx+8)] - 128.0f;
+			blocks[0][k] = (int16_t)c_plane[pitch*cy + 2*cx + 0] - 128;
+			blocks[1][k] = (int16_t)c_plane[pitch*cy + 2*cx + 1] - 128;
+			blocks[2][k] = (int16_t)y_plane[pitch*(ly+0) + (lx+0)] - 128;
+			blocks[3][k] = (int16_t)y_plane[pitch*(ly+0) + (lx+8)] - 128;
+			blocks[4][k] = (int16_t)y_plane[pitch*(ly+8) + (lx+0)] - 128;
+			blocks[5][k] = (int16_t)y_plane[pitch*(ly+8) + (lx+8)] - 128;
 		}
 		}
 
@@ -470,6 +589,17 @@ void encode_frame_bs(uint8_t *video_frame, settings_t *settings)
 		}
 	}
 	}
+
+	uint32_t end_of_block;
+	if (settings->frame_format == FRAME_FORMAT_V2) {
+		end_of_block = 0x1FF;
+	} else {
+		end_of_block = 0x3FF;
+		assert(settings->state_vid.dc_huffman_map);
+		assert(settings->state_vid.delta_clamp_map);
+	}
+	assert(settings->state_vid.ac_huffman_map);
+	assert(settings->state_vid.coeff_clamp_map);
 
 	// Attempt encoding the frame at the maximum quality. If the result is too
 	// large, increase the quantization scale and try again.
@@ -482,7 +612,20 @@ void encode_frame_bs(uint8_t *video_frame, settings_t *settings)
 		settings->state_vid.quant_scale < 64;
 		settings->state_vid.quant_scale++
 	) {
+		int16_t quant_table[8*8];
+
+		// The DC coefficient's quantization scale is always 8.
+		quant_table[0] = quant_dec[0] * 8;
+		for (int i = 1; i < 64; i++) {
+			quant_table[i] = quant_dec[i] * settings->state_vid.quant_scale;
+		}
+
 		memset(settings->state_vid.frame_output, 0, settings->state_vid.frame_max_size);
+
+		settings->state_vid.block_type = 0;
+		settings->state_vid.last_dc_values[0] = 0;
+		settings->state_vid.last_dc_values[1] = 0;
+		settings->state_vid.last_dc_values[2] = 0;
 
 		settings->state_vid.bits_value = 0;
 		settings->state_vid.bits_left = 16;
@@ -494,7 +637,7 @@ void encode_frame_bs(uint8_t *video_frame, settings_t *settings)
 		for(int fy = 0; ok && (fy < dct_block_count_y); fy++) {
 			// Order: Cr Cb [Y1|Y2\nY3|Y4]
 			int block_offs = 64 * (fy*dct_block_count_x + fx);
-			float *blocks[6] = {
+			int16_t *blocks[6] = {
 				settings->state_vid.dct_block_lists[0] + block_offs,
 				settings->state_vid.dct_block_lists[1] + block_offs,
 				settings->state_vid.dct_block_lists[2] + block_offs,
@@ -504,17 +647,15 @@ void encode_frame_bs(uint8_t *video_frame, settings_t *settings)
 			};
 
 			for(int i = 0; ok && (i < 6); i++) {
-				ok = encode_dct_block(&(settings->state_vid), blocks[i]);
+				ok = encode_dct_block(&(settings->state_vid), blocks[i], quant_table, settings->frame_format);
 			}
 		}
 		}
 
 		if (!ok) { continue; }
-		if (!encode_bits(&(settings->state_vid), 10, 0x1FF)) { continue; }
-		if (!encode_bits(&(settings->state_vid), 2, 0x2)) { continue; }
+		if (!encode_bits(&(settings->state_vid), 10, end_of_block)) { continue; }
 		if (!flush_bits(&(settings->state_vid))) { continue; }
 
-		settings->state_vid.uncomp_hwords_used += 2;
 		settings->state_vid.quant_scale_sum += settings->state_vid.quant_scale;
 		break;
 	}
@@ -544,8 +685,13 @@ void encode_frame_bs(uint8_t *video_frame, settings_t *settings)
 	settings->state_vid.frame_output[0x005] = (uint8_t)(settings->state_vid.quant_scale>>8);
 
 	// BS version
-	settings->state_vid.frame_output[0x006] = 0x02;
-	settings->state_vid.frame_output[0x007] = 0x00;
+	if (settings->frame_format == FRAME_FORMAT_V2) {
+		settings->state_vid.frame_output[0x006] = 0x02;
+		settings->state_vid.frame_output[0x007] = 0x00;
+	} else {
+		settings->state_vid.frame_output[0x006] = 0x03;
+		settings->state_vid.frame_output[0x007] = 0x00;
+	}
 
 	retire_av_data(settings, 0, 1);
 }
@@ -588,39 +734,30 @@ void encode_sector_str(uint8_t *video_frames, uint8_t *output, settings_t *setti
 	header[0x00A] = (uint8_t)(settings->state_vid.frame_index>>16);
 	header[0x00B] = (uint8_t)(settings->state_vid.frame_index>>24);
 
-	// Video frame size
-	header[0x010] = (uint8_t)settings->video_width;
-	header[0x011] = (uint8_t)(settings->video_width>>8);
-	header[0x012] = (uint8_t)settings->video_height;
-	header[0x013] = (uint8_t)(settings->video_height>>8);
-
-	// MDEC command (size of decompressed MDEC data)
-	header[0x014] = (uint8_t)settings->state_vid.blocks_used;
-	header[0x015] = (uint8_t)(settings->state_vid.blocks_used>>8);
-	header[0x016] = 0x00;
-	header[0x017] = 0x38;
-
-	// Quantization scale
-	header[0x018] = (uint8_t)settings->state_vid.quant_scale;
-	header[0x019] = (uint8_t)(settings->state_vid.quant_scale>>8);
-
-	// BS version
-	header[0x01A] = 0x02;
-	header[0x01B] = 0x00;
-
 	// Demuxed bytes used as a multiple of 4
 	header[0x00C] = (uint8_t)settings->state_vid.bytes_used;
 	header[0x00D] = (uint8_t)(settings->state_vid.bytes_used>>8);
 	header[0x00E] = (uint8_t)(settings->state_vid.bytes_used>>16);
 	header[0x00F] = (uint8_t)(settings->state_vid.bytes_used>>24);
 
-	if (settings->format == FORMAT_STR2CD) {
-		memcpy(output + 0x018, header, sizeof(header));
-		memcpy(output + 0x018 + 0x020, settings->state_vid.frame_output + settings->state_vid.frame_data_offset, 2016);
-	} else {
-		memcpy(output + 0x008, header, sizeof(header));
-		memcpy(output + 0x008 + 0x020, settings->state_vid.frame_output + settings->state_vid.frame_data_offset, 2016);
+	// Video frame size
+	header[0x010] = (uint8_t)settings->video_width;
+	header[0x011] = (uint8_t)(settings->video_width>>8);
+	header[0x012] = (uint8_t)settings->video_height;
+	header[0x013] = (uint8_t)(settings->video_height>>8);
+
+	// Copy of BS header
+	memcpy(header + 0x014, settings->state_vid.frame_output, 8);
+
+	int offset = 0;
+	if (settings->format == FORMAT_STR) {
+		offset = 0x008;
+	} else if (settings->format == FORMAT_STRCD) {
+		offset = 0x018;
 	}
+
+	memcpy(output + offset, header, sizeof(header));
+	memcpy(output + offset + 0x020, settings->state_vid.frame_output + settings->state_vid.frame_data_offset, 2016);
 
 	settings->state_vid.frame_data_offset += 2016;
 }

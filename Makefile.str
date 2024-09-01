@@ -4,7 +4,7 @@ all: \
 
 # STR converts
 iso/movies/%.str: iso/movies/%.mp4
-	tools/psxavenc/psxavenc -t str2 -r 15 -I -b 4 -c 2 -x 2 $< $@
+	tools/psxavenc/psxavenc -t str -I -b 4 -c 2 -x 2 -v v3b -F 1 $< $@
 
 clean:
 	echo "Cleaning .str files:"

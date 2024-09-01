@@ -204,22 +204,18 @@ bool open_av_data(const char *filename, settings_t *settings, bool use_audio, bo
 		if (av->scaler == NULL) {
 			return false;
 		}
-#if 0
-		// FIXME: if this is uncommented libswscale may produce completely black
-		// frames for whatever reason...
 		if (sws_setColorspaceDetails(
 			av->scaler,
 			sws_getCoefficients(av->video_codec_context->colorspace),
-			(av->video_codec_context->color_range == AVCOL_RANGE_JPEG),
+			(av->video_codec_context->color_range == AVCOL_RANGE_JPEG) ? 1 : 0,
 			sws_getCoefficients(SWS_CS_ITU601),
-			true,
+			1,
 			0,
-			0,
-			0
+			1 << 16,
+			1 << 16
 		) < 0) {
 			return false;
 		}
-#endif
 		if (settings->swscale_options) {
 			if (av_opt_set_from_string(av->scaler, settings->swscale_options, NULL, "=", ":,") < 0) {
 				return false;
@@ -355,7 +351,14 @@ bool poll_av_data(settings_t *settings)
 
 bool ensure_av_data(settings_t *settings, int needed_audio_samples, int needed_video_frames)
 {
-	while (settings->audio_sample_count < needed_audio_samples || settings->video_frame_count < needed_video_frames) {
+	// HACK: in order to update settings->end_of_input as soon as all data has
+	// been read from the input file, this loop waits for more data than
+	// strictly needed.
+	//while (settings->audio_sample_count < needed_audio_samples || settings->video_frame_count < needed_video_frames) {
+	while (
+		(needed_audio_samples && settings->audio_sample_count <= needed_audio_samples) ||
+		(needed_video_frames && settings->video_frame_count <= needed_video_frames)
+	) {
 		//fprintf(stderr, "ensure %d -> %d, %d -> %d\n", settings->audio_sample_count, needed_audio_samples, settings->video_frame_count, needed_video_frames);
 		if (!poll_av_data(settings)) {
 			// Keep returning true even if the end of the input file has been

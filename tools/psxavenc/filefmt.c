@@ -47,7 +47,7 @@ static psx_audio_xa_settings_t settings_to_libpsxav_xa_audio(settings_t *setting
 
 	switch (settings->format) {
 		case FORMAT_XA:
-		case FORMAT_STR2:
+		case FORMAT_STR:
 			new_settings.format = PSX_AUDIO_XA_FORMAT_XA;
 			break;
 		default:
@@ -137,6 +137,15 @@ void encode_file_spu(settings_t *settings, FILE *output) {
 				(double)(block_count*audio_samples_per_block) / (double)(settings->frequency*t)
 			);
 		}
+	}
+
+	int padding_size = (block_count*block_size) % settings->alignment;
+	if (padding_size) {
+		padding_size = settings->alignment - padding_size;
+		uint8_t *padding = malloc(padding_size);
+		memset(padding, 0, padding_size);
+		fwrite(padding, padding_size, 1, output);
+		free(padding);
 	}
 
 	if (settings->format == FORMAT_VAG) {
@@ -257,9 +266,16 @@ void encode_file_xa(settings_t *settings, FILE *output) {
 void encode_file_str(settings_t *settings, FILE *output) {
 	psx_audio_xa_settings_t xa_settings = settings_to_libpsxav_xa_audio(settings);
 	psx_audio_encoder_state_t audio_state;
-	int sector_size = psx_audio_xa_get_buffer_size_per_sector(xa_settings);
+
 	int audio_samples_per_sector;
 	uint8_t buffer[2352];
+
+	int sector_size;
+	if (settings->format == FORMAT_STRV) {
+		sector_size = 2048;
+	} else {
+		sector_size = psx_audio_xa_get_buffer_size_per_sector(xa_settings);
+	}
 
 	int interleave;
 	int video_sectors_per_block;
@@ -268,16 +284,16 @@ void encode_file_str(settings_t *settings, FILE *output) {
 		audio_samples_per_sector = psx_audio_xa_get_samples_per_sector(xa_settings);
 		interleave = psx_audio_xa_get_sector_interleave(xa_settings) * settings->cd_speed;
 		video_sectors_per_block = interleave - 1;
+
+		if (!settings->quiet) {
+			fprintf(stderr, "Interleave: 1/%d audio, %d/%d video\n",
+				interleave, video_sectors_per_block, interleave);
+		}
 	} else {
 		// 0/1 audio, 1/1 video
 		audio_samples_per_sector = 0;
 		interleave = 1;
 		video_sectors_per_block = 1;
-	}
-
-	if (!settings->quiet) {
-		fprintf(stderr, "Interleave: %d/%d audio, %d/%d video\n",
-			interleave - video_sectors_per_block, interleave, video_sectors_per_block, interleave);
 	}
 
 	memset(&audio_state, 0, sizeof(psx_audio_encoder_state_t));
@@ -290,6 +306,7 @@ void encode_file_str(settings_t *settings, FILE *output) {
 		fprintf(stderr, "Frame size: %.2f sectors\n", frame_size);
 	}
 
+	init_encoder_state(settings);
 	settings->state_vid.frame_output = malloc(2016 * (int)ceil(frame_size));
 	settings->state_vid.frame_index = 0;
 	settings->state_vid.frame_data_offset = 0;
@@ -304,7 +321,14 @@ void encode_file_str(settings_t *settings, FILE *output) {
 	for (int j = 0; !settings->end_of_input || settings->state_vid.frame_data_offset < settings->state_vid.frame_max_size; j++) {
 		ensure_av_data(settings, audio_samples_per_sector*settings->channels, frames_needed);
 
-		if ((j%interleave) < video_sectors_per_block) {
+		bool is_video_sector;
+		if (settings->trailing_audio) {
+			is_video_sector = (j%interleave) < video_sectors_per_block;
+		} else {
+			is_video_sector = (j%interleave) >= (interleave-video_sectors_per_block);
+		}
+
+		if (is_video_sector) {
 			// Video sector
 			init_sector_buffer_video(buffer, settings);
 			encode_sector_str(settings->video_frames, buffer, settings);
@@ -326,7 +350,7 @@ void encode_file_str(settings_t *settings, FILE *output) {
 			retire_av_data(settings, samples_length*settings->channels, 0);
 		}
 
-		if (settings->format == FORMAT_STR2CD) {
+		if (settings->format == FORMAT_STRCD) {
 			int t = j + 75*2;
 
 			// Put the time in
@@ -337,7 +361,7 @@ void encode_file_str(settings_t *settings, FILE *output) {
 			// FIXME: EDC is not calculated in 2336-byte sector mode (shouldn't
 			// matter anyway, any CD image builder will have to recalculate it
 			// due to the sector's MSF changing)
-			if((j%interleave) < video_sectors_per_block) {
+			if (is_video_sector) {
 				calculate_edc_data(buffer);
 			}
 		}
@@ -356,9 +380,11 @@ void encode_file_str(settings_t *settings, FILE *output) {
 	}
 
 	free(settings->state_vid.frame_output);
+	destroy_encoder_state(settings);
 }
 
 void encode_file_sbs(settings_t *settings, FILE *output) {
+	init_encoder_state(settings);
 	settings->state_vid.frame_output = malloc(settings->alignment);
 	settings->state_vid.frame_data_offset = 0;
 	settings->state_vid.frame_max_size = settings->alignment;
@@ -379,4 +405,5 @@ void encode_file_sbs(settings_t *settings, FILE *output) {
 	}
 
 	free(settings->state_vid.frame_output);
+	destroy_encoder_state(settings);
 }

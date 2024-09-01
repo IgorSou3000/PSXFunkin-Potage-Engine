@@ -1,44 +1,8 @@
 /*
- * PSn00bSDK .STR FMV playback example
- * (C) 2022-2023 spicyjpeg - MPL licensed
- *
- * This example demonstrates playback of full-motion video in the standard .STR
- * format, using the MDEC for frame decoding and XA for audio. Decoded frames
- * are transferred directly to the main framebuffer in this example, but could
- * also be output to another VRAM location and used as a background or texture
- * for a 2D or 3D scene.
- *
- * Playing video files requires setting up a fairly complex pipeline, involving
- * several buffers and components working in parallel:
- *
- * - .STR sectors are read continuously from the CD and each frame, usually
- *   spanning multiple sectors, is reassembled (demuxed) into a buffer in
- *   memory. In this example the task is performed by cd_sector_handler(). The
- *   CD drive handles XA-ADPCM sectors automatically, so no CPU intervention is
- *   necessary to play the audio track interleaved with the video.
- * - Once a full frame has been demuxed, the bitstream data is parsed and
- *   decompressed by the CPU (using DecDCTvlc()) to an array of run-length
- *   codes to be fed to the MDEC. This is done in the main loop.
- * - At the same time the last frame decompressed is read from RAM by the MDEC,
- *   which decodes it and outputs one 16-pixel-wide vertical slice at a time.
- * - When a slice is ready, it is uploaded by mdec_dma_handler() to the current
- *   framebuffer in VRAM while the MDEC is decoding the next slice.
- *   A text overlay is drawn on top of the framebuffer using the GPU after the
- *   entire frame has been decoded.
- *
- * Since pretty much all buffers used are going to be read and written at the
- * same time, double buffering is required for all of them. Every part of the
- * pipeline must also run in lockstep with each other to prevent frame
- * corruption, hence several functions and flag variables are used to stall the
- * main loop until a frame is available for decoding and the MDEC is ready.
- * Playback is stopped once the .STR header is no longer present in sectors
- * read.
- *
- * PSn00bSDK's bitstream decoding API supports both version 2 and 3 bitstreams.
- * Encoding your .STR files as v3 may result in slightly higher quality
- * depending on the encoder, but also higher CPU usage during playback compared
- * to the older v2.
- */
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
 
 #include "str.h"
 #include "psx.h"
@@ -49,18 +13,8 @@
 
 boolean movie_is_playing;
 
-// Uncomment to display the video in 24bpp mode. Note that the GPU does not
-// support 24bpp rendering, so the text overlay is only enabled in 16bpp mode.
-//#define DISP_24BPP
-
 /* CD and MDEC interrupt handlers */
-
-#ifdef DISP_24BPP
-#define BLOCK_SIZE 24
-#else
 #define BLOCK_SIZE 16
-//#define DRAW_OVERLAY
-#endif
 
 #define VRAM_X_COORD(x) ((x) * BLOCK_SIZE / 16)
 
@@ -247,17 +201,17 @@ static void STR_InitStream(void)
 
 	movie_is_playing = true;
 	str_ctx->cur_frame = 0;
-    str_ctx->cur_slice = 0;
+  str_ctx->cur_slice = 0;
 }
 
 static void STR_StopStream(void)
 {
 	CdControlB(CdlPause, 0, 0);
-    EnterCriticalSection();
-    CdReadyCallback(NULL);
-    DecDCToutCallback(NULL);
-    ExitCriticalSection();
-    movie_is_playing = false;
+  EnterCriticalSection();
+  CdReadyCallback(NULL);
+  DecDCToutCallback(NULL);
+  ExitCriticalSection();
+  movie_is_playing = false;
 }
 
 static void Str_Update(void)
@@ -280,7 +234,7 @@ static void Str_Update(void)
 
 	Gfx_FlipWithoutOT();
 
-    // Feed the newly decompressed frame to the MDEC. The MDEC will not
+  // Feed the newly decompressed frame to the MDEC. The MDEC will not
 	// actually start decoding it until an output buffer is also configured
 	// by calling DecDCTout() (see below).
 	DecDCTin(frame->mdec_data, DECDCT_MODE_16BPP);
@@ -312,6 +266,8 @@ void Str_Init(void)
 
 void Str_Play(const char *filedir)
 {
+	Gfx_DisableClear();
+
 	CdInit();
 	str_ctx = Mem_Alloc(sizeof(StreamContext));
 	sector_header = Mem_Alloc(sizeof(STR_Header));
@@ -343,6 +299,8 @@ void Str_Play(const char *filedir)
 		Pad_Update();
 		Str_Update();
 	}
+
+	Gfx_EnableClear();
 }
 
 void Str_CanPlayDef(void)
