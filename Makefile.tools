@@ -1,4 +1,4 @@
-TOOLS = tools/funkinarcpak tools/funkinchtpak tools/funkintimpak tools/xainterleave tools/psxavenc
+TOOLS = tools/funkinarcpak tools/funkinchtpak tools/funkinchrpak tools/funkintimpak tools/xainterleave tools/psxavenc
 
 all: $(TOOLS)
 

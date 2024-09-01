@@ -166,22 +166,29 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	
 	Animatable_Init(&this->character.animatable, char_bf_anim);
 	Character_Init((Character*)this, x, y);
+
+	CharFile* test;
+
+	IO_Data chr_file = IO_Read("\\CHAR\\BF.CHR;1");
+
+	u8* chr_byte = (u8*)chr_file;
+	test = (CharFile*)chr_byte;
 	
 	//Set character information
-	this->character.spec = (CHAR_SPEC_MISSANIM | CHAR_SPEC_ISPLAYER);
+	this->character.spec = test->flags;
 
 	//Health Icon
-	this->character.health_i = 0;
+	this->character.health_i = test->health_i;
 
 	//Health Bar
-	this->character.health_b = 0xFF28B0D1;
+	this->character.health_b = test->health_b;
 
 	//Character scale
-	this->character.scale = FIXED_DEC(1,1);
+	this->character.scale = test->scale;
 	
-	this->character.focus_x = FIXED_DEC(-50,1);
-	this->character.focus_y = (stage.stage_id == StageId_Tutorial) ? FIXED_DEC(-85,1) : FIXED_DEC(-65,1);
-	this->character.focus_zoom = FIXED_DEC(1,1);
+	this->character.focus_x = test->focus_x;
+	this->character.focus_y = test->focus_y;
+	this->character.focus_zoom = test->focus_zoom;
 	
 	//Load art
 	this->arc_main = IO_Read("\\CHAR\\BF.ARC;1");
@@ -189,20 +196,12 @@ Character *Char_BF_New(fixed_t x, fixed_t y)
 	//Load gameover texture
 	sprintf(stage.gameover_path, "\\CHAR\\BFDEAD.TIM;1");
 	stage.gameover_tim = IO_Read(stage.gameover_path);
-	
-	const char **pathp = (const char *[]){
-		"bf0.tim",   //BF_ArcMain_BF0
-		"bf1.tim",   //BF_ArcMain_BF1
-		"bf2.tim",   //BF_ArcMain_BF2
-		"bf3.tim",   //BF_ArcMain_BF3
-		"bf4.tim",   //BF_ArcMain_BF4
-		"bf5.tim",   //BF_ArcMain_BF5
-		"bf6.tim",   //BF_ArcMain_BF6
-		NULL
-	};
+
+	char* paths = (char*)(chr_byte + sizeof(CharFile));
+
 	IO_Data *arc_ptr = this->arc_ptr;
-	for (; *pathp != NULL; pathp++)
-		*arc_ptr++ = Archive_Find(this->arc_main, *pathp);
+	for (; *paths != NULL; paths += 12)
+		*arc_ptr++ = Archive_Find(this->arc_main, paths);
 	
 	//Initialize render state
 	this->tex_id = this->frame = 0xFF;

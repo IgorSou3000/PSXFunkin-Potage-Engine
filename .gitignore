@@ -16,6 +16,7 @@ mips/psyq/
 tools/funkinisopak/funkinisopak
 tools/funkinarcpak/funkinarcpak
 tools/funkinchtpak/funkinchtpak
+tools/funkinchrpak/funkinchrpak
 tools/funkintimpak/funkintimpak
 tools/psxavenc/psxavenc
 tools/xainterleave/xainterleave
@@ -37,6 +38,7 @@ build/
 *.xa
 *.mus
 *.cht
+*.chr
 *.vag
 *.str
 

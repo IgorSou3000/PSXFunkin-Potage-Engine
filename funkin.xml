@@ -66,6 +66,7 @@
 			<dir name = "char">
 				<!-- Boyfriend assets -->
 				<file name = "bf.arc" type = "data" source = "iso/characters/bf/main.arc"/>
+				<file name = "bf.chr" type = "data" source = "iso/characters/bf/bf.chr"/>
 				<file name = "bfdead.tim" type = "data" source = "iso/characters/bf/dead.tim"/>
 			
 				<!-- Dad assets -->

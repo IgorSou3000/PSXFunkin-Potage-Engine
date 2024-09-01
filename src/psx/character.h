@@ -15,8 +15,10 @@
 
 //Character specs
 typedef u8 CharSpec;
-#define CHAR_SPEC_MISSANIM (1 << 0) //Has miss animations
-#define CHAR_SPEC_ISPLAYER (1 << 1) //Character is the player
+#define CHAR_SPEC_ISPLAYER (1 << 0) 	//Character is the player
+#define CHAR_SPEC_MISSANIM (1 << 1) 	//Has miss animations
+#define CHAR_SPEC_GFANIM   (1 << 2) 	//Has girlfriend animations
+#define CHAR_SPEC_FASTANIM (1 << 3) 	//Has fast animations
 
 //Character enums
 typedef enum
@@ -38,6 +40,20 @@ typedef struct
 	u16 src[4];
 	s16 off[2];
 } CharFrame;
+
+typedef struct
+{
+	u8 flags;
+	u8 health_i;
+	u32 health_b;
+
+	fixed_t focus_x;
+	fixed_t	focus_y;
+	fixed_t focus_zoom;
+
+	fixed_t scale;
+
+} CharFile;
 
 typedef struct Character
 {
