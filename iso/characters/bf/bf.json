@@ -66,7 +66,7 @@
 
 	"flags" : {
 		"is_player" : true,
-		"miss_animation" : false,
+		"miss_animation" : true,
 		"gf_dance" : false,
 		"fast_dance" : false
 	},

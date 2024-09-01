@@ -36,19 +36,9 @@ typedef int32_t fixed_t;
 #define FIXED_SHIFT (10)
 #define FIXED_UNIT  (1 << FIXED_SHIFT)
 
-struct RECT
-{
-    int16_t x, y, w, h;
-};
-
-struct RECT_FIXED
-{
-    fixed_t x, y, w, h;
-};
-
 typedef struct
 {
-	uint8_t tex;
+	uint16_t tex;
 	uint16_t src[4];
 	int16_t off[2];
 } CharFrame;
@@ -59,6 +49,14 @@ typedef struct
 	uint8_t spd;
 	uint8_t script[128] = {0};
 } Animation;
+
+typedef struct
+{
+	uint32_t frames_address;
+	uint32_t animations_address;
+	uint32_t texture_paths_size;
+
+} CharFileHeader;
 
 typedef struct
 {
@@ -107,8 +105,10 @@ int main(int argc, char *argv[])
 	}
 	json json_data;
 	i >> json_data;
-	
+
+	CharFileHeader header;
 	CharFile character;
+
 	std::vector<CharFrame> frames;
 	std::vector<Animation> animations;
 	std::vector<std::string> paths;
@@ -201,11 +201,26 @@ int main(int argc, char *argv[])
     }
 
     //Write header
-    out.write(reinterpret_cast<const char*>(&character), sizeof(character));
+   	header.frames_address = sizeof(CharFileHeader) + sizeof(CharFile) + (paths.size() + 1) * 12;
+    header.animations_address = header.frames_address + frames.size() * sizeof(CharFrame);
+    header.texture_paths_size = paths.size();
+
+    out.write(reinterpret_cast<const char*>(&header), sizeof(CharFileHeader));
+    out.write(reinterpret_cast<const char*>(&character), sizeof(CharFile));
 
 	for (auto& i : paths)
 		out.write(i.c_str(), 12);
 	out.write("\0", 12);
+
+	for (auto& i : frames)
+	{
+		out.write(reinterpret_cast<const char*>(&i), sizeof(CharFrame));
+	}
+
+	for (auto& i : animations)
+	{
+		out.write(reinterpret_cast<const char*>(&i), sizeof(Animation));
+	}
 
     return 0;
 }

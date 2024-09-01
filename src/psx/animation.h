@@ -19,7 +19,7 @@ typedef struct
 {
 	//Animation data and script
 	u8 spd;
-	const u8 *script;
+	const u8 script[128];
 } Animation;
 
 typedef struct

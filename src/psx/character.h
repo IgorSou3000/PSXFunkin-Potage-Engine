@@ -36,10 +36,18 @@ typedef enum
 //Character structures
 typedef struct
 {
-	u8 tex;
+	u16 tex;
 	u16 src[4];
 	s16 off[2];
 } CharFrame;
+
+typedef struct
+{
+	u32 frame_address;
+	u32 animation_address;
+	u32 texture_paths_size;
+
+} CharFileHeader;
 
 typedef struct
 {
@@ -64,6 +72,10 @@ typedef struct Character
 	
 	//Position
 	fixed_t x, y;
+
+	//Character file
+	CharFileHeader* file_header;
+	CharFile* file;
 	
 	//Character information
 	CharSpec spec;
