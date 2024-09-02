@@ -24,79 +24,79 @@
 			
 			<!-- Menu assets -->
 			<dir name = "menu">
-				<file name = "loading.tim" type = "data" source = "iso/menu/loading.tim"/>
-				<file name = "menu.arc" type = "data" source = "iso/menu/menu.arc"/>
+				<file name = "loading.tim" type = "data" source = "iso/images/loading.tim"/>
+				<file name = "menu.arc" type = "data" source = "iso/images/menu/menu.arc"/>
 			</dir>
 			
 			<!-- Fonts -->
 			<dir name = "font">
-				<file name = "fonts.tim" type = "data" source = "iso/fonts/fonts.tim"/>
+				<file name = "fonts.tim" type = "data" source = "iso/images/fonts.tim"/>
 			</dir>
 			
 			<!-- Stage assets -->
 			<dir name = "hud">
-				<file name = "hud0.tim" type = "data" source = "iso/hud/hud0.tim"/>
-				<file name = "hud1.tim" type = "data" source = "iso/hud/hud1.tim"/>
-				<file name = "intro.tim" type = "data" source = "iso/hud/intro.tim"/>
+				<file name = "hud0.tim" type = "data" source = "iso/images/hud0.tim"/>
+				<file name = "hud1.tim" type = "data" source = "iso/images/hud1.tim"/>
+				<file name = "intro.tim" type = "data" source = "iso/images/intro.tim"/>
 			</dir>
 			
 			<!-- Week1 assets -->
 			<dir name = "week1">
 				<!-- Background art -->
-				<file name = "back.arc" type = "data" source = "iso/stages/week1/back.arc"/>
+				<file name = "back.arc" type = "data" source = "iso/images/stages/week1/back.arc"/>
 				
-				<file name = "1.1e.cht" type = "data" source = "iso/songs/bopeebo/bopeebo-easy.cht"/>
-				<file name = "1.1n.cht" type = "data" source = "iso/songs/bopeebo/bopeebo.cht"/>
-				<file name = "1.1h.cht" type = "data" source = "iso/songs/bopeebo/bopeebo-hard.cht"/>
+				<file name = "1.1e.cht" type = "data" source = "iso/data/songs/bopeebo/bopeebo-easy.cht"/>
+				<file name = "1.1n.cht" type = "data" source = "iso/data/songs/bopeebo/bopeebo.cht"/>
+				<file name = "1.1h.cht" type = "data" source = "iso/data/songs/bopeebo/bopeebo-hard.cht"/>
 
-				<file name = "1.2e.cht" type = "data" source = "iso/songs/fresh/fresh-easy.cht"/>
-				<file name = "1.2n.cht" type = "data" source = "iso/songs/fresh/fresh.cht"/>
-				<file name = "1.2h.cht" type = "data" source = "iso/songs/fresh/fresh-hard.cht"/>
-				<file name = "1.2event.cht" type = "data" source = "iso/songs/fresh/events.cht"/>
+				<file name = "1.2e.cht" type = "data" source = "iso/data/songs/fresh/fresh-easy.cht"/>
+				<file name = "1.2n.cht" type = "data" source = "iso/data/songs/fresh/fresh.cht"/>
+				<file name = "1.2h.cht" type = "data" source = "iso/data/songs/fresh/fresh-hard.cht"/>
+				<file name = "1.2event.cht" type = "data" source = "iso/data/songs/fresh/events.cht"/>
 
-				<file name = "1.3e.cht" type = "data" source = "iso/songs/dadbattle/dadbattle-easy.cht"/>
-				<file name = "1.3n.cht" type = "data" source = "iso/songs/dadbattle/dadbattle.cht"/>
-				<file name = "1.3h.cht" type = "data" source = "iso/songs/dadbattle/dadbattle-hard.cht"/>
+				<file name = "1.3e.cht" type = "data" source = "iso/data/songs/dadbattle/dadbattle-easy.cht"/>
+				<file name = "1.3n.cht" type = "data" source = "iso/data/songs/dadbattle/dadbattle.cht"/>
+				<file name = "1.3h.cht" type = "data" source = "iso/data/songs/dadbattle/dadbattle-hard.cht"/>
 			
-				<file name = "1.4e.cht" type = "data" source = "iso/songs/tutorial/tutorial-easy.cht"/>
-				<file name = "1.4n.cht" type = "data" source = "iso/songs/tutorial/tutorial.cht"/>
-				<file name = "1.4h.cht" type = "data" source = "iso/songs/tutorial/tutorial-hard.cht"/>
+				<file name = "1.4e.cht" type = "data" source = "iso/data/songs/tutorial/tutorial-easy.cht"/>
+				<file name = "1.4n.cht" type = "data" source = "iso/data/songs/tutorial/tutorial.cht"/>
+				<file name = "1.4h.cht" type = "data" source = "iso/data/songs/tutorial/tutorial-hard.cht"/>
 			</dir>
 			<!-- Character assets -->
 			<dir name = "char">
 				<!-- Boyfriend assets -->
-				<file name = "bf.chr" type = "data" source = "iso/characters/bf/bf.chr"/>
-				<file name = "bf.arc" type = "data" source = "iso/characters/bf/main.arc"/>
-				<file name = "bfdead.tim" type = "data" source = "iso/characters/bf/dead.tim"/>
+				<file name = "bf.chr" type = "data" source = "iso/data/characters/bf.chr"/>
+				<file name = "bf.arc" type = "data" source = "iso/images/characters/bf/main.arc"/>
+				<file name = "bfdead.tim" type = "data" source = "iso/images/characters/bf/dead.tim"/>
 			
 				<!-- Dad assets -->
-				<file name = "dad.chr" type = "data" source = "iso/characters/dad/dad.chr"/>
-				<file name = "dad.arc" type = "data" source = "iso/characters/dad/main.arc"/>
+				<file name = "dad.chr" type = "data" source = "iso/data/characters/dad.chr"/>
+				<file name = "dad.arc" type = "data" source = "iso/images/characters/dad/main.arc"/>
 
 				<!-- Girlfriend assets -->
-				<file name = "gf.chr" type = "data" source = "iso/characters/gf/gf.chr"/>
-				<file name = "gf.arc" type = "data" source = "iso/characters/gf/main.arc"/>
-				<file name = "speaker.tim" type = "data" source = "iso/characters/gf/speaker.tim"/>
+				<file name = "gf.chr" type = "data" source = "iso/data/characters/gf.chr"/>
+				<file name = "gf.arc" type = "data" source = "iso/images/characters/gf/main.arc"/>
+				<file name = "speaker.tim" type = "data" source = "iso/images/characters/speaker.tim"/>
 			</dir>
 
 			<!-- Sounds effects -->
 			<dir name = "sounds">
 				<!-- Menu Sounds -->
-				<file name = "scroll.vag" type = "data" source = "iso/sounds/menu/scroll.vag"/>
-				<file name = "confirm.vag" type = "data" source = "iso/sounds/menu/confirm.vag"/>
-				<file name = "cancel.vag" type = "data" source = "iso/sounds/menu/cancel.vag"/>
+				<file name = "scroll.vag" type = "data" source = "iso/sounds/scrollMenu.vag"/>
+				<file name = "confirm.vag" type = "data" source = "iso/sounds/confirmMenu.vag"/>
+				<file name = "cancel.vag" type = "data" source = "iso/sounds/cancelMenu.vag"/>
 
 				<!-- Stage Sounds -->
-				<file name = "intro3.vag" type = "data" source = "iso/sounds/stage/intro3.vag"/>
-				<file name = "intro2.vag" type = "data" source = "iso/sounds/stage/intro2.vag"/>
-				<file name = "intro1.vag" type = "data" source = "iso/sounds/stage/intro1.vag"/>
-				<file name = "intro0.vag" type = "data" source = "iso/sounds/stage/intro0.vag"/>
+				<file name = "intro3.vag" type = "data" source = "iso/sounds/intro3.vag"/>
+				<file name = "intro2.vag" type = "data" source = "iso/sounds/intro2.vag"/>
+				<file name = "intro1.vag" type = "data" source = "iso/sounds/intro1.vag"/>
+				<file name = "intro0.vag" type = "data" source = "iso/sounds/introGo.vag"/>
 			</dir>
 
-			<!-- Movies -->
+			<!-- Videos -->
 			<dir name = "str">
-				<!-- Week7 videos -->
-				<file name = "ugh.str" type = "str" source = "iso/movies/ughCutscene.str"/>
+				<!-- Week7 -->
+				<file name = "ugh.str" type = "str" source = "iso/videos/ughCutscene.str"/>
 			</dir>
 
 			<!-- Songs -->

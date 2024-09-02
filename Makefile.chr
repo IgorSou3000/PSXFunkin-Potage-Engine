@@ -1,5 +1,6 @@
 all: \
-	$(addsuffix .chr,  $(basename $(wildcard iso/characters/*/*.json)))
+	$(addsuffix .chr,  $(basename $(wildcard iso/data/characters/*.json))) \
+	$(addsuffix .chr,  $(basename $(wildcard iso/data/characters/*/*.json)))
 
 iso/%.chr: iso/%.json
 	tools/funkinchrpak/funkinchrpak $< $@

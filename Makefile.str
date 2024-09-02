@@ -1,9 +1,9 @@
 all: \
-	$(addsuffix .str, $(basename $(wildcard iso/movies/*.mp4))) \
-	$(addsuffix .str, $(basename $(wildcard iso/movies/*/*.mp4)))
+	$(addsuffix .str, $(basename $(wildcard iso/videos/*.mp4))) \
+	$(addsuffix .str, $(basename $(wildcard iso/videos/*/*.mp4)))
 
 # STR converts
-iso/movies/%.str: iso/movies/%.mp4
+iso/videos/%.str: iso/videos/%.mp4
 	tools/psxavenc/psxavenc -t str -I -b 4 -c 2 -x 2 -v v3b -F 1 $< $@
 
 clean:
