@@ -262,7 +262,7 @@ Obj_Combo *Obj_Combo_New(Character* character, u8 hit_type, u16 combo)
 	{
 		//Pixel combo
 		this->obj.tick = Obj_Combo_Tick_Weeb;
-		if (((character->spec & CHAR_SPEC_ISPLAYER) == 0) ^ (stage.mode < StageMode_2P))
+		if (((character->flags & CHAR_FLAGS_IS_PLAYER) == 0) ^ (stage.mode < StageMode_2P))
 			this->x = FIXED_DEC(-70,1) - FIXED_DEC(SCREEN_WIDEADD,8);
 		else
 			this->x = FIXED_DEC(0,1) + FIXED_DEC(SCREEN_WIDEADD,8);
@@ -272,7 +272,7 @@ Obj_Combo *Obj_Combo_New(Character* character, u8 hit_type, u16 combo)
 	{
 		//Regular combo
 		this->obj.tick = Obj_Combo_Tick;
-		if (((character->spec & CHAR_SPEC_ISPLAYER) == 0) ^ (stage.mode < StageMode_2P))
+		if (((character->flags & CHAR_FLAGS_IS_PLAYER) == 0) ^ (stage.mode < StageMode_2P))
 			this->x = FIXED_DEC(-112,1) - FIXED_DEC(SCREEN_WIDEADD,4);
 		else
 			this->x = FIXED_DEC(30,1) + FIXED_DEC(SCREEN_WIDEADD,4);

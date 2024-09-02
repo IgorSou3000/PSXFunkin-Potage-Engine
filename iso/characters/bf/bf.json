@@ -69,7 +69,7 @@
 		"is_player" : true,
 		"miss_animation" : true,
 		"gf_dance" : false,
-		"fast_dance" : false
+		"spooky_dance" : false
 	},
 
 	"path" : [

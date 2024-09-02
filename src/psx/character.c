@@ -69,7 +69,7 @@ void Character_CheckStartSing(Character *this)
 	    this->animatable.anim == CharAnim_UpAlt ||
 	    this->animatable.anim == CharAnim_Right ||
 	    this->animatable.anim == CharAnim_RightAlt ||
-	    ((this->spec & CHAR_SPEC_MISSANIM) &&
+	    ((this->flags & CHAR_FLAGS_MISS_ANIM) &&
 	    (this->animatable.anim == PlayerAnim_LeftMiss ||
 	     this->animatable.anim == PlayerAnim_DownMiss ||
 	     this->animatable.anim == PlayerAnim_UpMiss ||
@@ -77,7 +77,7 @@ void Character_CheckStartSing(Character *this)
 		this->sing_end = stage.note_scroll + (FIXED_DEC(12,1) << 2); //1 beat
 }
 
-void Character_CheckEndSing(Character *this)
+void Character_CheckEndSing(Character *this, u8 idle_animation)
 {
 	if ((this->animatable.anim == CharAnim_Left ||
 	     this->animatable.anim == CharAnim_LeftAlt ||
@@ -87,16 +87,16 @@ void Character_CheckEndSing(Character *this)
 	     this->animatable.anim == CharAnim_UpAlt ||
 	     this->animatable.anim == CharAnim_Right ||
 	     this->animatable.anim == CharAnim_RightAlt ||
-	    ((this->spec & CHAR_SPEC_MISSANIM) &&
+	    ((this->flags & CHAR_FLAGS_MISS_ANIM) &&
 	    (this->animatable.anim == PlayerAnim_LeftMiss ||
 	     this->animatable.anim == PlayerAnim_DownMiss ||
 	     this->animatable.anim == PlayerAnim_UpMiss ||
 	     this->animatable.anim == PlayerAnim_RightMiss))) &&
 	    stage.note_scroll >= this->sing_end)
-		this->set_anim(this, CharAnim_Idle);
+		this->set_anim(this, idle_animation);
 }
 
-void Character_CheckAnimationUpdate(Character* this)
+void Character_CheckAnimationUpdate(Character* this, u8 idle_animation)
 {
 	//Handle animation updates
 	if ((this->pad_held & (INPUT_LEFT | INPUT_DOWN | INPUT_UP | INPUT_RIGHT)) == 0 ||
@@ -108,12 +108,12 @@ void Character_CheckAnimationUpdate(Character* this)
 	     this->animatable.anim != CharAnim_UpAlt &&
 	     this->animatable.anim != CharAnim_Right &&
 	     this->animatable.anim != CharAnim_RightAlt))
-		Character_CheckEndSing(this);
+		Character_CheckEndSing(this, idle_animation);
 }
 
-void Character_PerformIdle(Character *this)
+void Character_PerformIdle(Character *this, boolean is_animatable_done, u8 step_speed, u8 idle_animation)
 {
-	if (Animatable_Ended(&this->animatable) &&
+	if (is_animatable_done &&
 		(this->animatable.anim != CharAnim_Left &&
 		 this->animatable.anim != CharAnim_LeftAlt &&
 		 this->animatable.anim != PlayerAnim_LeftMiss &&
@@ -126,8 +126,8 @@ void Character_PerformIdle(Character *this)
 		 this->animatable.anim != CharAnim_Right &&
 		 this->animatable.anim != CharAnim_RightAlt &&
 		 this->animatable.anim != PlayerAnim_RightMiss) &&
-		(stage.song_step & 7) == 0)
-			this->set_anim(this, CharAnim_Idle);
+		(((u16)stage.song_step) % step_speed) == 0) //Convert step to unsigned so we won't have problems with negative numbers
+			this->set_anim(this, idle_animation);
 }
 
 typedef struct
@@ -168,16 +168,27 @@ static void CharacterData_SetFrame(void *user, u8 frame)
 static void CharacterData_Tick(Character *character)
 {
 	CharacterData *this = (CharacterData*)character;
+
+	u8 idle, idle_speed;
+
+	if (character->flags & CHAR_FLAGS_SPOOKY_DANCE)
+	{
+		idle = (character->animatable.anim == CharAnim_LeftAlt) ? CharAnim_RightAlt : CharAnim_LeftAlt;
+		idle_speed = 4;
+	}
+
+	else
+	{
+		idle = CharAnim_Idle;
+		idle_speed = 8;
+	}
 	
-	if (!(character->spec & CHAR_SPEC_GFANIM))
-		Character_CheckAnimationUpdate(character);
+	if (!(character->flags & CHAR_FLAGS_GF_DANCE))
+		Character_CheckAnimationUpdate(character, idle);
 	
 	if (stage.flag & STAGE_FLAG_JUST_STEP)
 	{
-		if (!(character->spec & CHAR_SPEC_GFANIM))
-			Character_PerformIdle(character);
-
-		else
+		if (character->flags & CHAR_FLAGS_GF_DANCE)
 		{
 			//Perform dance
 			if (stage.note_scroll >= character->sing_end && (stage.song_step % stage.gf_speed) == 0)
@@ -192,6 +203,8 @@ static void CharacterData_Tick(Character *character)
 				Speaker_Bump(&this->speaker);
 			}
 		}
+		else
+			Character_PerformIdle(character, Animatable_Ended(&character->animatable), idle_speed, idle);
 	}
 	
 	//Animate and draw character
@@ -199,7 +212,7 @@ static void CharacterData_Tick(Character *character)
 	Character_Draw(character, &this->tex, &this->char_frames[this->frame]); 
 
 	//Tick speakers
-	if (character->spec & CHAR_SPEC_GFANIM)	
+	if (character->flags & CHAR_FLAGS_GF_DANCE)	
 		Speaker_Tick(&this->speaker, character->x, character->y);
 }
 
@@ -208,7 +221,7 @@ static void CharacterData_SetAnim(Character *character, u8 anim)
 	CharacterData *this = (CharacterData*)character;
 	
 	//Set animation
-	if (character->spec & CHAR_SPEC_GFANIM)
+	if (character->flags & CHAR_FLAGS_GF_DANCE)
 	{
 		if (anim == CharAnim_Left || anim == CharAnim_Down || anim == CharAnim_Up || anim == CharAnim_Right || anim == CharAnim_UpAlt)
 			character->sing_end = stage.note_scroll + FIXED_DEC(22,1); //Nearly 2 steps
@@ -216,7 +229,7 @@ static void CharacterData_SetAnim(Character *character, u8 anim)
 
 	Animatable_SetAnim(&character->animatable, anim);
 
-	if (!(character->spec & CHAR_SPEC_GFANIM))
+	if (!(character->flags & CHAR_FLAGS_GF_DANCE))
 		Character_CheckStartSing(character);
 }
 
@@ -263,7 +276,7 @@ Character *CharacterData_New(Character* character, const char* chr_path, fixed_t
 	Character_Init((Character*)this, x, y);
 	
 	//Set character information
-	character->spec = character->file->flags;
+	character->flags = character->file->flags;
 
 	//Health
 	character->health_i = character->file->health_i;
@@ -289,7 +302,7 @@ Character *CharacterData_New(Character* character, const char* chr_path, fixed_t
 	this->tex_id = this->frame = 0xFF;
 
 	//Initialize speaker
-	if (character->spec & CHAR_SPEC_GFANIM)
+	if (character->flags & CHAR_FLAGS_GF_DANCE)
 		Speaker_Init(&this->speaker);
 	
 	return (Character*)this;

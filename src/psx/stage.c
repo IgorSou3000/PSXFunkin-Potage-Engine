@@ -300,7 +300,7 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 			//Make character sing if he exist
 			if (this->character != NULL)
 			{
-				if (this->character->spec & CHAR_SPEC_MISSANIM)
+				if (this->character->flags & CHAR_FLAGS_MISS_ANIM)
 				this->character->set_anim(this->character, note_anims[type % 4][2]);
 
 				else
@@ -320,7 +320,7 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 		//Make character sing if he exist
 			if (this->character != NULL)
 			{
-				if (this->character->spec & CHAR_SPEC_MISSANIM)
+				if (this->character->flags & CHAR_FLAGS_MISS_ANIM)
 				this->character->set_anim(this->character, note_anims[type % 4][2]);
 
 				else
@@ -664,7 +664,7 @@ static void Stage_DrawHealthIcon(s16 health, Character* this, s8 offsetx)
 		dst.y = -dst.y - dst.h;
 
 	//Swap icon if character is player
-	if (this->spec & CHAR_SPEC_ISPLAYER)
+	if (this->flags & CHAR_FLAGS_IS_PLAYER)
 	{
 		dst.x += dst.w;
 		dst.w = -dst.w;

@@ -1,5 +1,5 @@
 /*
- * funkinchrpak by IgorSou3000
+ * funkinchrpak by IgorSou3000 (based on the UNSTOP4BLE version)
  * Packs PSXFunkin' json formatted characters into a binary file for the PSX port
 */
 
@@ -19,18 +19,15 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
-// Characters flags
-#define CHAR_SPEC_ISPLAYER (1 << 0) 	//Character is the player
-#define CHAR_SPEC_MISSANIM (1 << 1) 	//Has miss animations
-#define CHAR_SPEC_GFANIM   (1 << 2) 	//Has girlfriend animations
-#define CHAR_SPEC_FASTANIM (1 << 3) 	//Has fast animations
-
-//Animation flags
 #define ASCR_REPEAT 0xFF
 #define ASCR_CHGANI 0xFE
 #define ASCR_BACK   0xFD
 
-//Fixed point constants
+#define CHAR_FLAGS_IS_PLAYER 	(1 << 0)	//Character is the player
+#define CHAR_FLAGS_MISS_ANIM 	(1 << 1)	//Has miss animations
+#define CHAR_FLAGS_GF_DANCE   	(1 << 2)	//Has girlfriend dance
+#define CHAR_FLAGS_SPOOKY_DANCE (1 << 3)	//Has spooky month dance
+
 typedef int32_t fixed_t;
 
 #define FIXED_SHIFT (10)
@@ -38,16 +35,9 @@ typedef int32_t fixed_t;
 
 typedef struct
 {
-	uint16_t tex;
-	uint16_t src[4];
-	int16_t off[2];
-} CharFrame;
-
-typedef struct
-{
-	//Animation data and script
+	//Animation data and indices
 	uint8_t spd;
-	uint8_t script[128] = {0};
+	uint8_t indices[128] = {0};
 } Animation;
 
 typedef struct
@@ -73,6 +63,13 @@ typedef struct
 	char archive_path[32];
 
 } CharFile;
+
+typedef struct
+{
+	uint16_t tex;
+	uint16_t src[4];
+	int16_t off[2];
+} CharFrame;
 
 // Function to write a int16_t to the output stream
 void WriteWord(std::ostream &out, uint16_t word)
@@ -129,19 +126,20 @@ int main(int argc, char *argv[])
 	strncpy(character.archive_path, static_cast<std::string>(json_data["archive_path"]).c_str(), 32);
 
 	if (json_data["flags"]["is_player"] == true)
-		character.flags |= CHAR_SPEC_ISPLAYER;
+		character.flags |= CHAR_FLAGS_IS_PLAYER;
 
 	if (json_data["flags"]["miss_animation"] == true)
-		character.flags |= CHAR_SPEC_MISSANIM;
+		character.flags |= CHAR_FLAGS_MISS_ANIM;
 
 	if (json_data["flags"]["gf_dance"] == true)
-		character.flags |= CHAR_SPEC_GFANIM;
+		character.flags |= CHAR_FLAGS_GF_DANCE;
 
-	if (json_data["flags"]["fast_dance"] == true)
-		character.flags |= CHAR_SPEC_FASTANIM;
+	if (json_data["flags"]["spooky_dance"] == true)
+		character.flags |= CHAR_FLAGS_SPOOKY_DANCE;
 
-	for (auto& i : json_data["frames"])
+	for (auto& i : json_data["frames"]) //Iterate through frames
 	{
+		//Read frames
 		CharFrame new_frame;
 
 		std::vector<uint16_t>src_values = i[1];
@@ -160,9 +158,10 @@ int main(int argc, char *argv[])
 		frames.push_back(new_frame);
 	}
 
-	for (auto& i : json_data["animations"])
+	for (auto& i : json_data["animations"]) //Iterate through animations
 	{
-		int current_script_indice = 0;
+		//Read animations
+		int animation_index = 0;
 		Animation new_animation;
 		new_animation.spd = i[0];
 
@@ -177,8 +176,8 @@ int main(int argc, char *argv[])
 			else if (j == "repeat") frame = ASCR_REPEAT;
 			else frame = j;
 
-			new_animation.script[current_script_indice] = frame;
-			current_script_indice++;
+			new_animation.indices[animation_index] = frame;
+			animation_index++;
 		}
 
 		animations.push_back(new_animation);
@@ -205,7 +204,7 @@ int main(int argc, char *argv[])
     }
 
     //Write header
-   	header.frames_address = sizeof(CharFileHeader) + sizeof(CharFile) + (paths.size() + 1) * 12;
+   	header.frames_address = sizeof(CharFileHeader) + sizeof(CharFile) + paths.size() * 12;
     header.animations_address = header.frames_address + frames.size() * sizeof(CharFrame);
     header.texture_paths_size = paths.size();
 
@@ -214,7 +213,6 @@ int main(int argc, char *argv[])
 
 	for (auto& i : paths)
 		out.write(i.c_str(), 12);
-	out.write("\0", 12);
 
 	for (auto& i : frames)
 	{

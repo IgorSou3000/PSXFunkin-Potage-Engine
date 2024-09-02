@@ -20,7 +20,7 @@ void Animatable_SetAnim(Animatable *this, u8 anim)
 {
 	//Start animation
 	this->anim = anim;
-	this->anim_p = this->anims[anim].script;
+	this->anim_p = this->anims[anim].indices;
 	this->anim_spd = FIXED_DEC(this->anims[anim].spd,1) / 24;
 	this->anim_time = 0;
 	this->ended = false;
@@ -37,7 +37,7 @@ void Animatable_Animate(Animatable *this, void *user, void (*set_frame)(void*, u
 			switch (this->anim_p[0])
 			{
 				case ASCR_REPEAT:
-					this->anim_p = this->anims[this->anim].script;
+					this->anim_p = this->anims[this->anim].indices;
 					this->ended = true;
 					break;
 				case ASCR_CHGANI:

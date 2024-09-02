@@ -46,8 +46,8 @@
 	"flags" : {
 		"is_player" : false,
 		"miss_animation" : false,
-		"gf_dance" : false,
-		"fast_dance" : false
+		"gf_dance" : true,
+		"spooky_dance" : false
 	},
 
 	"path" : [

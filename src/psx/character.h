@@ -13,12 +13,11 @@
 #include "fixed.h"
 #include "animation.h"
 
-//Character specs
-typedef u8 CharSpec;
-#define CHAR_SPEC_ISPLAYER (1 << 0) 	//Character is the player
-#define CHAR_SPEC_MISSANIM (1 << 1) 	//Has miss animations
-#define CHAR_SPEC_GFANIM   (1 << 2) 	//Has girlfriend animations
-#define CHAR_SPEC_FASTANIM (1 << 3) 	//Has fast animations
+//Character flags
+#define CHAR_FLAGS_IS_PLAYER 		(1 << 0)	//Character is the player
+#define CHAR_FLAGS_MISS_ANIM 		(1 << 1)	//Has miss animations
+#define CHAR_FLAGS_GF_DANCE   	(1 << 2)	//Has girlfriend dance
+#define CHAR_FLAGS_SPOOKY_DANCE (1 << 3)	//Has spooky month dance
 
 //Character enums
 typedef enum
@@ -34,13 +33,6 @@ typedef enum
 } CharAnim;
 
 //Character structures
-typedef struct
-{
-	u16 tex;
-	u16 src[4];
-	s16 off[2];
-} CharFrame;
-
 typedef struct
 {
 	u32 frame_address;
@@ -65,6 +57,13 @@ typedef struct
 
 } CharFile;
 
+typedef struct
+{
+	u16 tex;
+	u16 src[4];
+	s16 off[2];
+} CharFrame;
+
 typedef struct Character
 {
 	//Character functions
@@ -80,11 +79,15 @@ typedef struct Character
 	CharFile* file;
 	
 	//Character information
-	CharSpec spec;
-	u8 health_i; //hud1.tim
-	fixed_t focus_x, focus_y, focus_zoom;
+	u8 flags;
+	u8 health_i;
+	u32 health_b;
+
+	fixed_t focus_x; 
+	fixed_t focus_y;
+	fixed_t focus_zoom;
+
 	fixed_t scale; //Scale character
-	u32 health_b; //Healthbar color
 	
 	//Animation state
 	Animatable animatable;
@@ -99,9 +102,9 @@ void Character_DrawCol(Character *this, Gfx_Tex *tex, const CharFrame *cframe, u
 void Character_Draw(Character *this, Gfx_Tex *tex, const CharFrame *cframe);
 
 void Character_CheckStartSing(Character *this);
-void Character_CheckEndSing(Character *this);
-void Character_CheckAnimationUpdate(Character* this);
-void Character_PerformIdle(Character *this);
+void Character_CheckEndSing(Character *this, u8 idle_animation);
+void Character_CheckAnimationUpdate(Character* this, u8 idle_animation);
+void Character_PerformIdle(Character *this, boolean is_animatable_done, u8 step_speed, u8 idle_animation);
 
 Character *CharacterData_New(Character* character, const char* chr_path, fixed_t x, fixed_t y);
 
