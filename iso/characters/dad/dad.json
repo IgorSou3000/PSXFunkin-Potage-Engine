@@ -46,7 +46,7 @@
 	"flags" : {
 		"is_player" : false,
 		"miss_animation" : false,
-		"gf_dance" : true,
+		"gf_dance" : false,
 		"spooky_dance" : false
 	},
 
