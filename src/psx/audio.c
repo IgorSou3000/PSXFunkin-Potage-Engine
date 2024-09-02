@@ -201,6 +201,7 @@ static void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop
 	//Start seeking to XA and use parameters
 	XA_SetFilter(channel);
 	XA_SetVolume(volume);
+	IO_SeekFile(file);
 
 	//Shitty emulator average user smh
 	xa_offset = XA_TellSector() - xa_start;

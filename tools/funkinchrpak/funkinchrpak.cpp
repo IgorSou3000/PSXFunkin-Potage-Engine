@@ -70,6 +70,8 @@ typedef struct
 
 	fixed_t scale;
 
+	char archive_path[32];
+
 } CharFile;
 
 // Function to write a int16_t to the output stream
@@ -123,6 +125,8 @@ int main(int argc, char *argv[])
 	character.focus_zoom = static_cast<double>(json_data["camera_position"]["zoom"]) * FIXED_UNIT;
 
 	character.scale = static_cast<double>(json_data["scale"]) * FIXED_UNIT;
+
+	strncpy(character.archive_path, static_cast<std::string>(json_data["archive_path"]).c_str(), 32);
 
 	if (json_data["flags"]["is_player"] == true)
 		character.flags |= CHAR_SPEC_ISPLAYER;

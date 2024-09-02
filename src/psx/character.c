@@ -8,6 +8,9 @@
 
 #include "mem.h"
 #include "psx/stage.h"
+#include "psx/main.h"
+#include "psx/archive.h"
+#include "characters/speaker.h"
 
 //Character functions
 void Character_Free(Character *this)
@@ -125,4 +128,169 @@ void Character_PerformIdle(Character *this)
 		 this->animatable.anim != PlayerAnim_RightMiss) &&
 		(stage.song_step & 7) == 0)
 			this->set_anim(this, CharAnim_Idle);
+}
+
+typedef struct
+{
+	//Character base structure
+	Character character;
+	
+	//Render data and state
+	IO_Data arc_main;
+	IO_Data* arc_ptr;
+	
+	Gfx_Tex tex;
+	u8 frame, tex_id;
+
+	IO_Data chr_file;
+
+	CharFrame* char_frames;
+	Animation* char_animations;
+
+	Speaker speaker;
+} CharacterData;
+
+//Character data functions
+static void CharacterData_SetFrame(void *user, u8 frame)
+{
+	CharacterData *this = (CharacterData*)user;
+	
+	//Check if this is a new frame
+	if (frame != this->frame)
+	{
+		//Check if new art shall be loaded
+		const CharFrame *cframe = &this->char_frames[this->frame = frame];
+		if (cframe->tex != this->tex_id)
+			Gfx_LoadTex(&this->tex, this->arc_ptr[this->tex_id = cframe->tex], 0);
+	}
+}
+
+static void CharacterData_Tick(Character *character)
+{
+	CharacterData *this = (CharacterData*)character;
+	
+	if (!(character->spec & CHAR_SPEC_GFANIM))
+		Character_CheckAnimationUpdate(character);
+	
+	if (stage.flag & STAGE_FLAG_JUST_STEP)
+	{
+		if (!(character->spec & CHAR_SPEC_GFANIM))
+			Character_PerformIdle(character);
+
+		else
+		{
+			//Perform dance
+			if (stage.note_scroll >= character->sing_end && (stage.song_step % stage.gf_speed) == 0)
+			{
+				//Switch animation
+				if (character->animatable.anim == CharAnim_LeftAlt || character->animatable.anim == CharAnim_Right)
+					character->set_anim(character, CharAnim_RightAlt);
+				else
+					character->set_anim(character, CharAnim_LeftAlt);
+					
+				//Bump speakers
+				Speaker_Bump(&this->speaker);
+			}
+		}
+	}
+	
+	//Animate and draw character
+	Animatable_Animate(&character->animatable, (void*)this, CharacterData_SetFrame);
+	Character_Draw(character, &this->tex, &this->char_frames[this->frame]); 
+
+	//Tick speakers
+	if (character->spec & CHAR_SPEC_GFANIM)	
+		Speaker_Tick(&this->speaker, character->x, character->y);
+}
+
+static void CharacterData_SetAnim(Character *character, u8 anim)
+{
+	CharacterData *this = (CharacterData*)character;
+	
+	//Set animation
+	if (character->spec & CHAR_SPEC_GFANIM)
+	{
+		if (anim == CharAnim_Left || anim == CharAnim_Down || anim == CharAnim_Up || anim == CharAnim_Right || anim == CharAnim_UpAlt)
+			character->sing_end = stage.note_scroll + FIXED_DEC(22,1); //Nearly 2 steps
+	}
+
+	Animatable_SetAnim(&character->animatable, anim);
+
+	if (!(character->spec & CHAR_SPEC_GFANIM))
+		Character_CheckStartSing(character);
+}
+
+static void CharacterData_Free(Character *character)
+{
+	CharacterData *this = (CharacterData*)character;
+	
+	//Free art
+	Mem_Free(this->arc_ptr);
+	Mem_Free(this->arc_main);
+	Mem_Free(this->chr_file);
+}
+
+Character *CharacterData_New(Character* character, const char* chr_path, fixed_t x, fixed_t y)
+{
+	//Allocate boyfriend object
+	character = Mem_Alloc(sizeof(CharacterData));
+	if (character == NULL)
+	{
+		sprintf(error_msg, "[%s] Failed to allocate character object", chr_path);
+		ErrorLock();
+		return NULL;
+	}
+
+	CharacterData *this = (CharacterData*)character;
+	
+	this->chr_file = IO_Read(chr_path);
+
+	//Initialize character
+	character->tick = CharacterData_Tick;
+	character->set_anim = CharacterData_SetAnim;
+	character->free = CharacterData_Free;
+
+	u8* chr_byte = (u8*)this->chr_file;
+	character->file_header = (CharFileHeader*)(chr_byte);
+	character->file = (CharFile*)(chr_byte + sizeof(CharFileHeader));
+
+	this->char_frames = (CharFrame*)(chr_byte + character->file_header->frame_address);
+	this->char_animations = (Animation*)(chr_byte + character->file_header->animation_address);
+
+	this->arc_ptr = Mem_Alloc(sizeof(IO_Data) * character->file_header->texture_paths_size);
+	
+	Animatable_Init(&character->animatable, this->char_animations);
+	Character_Init((Character*)this, x, y);
+	
+	//Set character information
+	character->spec = character->file->flags;
+
+	//Health
+	character->health_i = character->file->health_i;
+	character->health_b = character->file->health_b;
+
+	//Character scale
+	character->scale = character->file->scale;
+	
+	character->focus_x = character->file->focus_x;
+	character->focus_y = character->file->focus_y;
+	character->focus_zoom = character->file->focus_zoom;
+	
+	//Load art
+	this->arc_main = IO_Read(character->file->archive_path);
+
+	char* paths = (char*)(chr_byte + sizeof(CharFile) + sizeof(CharFileHeader));
+
+	IO_Data *arc_ptr = this->arc_ptr;
+	for (; *paths != NULL; paths += 12)
+		*arc_ptr++ = Archive_Find(this->arc_main, paths);
+	
+	//Initialize render state
+	this->tex_id = this->frame = 0xFF;
+
+	//Initialize speaker
+	if (character->spec & CHAR_SPEC_GFANIM)
+		Speaker_Init(&this->speaker);
+	
+	return (Character*)this;
 }

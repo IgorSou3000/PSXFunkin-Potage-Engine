@@ -1,8 +1,8 @@
 	{ //StageId_Bopeebo
 		//Characters
-		{Char_BF_New,    FIXED_DEC(60,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-10,1)},
+		{"\\CHAR\\BF.CHR;1", 	FIXED_DEC(60,1),  	FIXED_DEC(100,1)},
+		{"\\CHAR\\DAD.CHR;1", FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{"\\CHAR\\GF.CHR;1",  FIXED_DEC(0,1),  		FIXED_DEC(-10,1)},
 		
 		//Stage background
 		Back_Week1_New,
@@ -15,9 +15,9 @@
 	},
 	{ //StageId_Fresh
 		//Characters
-		{Char_BF_New,    FIXED_DEC(60,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-10,1)},
+		{"\\CHAR\\BF.CHR;1", 	FIXED_DEC(60,1),  	FIXED_DEC(100,1)},
+		{"\\CHAR\\DAD.CHR;1", FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{"\\CHAR\\GF.CHR;1",  FIXED_DEC(0,1),  		FIXED_DEC(-10,1)},
 		
 		//Stage background
 		Back_Week1_New,
@@ -30,9 +30,9 @@
 	},
 	{ //StageId_DadBattle
 		//Characters
-		{Char_BF_New,    FIXED_DEC(60,1),  FIXED_DEC(100,1)},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,     FIXED_DEC(0,1),  FIXED_DEC(-10,1)},
+		{"\\CHAR\\BF.CHR;1", 	FIXED_DEC(60,1),  	FIXED_DEC(100,1)},
+		{"\\CHAR\\DAD.CHR;1", FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{"\\CHAR\\GF.CHR;1",  FIXED_DEC(0,1),  		FIXED_DEC(-10,1)},
 		
 		//Stage background
 		Back_Week1_New,
@@ -45,9 +45,9 @@
 	},
 	{ //StageId_Tutorial
 		//Characters
-		{Char_BF_New, FIXED_DEC(60,1),  FIXED_DEC(100,1)},
-		{Char_GF_New,  FIXED_DEC(0,1),  FIXED_DEC(-15,1)}, //TODO
-		{NULL,           FIXED_DEC(0,1),  FIXED_DEC(-10,1)},
+		{"\\CHAR\\BF.CHR;1", 	FIXED_DEC(60,1), FIXED_DEC(100,1)},
+		{"\\CHAR\\GF.CHR;1",  FIXED_DEC(0,1),  FIXED_DEC(-10,1)},
+		{NULL,           			FIXED_DEC(0,1),  FIXED_DEC(-10,1)},
 		
 		//Stage background
 		Back_Week1_New,

@@ -23,8 +23,6 @@
 #include "psx/trans.h"
 #include "psx/loadscr.h"
 
-#include "characters/gf.h"
-
 //Used in the options
 #define DESCRIPTION_BAR_WIDTH SCREEN_WIDTH
 #define DESCRIPTION_BAR_HEIGHT 32
@@ -361,7 +359,7 @@ void Menu_Load(MenuPage page)
 	FontData_Load(&menu.font_arial, Font_Arial, false);
 	FontData_Load(&menu.font_cdr, Font_CDR, false);
 	
-	menu.gf = Char_GF_New(FIXED_DEC(62,1), FIXED_DEC(-12,1));
+	menu.gf = CharacterData_New(menu.gf, "\\CHAR\\GF.CHR;1", FIXED_DEC(62,1), FIXED_DEC(-12,1));
 	stage.camera.x = stage.camera.y = FIXED_DEC(0,1);
 	stage.camera.bzoom = FIXED_UNIT;
 	stage.gf_speed = 4;

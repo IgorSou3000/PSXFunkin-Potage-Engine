@@ -61,7 +61,8 @@
 
 		[1, [ 5, 20, 20, 21, "back", 1]],
 		[1, [ 7, 22, 22, 23, "back", 1]],
-		[1, [ 9, 24, 24, 25, "back", 1]]
+		[1, [ 9, 24, 24, 25, "back", 1]],
+		[1, [11, 26, 26, 27, "back", 1]]
 	],
 
 	"flags" : {
@@ -81,6 +82,7 @@
 		"bf6.tim"
 	],
 
+	"archive_path" : "\\CHAR\\BF.ARC;1",
 	"health_index" : 0,
 	"healthbar_color" : "0x28B0D1",
 	"camera_position" : {"x" : -50, "y" : -65, "zoom" : 1.0},

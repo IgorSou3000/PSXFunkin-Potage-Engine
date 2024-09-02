@@ -42,7 +42,7 @@ void Back_Week1_Tick(StageBack *back)
 				if (stage.song_step > 64 && stage.song_step < 192 && (stage.song_step % 64) == 60)
 				{
 					stage.player->set_anim(stage.player, CharAnim_Special1);
-					stage.opponent->set_anim(stage.opponent, CharAnim_UpAlt);
+					stage.opponent->set_anim(stage.opponent, CharAnim_Special1);
 				}
 				break;
 			default:

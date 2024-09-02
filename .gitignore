@@ -44,6 +44,7 @@ build/
 
 # Don't remove these bitch
 !makefile.cht
+!makefile.chr
 !makefile.tim
 !makefile.xa
 !makefile.vag

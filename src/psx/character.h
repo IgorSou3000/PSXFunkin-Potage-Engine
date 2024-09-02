@@ -61,6 +61,8 @@ typedef struct
 
 	fixed_t scale;
 
+	char archive_path[32];
+
 } CharFile;
 
 typedef struct Character
@@ -100,5 +102,7 @@ void Character_CheckStartSing(Character *this);
 void Character_CheckEndSing(Character *this);
 void Character_CheckAnimationUpdate(Character* this);
 void Character_PerformIdle(Character *this);
+
+Character *CharacterData_New(Character* character, const char* chr_path, fixed_t x, fixed_t y);
 
 #endif

@@ -36,10 +36,6 @@ static const u8 note_anims[4][3] = {
 };
 
 //Stage definitions
-#include "characters/bf.h"
-#include "characters/dad.h"
-#include "characters/gf.h"
-
 #include "stages/dummy.h"
 #include "stages/week1.h"
 
@@ -243,7 +239,7 @@ static void Stage_MissNote(PlayerState *this)
 	{
 		//Kill combo
 		if (stage.gf != NULL && this->combo > 5)
-			stage.gf->set_anim(stage.gf, CharAnim_DownAlt); //Cry if we lost a large combo
+			stage.gf->set_anim(stage.gf, CharAnim_Special2); //Cry if we lost a large combo
 		this->combo = 0;
 		
 		//Create combo object telling of our lost combo
@@ -972,8 +968,8 @@ static void Stage_LoadPlayer(void)
 {
 	//Load player character
 	Character_Free(stage.player);
-	if (stage.stage_def->pchar.new != NULL)
-	stage.player = stage.stage_def->pchar.new(stage.stage_def->pchar.x, stage.stage_def->pchar.y);
+	if (stage.stage_def->pchar.path != NULL)
+		stage.player = CharacterData_New(stage.player, stage.stage_def->pchar.path, stage.stage_def->pchar.x, stage.stage_def->pchar.y);
 	else
 		stage.player = NULL;
 }
@@ -982,8 +978,8 @@ static void Stage_LoadOpponent(void)
 {
 	//Load opponent character
 	Character_Free(stage.opponent);
-	if (stage.stage_def->ochar.new != NULL)
-	stage.opponent = stage.stage_def->ochar.new(stage.stage_def->ochar.x, stage.stage_def->ochar.y);
+	if (stage.stage_def->ochar.path != NULL)
+		stage.opponent = CharacterData_New(stage.opponent, stage.stage_def->ochar.path, stage.stage_def->ochar.x, stage.stage_def->ochar.y);
 	else
 		stage.opponent = NULL;
 }
@@ -992,8 +988,8 @@ static void Stage_LoadGirlfriend(void)
 {
 	//Load girlfriend character
 	Character_Free(stage.gf);
-	if (stage.stage_def->gchar.new != NULL)
-		stage.gf = stage.stage_def->gchar.new(stage.stage_def->gchar.x, stage.stage_def->gchar.y);
+	if (stage.stage_def->gchar.path != NULL)
+		stage.gf = CharacterData_New(stage.gf, stage.stage_def->gchar.path, stage.stage_def->gchar.x, stage.stage_def->gchar.y);
 	else
 		stage.gf = NULL;
 }
@@ -1798,6 +1794,10 @@ void Stage_Tick(void)
 		{
 			//Stop music immediately
 			Audio_StopXA();
+
+			//Load gameover texture
+			sprintf(stage.gameover_path, "\\CHAR\\BFDEAD.TIM;1");
+			stage.gameover_tim = IO_Read(stage.gameover_path);
 			
 			//Unload stage data
 			Stage_UnloadChart(&stage.chart);

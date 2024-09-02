@@ -1,0 +1,9 @@
+all: \
+	$(addsuffix .chr,  $(basename $(wildcard iso/characters/*/*.json)))
+
+iso/%.chr: iso/%.json
+	tools/funkinchrpak/funkinchrpak $< $@
+
+clean:
+	echo "Cleaning .chr files:"
+	find iso -type f \( -name "*.chr" \) -print -delete

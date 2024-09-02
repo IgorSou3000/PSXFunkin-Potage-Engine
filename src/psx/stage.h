@@ -88,7 +88,7 @@ typedef struct
 	//Characters
 	struct
 	{
-		Character* (*new)();
+		const char* path;
 		fixed_t x, y;
 	} pchar, ochar, gchar;
 	
