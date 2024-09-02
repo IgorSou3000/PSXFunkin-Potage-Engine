@@ -1831,7 +1831,7 @@ void Stage_Tick(void)
 			Gfx_LoadTex(&stage.tex_gameover, stage.gameover_tim, GFX_LOADTEX_FREE);
 
 			//Play Gameover music
-			Audio_PlayXA_Track(XA_GameOver, 0x40, 0, true);
+			Audio_PlayXA_Track(XA_GameOver, 0x40, 1, true);
 			
 			stage.state = StageState_DeadLoop;
 			break;
