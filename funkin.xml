@@ -107,6 +107,7 @@
 				<file name = "week1_1.mus" type = "xa" source = "iso/songs/bopeebo/bopeebo.mus"/>
 				<file name = "week1_2.mus" type = "xa" source = "iso/songs/fresh/fresh.mus"/>
 				<file name = "week1_3.mus" type = "xa" source = "iso/songs/dadbattle/dadbattle.mus"/>
+				<file name = "week1_4.mus" type = "xa" source = "iso/songs/tutorial/tutorial.mus"/>
 			</dir>
 			
 			<!-- Dummy sectors -->

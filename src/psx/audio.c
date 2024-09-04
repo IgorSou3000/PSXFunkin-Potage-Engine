@@ -436,6 +436,10 @@ void Audio_PauseMus(void)
 
 void Audio_SetVolume(u8 i, u16 vol_left, u16 vol_right)
 {
+	// Don't try change a channel volume that doesn't belong to the spu streaming
+	if (i > audio_streamcontext.header.s.channels)
+		return;
+
 	SPU_CHANNELS[i].vol_left = vol_left;
 	SPU_CHANNELS[i].vol_right = vol_right;
 }

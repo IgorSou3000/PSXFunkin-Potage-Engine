@@ -171,7 +171,13 @@ static void CharacterData_Tick(Character *character)
 
 	u8 idle, idle_speed;
 
-	if (character->flags & CHAR_FLAGS_SPOOKY_DANCE)
+	if (character->flags & CHAR_FLAGS_GF_DANCE)
+	{
+		idle = (character->animatable.anim == CharAnim_LeftAlt || character->animatable.anim == CharAnim_Right) ? CharAnim_RightAlt : CharAnim_LeftAlt;
+		idle_speed = stage.gf_speed;
+	}
+
+	else if (character->flags & CHAR_FLAGS_SPOOKY_DANCE)
 	{
 		idle = (character->animatable.anim == CharAnim_LeftAlt) ? CharAnim_RightAlt : CharAnim_LeftAlt;
 		idle_speed = 4;
@@ -191,13 +197,9 @@ static void CharacterData_Tick(Character *character)
 		if (character->flags & CHAR_FLAGS_GF_DANCE)
 		{
 			//Perform dance
-			if (stage.note_scroll >= character->sing_end && (stage.song_step % stage.gf_speed) == 0)
+			if (stage.note_scroll >= character->sing_end && (stage.song_step % idle_speed) == 0)
 			{
-				//Switch animation
-				if (character->animatable.anim == CharAnim_LeftAlt || character->animatable.anim == CharAnim_Right)
-					character->set_anim(character, CharAnim_RightAlt);
-				else
-					character->set_anim(character, CharAnim_LeftAlt);
+				character->set_anim(character, idle);
 					
 				//Bump speakers
 				Speaker_Bump(&this->speaker);
