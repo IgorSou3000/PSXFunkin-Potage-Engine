@@ -28,7 +28,7 @@ typedef enum
 } MenuPage;
 
 //Menu functions
-u8 Menu_Scroll(u8 select, u8 optionsn, SFX* scroll_sfx);
+u8 Menu_Scroll(u8 select, u8 optionsn, sound_t* scroll_sfx);
 void Menu_Load(MenuPage page);
 void Menu_Unload();
 void Menu_ToStage(StageId id, StageDiff diff, boolean story);

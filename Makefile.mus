@@ -1,0 +1,10 @@
+all: \
+	$(addsuffix .mus,  $(basename $(wildcard iso/songs/*.txt))) \
+	$(addsuffix .mus,  $(basename $(wildcard iso/songs/*/*.txt))) \
+
+iso/%.mus: iso/%.txt
+	tools/funkinmuspak/funkinmuspak $@ $<
+
+clean:
+	echo "Cleaning .mus files:"
+	find iso -type f \( -name "*.mus" \) -print -delete

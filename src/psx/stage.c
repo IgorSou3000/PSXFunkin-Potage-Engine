@@ -49,20 +49,12 @@ Stage stage;
 //Stage music functions
 static void Stage_StartVocal(void)
 {
-	if (!(stage.flag & STAGE_FLAG_VOCAL_ACTIVE))
-	{
-		Audio_ChannelXA(stage.stage_def->channel);
-		stage.flag |= STAGE_FLAG_VOCAL_ACTIVE;
-	}
+	Audio_SetVolume(2, 0x3FFF, 0x3FFF);
 }
 
 static void Stage_CutVocal(void)
 {
-	if (stage.flag & STAGE_FLAG_VOCAL_ACTIVE)
-	{
-		Audio_ChannelXA(stage.stage_def->channel + 1);
-		stage.flag &= ~STAGE_FLAG_VOCAL_ACTIVE;
-	}
+	Audio_SetVolume(2, 0x0000, 0x0000);
 }
 
 //Stage camera functions
@@ -510,11 +502,11 @@ static void Stage_TimerTick(void)
 	{
 		//Don't change anything if timer be 0
 		if (stage.timer != 0)
-			stage.timer = Audio_GetLength(stage.stage_def->track) - (stage.song_time >> FIXED_SHIFT);
+			stage.timer = Audio_GetLength() - (stage.song_time >> FIXED_SHIFT);
 	}
 
 	else //If not keep the timer at the song starting length	
-			stage.timer = Audio_GetLength(stage.stage_def->track); //Seconds (ticks down)
+			stage.timer = Audio_GetLength(); //Seconds (ticks down)
 
 	stage.timermin = stage.timer / 60; //Minutes left till song ends
 	stage.timersec = stage.timer % 60; //Seconds left till song ends
@@ -524,7 +516,7 @@ static void Stage_TimerDraw(void)
 {
 	Stage_TimerTick();
 
-	RECT bar_fill = {0, 240,100 - (100 * stage.timer / Audio_GetLength(stage.stage_def->track)), 6};
+	RECT bar_fill = {0, 240,100 - (100 * stage.timer / Audio_GetLength()), 6};
 	RECT bar_back = {0, 240,100, 6};
 
 	RECT_FIXED bar_dst = {FIXED_DEC(-50,1), FIXED_DEC(-110,1), 0, FIXED_DEC(6,1)};
@@ -589,7 +581,7 @@ static void Stage_DrawCountdown(void)
 
 		//Play the appropriate intro sound if the song step is a multiple of increase_count_step
 		if (stage.flag & STAGE_FLAG_JUST_STEP && (stage.song_step % increase_count_step) == 0)
-			Audio_PlaySFX(stage.introsound[countdown_number + 2], 90);
+			Audio_PlaySound(stage.introsound[countdown_number + 2], 90);
 	}
 }
 
@@ -1071,9 +1063,9 @@ static void Stage_LoadChart(void)
 	Stage_ChangeBPM(stage.chart.cur_section->flag & SECTION_FLAG_BPM_MASK, 0);
 }
 
-static void Stage_LoadSFX(void)
+static void Stage_LoadSound(void)
 {
-	//Clear Alloc for sound effect work
+	//Clear alloc for sound effect work
 	Audio_ClearAlloc();
 
 	//Load Intro Sound Effects
@@ -1086,7 +1078,7 @@ static void Stage_LoadSFX(void)
 
 	for (u8 i = 0; i < COUNT_OF(intro_path); i++)
 	{
-		stage.introsound[i] = Audio_LoadSFX(intro_path[i]);
+		stage.introsound[i] = Audio_LoadSound(intro_path[i]);
 	}
 
 	//Load General Sound Effects
@@ -1095,7 +1087,7 @@ static void Stage_LoadSFX(void)
 	};
 
 	for (u8 i = 0; i < COUNT_OF(sfx_path); i++)
-		stage.sounds[i] = Audio_LoadSFX(sfx_path[i]);
+		stage.sounds[i] = Audio_LoadSound(sfx_path[i]);
 }
 
 static void Stage_LoadMusic(void)
@@ -1111,7 +1103,7 @@ static void Stage_LoadMusic(void)
 		stage.gf->sing_end -= stage.note_scroll;
 	
 	//Find music file and begin seeking to it
-	Audio_SeekXA_Track(stage.stage_def->track);
+	Audio_LoadMus(stage.stage_def->song_path);
 	
 	//Initialize music state
 	stage.note_scroll = FIXED_DEC(-5 * 5 * 12,1);
@@ -1242,7 +1234,7 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stage.sbump = FIXED_UNIT;
 
 	//Load Sound effects
-	Stage_LoadSFX();
+	Stage_LoadSound();
 	
 	//Load music
 	stage.note_scroll = 0;
@@ -1434,15 +1426,15 @@ void Stage_Tick(void)
 					//Update song
 					if (stage.song_time >= 0)
 					{
-						//Song has started
+						//Start song
 						playing = true;
-						Audio_PlayXA_Track(stage.stage_def->track, 0x40, stage.stage_def->channel, false);
-							
+						
+						Audio_PlayMus(false);
+						Audio_SetVolume(0, 0x3FFF, 0x0000);
+						Audio_SetVolume(1, 0x0000, 0x3FFF);
+						
 						//Update song time
-						fixed_t audio_time = (fixed_t)Audio_TellXA_Milli() - stage.offset;
-						if (audio_time < 0)
-							audio_time = 0;
-						stage.interp_ms = (audio_time << FIXED_SHIFT) / 1000;
+						stage.interp_ms = Audio_GetTime();
 						stage.interp_time = 0;
 						stage.song_time = stage.interp_ms;
 					}
@@ -1455,18 +1447,15 @@ void Stage_Tick(void)
 						//Update scroll
 						next_scroll = FIXED_MUL(stage.song_time, stage.step_crochet);
 					}
-				else if (Audio_PlayingXA())
+				else if (Audio_IsPlaying())
 				{
 					//Sync to audio
-					fixed_t audio_time_pof = (fixed_t)Audio_TellXA_Milli();
-					fixed_t audio_time = (audio_time_pof > 0) ? (audio_time_pof - stage.offset) : 0;
-
-					stage.interp_ms = (audio_time << FIXED_SHIFT) / 1000;
+					stage.interp_ms = Audio_GetTime();
 					stage.interp_time = 0;
 					stage.song_time = stage.interp_ms;
-						
+					
 					playing = true;
-						
+					
 					//Update scroll
 					next_scroll = ((fixed_t)stage.step_base << FIXED_SHIFT) + FIXED_MUL(stage.song_time - stage.time_base, stage.step_crochet);
 				}
@@ -1548,7 +1537,7 @@ void Stage_Tick(void)
 
 			if (playing && pad_state.press & PAD_START)
 			{
-				Audio_PauseXA();
+				Audio_PauseMus();
 
 				//Initialize pause variables
 				stage.flag |= STAGE_FLAG_PAUSED;
@@ -1793,7 +1782,7 @@ void Stage_Tick(void)
 		case StageState_Dead: //Start BREAK animation and reading extra data from CD
 		{
 			//Stop music immediately
-			Audio_StopXA();
+			Audio_StopMus();
 
 			//Load gameover texture
 			sprintf(stage.gameover_path, "\\CHAR\\BFDEAD.TIM;1");
@@ -1830,8 +1819,11 @@ void Stage_Tick(void)
 			//Load Gameover texture
 			Gfx_LoadTex(&stage.tex_gameover, stage.gameover_tim, GFX_LOADTEX_FREE);
 
-			//Play Gameover music
-			Audio_PlayXA_Track(XA_GameOver, 0x40, 1, true);
+			//Play gameover music
+			Audio_LoadMus("\\SONGS\\GAMEOVER.MUS;1");
+			Audio_PlayMus(true);
+			Audio_SetVolume(0, 0x3FFF, 0x0000);
+			Audio_SetVolume(1, 0x0000, 0x3FFF);
 			
 			stage.state = StageState_DeadLoop;
 			break;

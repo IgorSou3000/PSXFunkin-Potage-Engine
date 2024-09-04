@@ -18,8 +18,8 @@ tools/funkinarcpak/funkinarcpak
 tools/funkinchtpak/funkinchtpak
 tools/funkinchrpak/funkinchrpak
 tools/funkintimpak/funkintimpak
+tools/funkinmuspak/funkinmuspak
 tools/psxavenc/psxavenc
-tools/xainterleave/xainterleave
 
 # Exclude object and link files
 obj/
@@ -35,7 +35,6 @@ build/
 # Exclude converted assets
 *.tim
 *.arc
-*.xa
 *.mus
 *.cht
 *.chr
@@ -46,7 +45,7 @@ build/
 !makefile.cht
 !makefile.chr
 !makefile.tim
-!makefile.xa
+!makefile.mus
 !makefile.vag
 !makefile.str
 

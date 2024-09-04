@@ -28,7 +28,7 @@ void Pause_Tick()
 		{
 			case 0: //Resume
 				stage.flag &= ~STAGE_FLAG_PAUSED;
-				Audio_ResumeXA();
+				Audio_ResumeMus();
 				break;
 			case 1: //Retry
 				stage.trans = StageTrans_Reload;

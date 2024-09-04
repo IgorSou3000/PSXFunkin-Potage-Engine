@@ -9,7 +9,7 @@
 		
 		//Song info
 		1, 1,
-		XA_Bopeebo, 0,
+		"\\SONGS\\WEEK1_1.MUS;1",
 		
 		StageId_Fresh, STAGE_LOAD_FLAG
 	},
@@ -24,7 +24,7 @@
 		
 		//Song info
 		1, 2,
-		XA_Fresh, 2,
+		"\\SONGS\\WEEK1_2.MUS;1",
 		
 		StageId_DadBattle, STAGE_LOAD_FLAG
 	},
@@ -39,7 +39,7 @@
 		
 		//Song info
 		1, 3,
-		XA_Dadbattle, 0,
+		"\\SONGS\\WEEK1_3.MUS;1",
 		
 		StageId_DadBattle, 0
 	},
@@ -54,7 +54,7 @@
 		
 		//Song info
 		1, 4,
-		XA_Tutorial, 2,
+		"\\SONGS\\WEEK1_4.MUS;1",
 		
 		StageId_Tutorial, 0
 	},

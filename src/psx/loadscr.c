@@ -16,7 +16,8 @@
 void LoadScr_Start(void)
 {
 	//Stop music and make sure frame has been drawn
-	Audio_StopXA();
+	Audio_ClearAlloc();
+	Audio_StopMus();
 	Gfx_Flip();
 	
 	//Load loading screen texture

@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 	while (true)
 	{		
 		Timer_Tick();
-		Audio_ProcessXA();
+		Audio_ProcessMusic();
 		Pad_Update();
 		
 		#ifdef MEM_STAT

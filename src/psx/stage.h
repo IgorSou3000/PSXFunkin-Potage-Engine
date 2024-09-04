@@ -97,8 +97,7 @@ typedef struct
 	
 	//Song info	
 	u8 week, week_song;
-	XA_Track track;
-	u8 channel;
+	const char* song_path;
 	
 	StageId next_stage;
 	u8 next_load;
@@ -174,7 +173,7 @@ typedef struct
 	//Variables that you want save
 	struct
 	{
-		boolean ghost, middlescroll, downscroll, healthdrain, showtimer, botplay, canbump, splash, debug_mode;
+		boolean ghost, middlescroll, downscroll, healthdrain, interrupt_sync, showtimer, botplay, canbump, splash, debug_mode;
 
 		u32 savescore[StageId_Max][StageDiff_Max];	
 	}save;
@@ -197,8 +196,8 @@ typedef struct
 	FontData font_cdr, font_bold;
 
 	//Sound Effects
-	SFX introsound[4];
-	SFX sounds[6];
+	sound_t introsound[4];
+	sound_t sounds[6];
 	
 	//Stage data
 	const StageDef *stage_def;

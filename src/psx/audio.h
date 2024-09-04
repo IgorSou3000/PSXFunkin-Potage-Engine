@@ -4,53 +4,33 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#pragma once
+#ifndef PSXF_GUARD_AUDIO_H
+#define PSXF_GUARD_AUDIO_H
 
 #include "psx.h"
 
-typedef u32 SFX;
+#include "fixed.h"
 
-//XA enumerations
-typedef enum
-{
-  XA_Menu,   //MENU.XA
-  XA_Week1A, //WEEK1A.XA
-  XA_Week1B, //WEEK1B.XA
-  
-  XA_Max,
-} XA_File;
+typedef u32 sound_t;
 
-typedef enum
-{
-  //MENU.XA
-  XA_GettinFreaky,
-  XA_GameOver,
-  //WEEK1A.XA
-  XA_Bopeebo,
-  XA_Fresh,
-  //WEEK1B.XA
-  XA_Dadbattle,
-  XA_Tutorial,
-  
-  XA_TrackMax,
-} XA_Track;
-
-//Audio functions
+//Audio interface
 void Audio_Init(void);
 void Audio_Quit(void);
-void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop);
-void Audio_SeekXA_Track(XA_Track track);
-void Audio_PauseXA(void);
-void Audio_ResumeXA(void);
-void Audio_StopXA(void);
-void Audio_ChannelXA(u8 channel);
-s32 Audio_TellXA_Sector(void);
-s32 Audio_TellXA_Milli(void);
-boolean Audio_PlayingXA(void);
-void Audio_WaitPlayXA(void);
-void Audio_ProcessXA(void);
-u16 Audio_GetLength(XA_Track track);
+void Audio_LoadMusFile(CdlFILE *file);
+void Audio_LoadMus(const char *path);
+void Audio_PlayMus(boolean loops);
+void Audio_StopMus(void);
+void Audio_ResumeMus(void);
+void Audio_PauseMus(void);
+void Audio_SetVolume(u8 i, u16 vol_left, u16 vol_right);
+fixed_t Audio_GetTime(void);
+u32 Audio_GetLength(void);
+boolean Audio_IsPlaying(void);
+boolean Audio_IsPaused(void);
+void Audio_ProcessMusic(void);
 
 void Audio_ClearAlloc(void);
-u32 Audio_LoadSFX(const char* path);
-void Audio_PlaySFX(SFX addr, u16 volume);
+sound_t Audio_LoadSound(const char* path);
+void Audio_PlaySound(sound_t sound, u16 volume);
+
+#endif

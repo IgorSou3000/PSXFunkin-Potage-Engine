@@ -88,7 +88,7 @@ static struct
 	fixed_t scroll;
 	fixed_t trans_time;
 
-	SFX sounds[10];
+	sound_t sounds[10];
 	
 	//Page specific state
 	union
@@ -188,13 +188,13 @@ static const char *Menu_LowerIf(const char *text, boolean lower)
 }
 
 //Since the psxfunkin scroll code is basically the same in every mode, i making this be a function
-u8 Menu_Scroll(u8 select, u8 optionsn, SFX* scroll_sfx)
+u8 Menu_Scroll(u8 select, u8 optionsn, sound_t* scroll_sfx)
 {
 	//Change options
 	if (pad_state.press & PAD_UP)
 	{
 		//Play Scroll Sound
-		Audio_PlaySFX(*scroll_sfx, 80);
+		Audio_PlaySound(*scroll_sfx, 80);
 		if (select > 0)
 				select--;
 		else
@@ -204,7 +204,7 @@ u8 Menu_Scroll(u8 select, u8 optionsn, SFX* scroll_sfx)
 	if (pad_state.press & PAD_DOWN)
 	{
 		//Play Scroll Sound
-		Audio_PlaySFX(*scroll_sfx, 80);
+		Audio_PlaySound(*scroll_sfx, 80);
 		if (select < optionsn)
 			select++;
 		else
@@ -384,9 +384,6 @@ void Menu_Load(MenuPage page)
 	
 	stage.song_step = 0;
 
-	//Clear Alloc for sound effect work (otherwise the sounds will not work)
-	Audio_ClearAlloc();
-
 	//Sound Effects Path
 	const char* sfx_path[] = {
 		"\\SOUNDS\\SCROLL.VAG;1",
@@ -397,11 +394,14 @@ void Menu_Load(MenuPage page)
 	//Load sound effects
 	for (u8 i = 0; i < COUNT_OF(sfx_path); i++)
 	{
-		menu.sounds[i] = Audio_LoadSFX(sfx_path[i]);
+		menu.sounds[i] = Audio_LoadSound(sfx_path[i]);
 	}
 	
 	//Play menu music
-	Audio_PlayXA_Track(XA_GettinFreaky, 0x40, 0, true);
+	Audio_LoadMus("\\SONGS\\FREAKY.MUS;1");
+	Audio_PlayMus(true);
+	Audio_SetVolume(0, 0x3FFF, 0x0000);
+	Audio_SetVolume(1, 0x0000, 0x3FFF);
 	
 	//Set background colour
 	Gfx_SetClear(0, 0, 0);
@@ -430,8 +430,7 @@ void Menu_Tick(void)
 	//Get song position
 	u16 bpm = 102; // Freaky BPM(102)
 
-	//Weird formula that make the xa milliseconds be a bpm
-	u16 next_step = Audio_TellXA_Milli() / (256 * 60 / bpm);
+	u16 next_step = Audio_GetTime() / FIXED_DEC(15, bpm);
 
 	if (next_step != stage.song_step)
 	{
@@ -545,7 +544,7 @@ void Menu_Tick(void)
 			if ((pad_state.press & PAD_START) && menu.next_page == menu.page && Trans_Idle())
 			{
 				//Play Confirm Sound
-				Audio_PlaySFX(menu.sounds[1], 80);
+				Audio_PlaySound(menu.sounds[1], 80);
 				menu.trans_time = FIXED_UNIT;
 				menu.page_state.title.fade = FIXED_DEC(255,1);
 				menu.page_state.title.fadespd = FIXED_DEC(300,1);
@@ -658,7 +657,7 @@ void Menu_Tick(void)
 							break;
 					}
 					//Play Confirm Sound
-					Audio_PlaySFX(menu.sounds[1], 80);
+					Audio_PlaySound(menu.sounds[1], 80);
 
 					menu.next_select = 0;
 					menu.trans_time = FIXED_UNIT;
@@ -668,7 +667,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//Play Cancel Sound
-					Audio_PlaySFX(menu.sounds[2], 80);
+					Audio_PlaySound(menu.sounds[2], 80);
 					menu.next_page = MenuPage_Title;
 					Trans_Start();
 				}
@@ -759,7 +758,7 @@ void Menu_Tick(void)
 				if (pad_state.press & (PAD_START | PAD_CROSS))
 				{
 					//Play Confirm Sound
-					Audio_PlaySFX(menu.sounds[1], 80);
+					Audio_PlaySound(menu.sounds[1], 80);
 
 					menu.next_page = MenuPage_Stage;
 					menu.page_param.stage.id = menu_options[menu.select].stage;
@@ -771,7 +770,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//Play Cancel Sound
-					Audio_PlaySFX(menu.sounds[2], 80);
+					Audio_PlaySound(menu.sounds[2], 80);
 
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 0; //Story Mode
@@ -888,7 +887,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//Play Cancel Sound
-					Audio_PlaySFX(menu.sounds[2], 80);
+					Audio_PlaySound(menu.sounds[2], 80);
 
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 1; //Freeplay
@@ -1022,7 +1021,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//Play Cancel Sound
-					Audio_PlaySFX(menu.sounds[2], 80);
+					Audio_PlaySound(menu.sounds[2], 80);
 
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 2; //Credits
@@ -1100,7 +1099,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//Play Cancel Sound
-					Audio_PlaySFX(menu.sounds[2], 80);
+					Audio_PlaySound(menu.sounds[2], 80);
 
 					menu.next_page = MenuPage_Main;
 					menu.next_select = 3; //Options
@@ -1168,7 +1167,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//Play Cancel Sound
-					Audio_PlaySFX(menu.sounds[2], 80);
+					Audio_PlaySound(menu.sounds[2], 80);
 
 					menu.page = menu.next_page = MenuPage_Options;
 				}
@@ -1275,7 +1274,7 @@ void Menu_Tick(void)
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//Play Cancel Sound
-					Audio_PlaySFX(menu.sounds[2], 80);
+					Audio_PlaySound(menu.sounds[2], 80);
 
 					menu.page = menu.next_page = MenuPage_Options;
 				}
@@ -1378,14 +1377,14 @@ void Menu_Tick(void)
 				{
 					menu_options[menu.select].func();
 					menu.trans_time = FIXED_UNIT;
-					Audio_PlaySFX(menu.sounds[1], 80);
+					Audio_PlaySound(menu.sounds[1], 80);
 				}
 
 				//Return to main menu if circle is pressed
 				if (pad_state.press & PAD_CIRCLE)
 				{
 					//Play Cancel Sound
-					Audio_PlaySFX(menu.sounds[2], 80);
+					Audio_PlaySound(menu.sounds[2], 80);
 
 					menu.page = menu.next_page = MenuPage_Options;
 				}

@@ -103,18 +103,20 @@ void Gfx_Flip(void)
 
 void Gfx_FlipWithoutOT(void)
 {
+	DrawSync(0);
 	VSync(0);
-    DecDCTinSync(0);
-    DecDCToutSync(0);
+  DecDCTinSync(0);
+  DecDCToutSync(0);
 
-    FntFlush(-1);
-    db ^= 1;
-
-    DrawSync(0);
-    PutDrawEnv(&draw[db]);
-    PutDispEnv(&disp[db]);
-    //Enable display
+  //Enable display
 	SetDispMask(1);
+
+	db ^= 1;
+
+  PutDrawEnv(&draw[db]);
+  PutDispEnv(&disp[db]);
+
+  FntFlush(-1);
 }
 
 RECT* Gfx_GetDrawClip(void)

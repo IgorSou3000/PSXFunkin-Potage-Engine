@@ -101,9 +101,12 @@
 
 			<!-- Songs -->
 			<dir name = "songs">
-				<file name = "menu.mus" type = "xa" source = "iso/songs/menu.mus"/>
-				<file name = "week1a.mus" type = "xa" source = "iso/songs/week1a.mus"/>
-				<file name = "week1b.mus" type = "xa" source = "iso/songs/week1b.mus"/>
+				<file name = "freaky.mus" type = "xa" source = "iso/songs/freakyMenu/freakyMenu.mus"/>
+				<file name = "gameover.mus" type = "xa" source = "iso/songs/gameover/gameover.mus"/>
+
+				<file name = "week1_1.mus" type = "xa" source = "iso/songs/bopeebo/bopeebo.mus"/>
+				<file name = "week1_2.mus" type = "xa" source = "iso/songs/fresh/fresh.mus"/>
+				<file name = "week1_3.mus" type = "xa" source = "iso/songs/dadbattle/dadbattle.mus"/>
 			</dir>
 			
 			<!-- Dummy sectors -->
